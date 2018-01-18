@@ -4,6 +4,9 @@
    Contributed by Andrew Waterman (andrew@sifive.com).
    Based on MIPS target.
 
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
+
    This file is part of BFD, the Binary File Descriptor library.
 
    This program is free software; you can redistribute it and/or modify
@@ -86,3 +89,18 @@ riscv_release_subset_list (riscv_subset_list_t *);
 
 extern char *
 riscv_arch_str (unsigned, const riscv_subset_list_t *);
+
+// extern bfd_boolean ReleaseImportEntry(void);
+// extern bfd_boolean PulpImportCreateNameAndRelocSections(int, unsigned int **, unsigned int *, unsigned int **, unsigned int *, unsigned int *);
+
+extern void PulpImportSectionsSize(int, unsigned int *, unsigned int *, unsigned int *, bfd_boolean);
+
+extern bfd_boolean InsertExportEntry(const char *);
+// extern bfd_boolean ReleaseExportEntry(void);
+extern unsigned int ExportSectionSize(unsigned int *);
+
+extern void PulpRegisterSymbolEntry(struct bfd_sym_chain, bfd_boolean);
+
+extern bfd_boolean ComponentMode;
+extern unsigned int DumpImportExportSections;
+
