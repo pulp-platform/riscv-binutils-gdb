@@ -4383,6 +4383,12 @@ number for the SBIC, SBIS, SBI and CBI instructions  */
   BFD_RELOC_RISCV_SET16,
   BFD_RELOC_RISCV_SET32,
   BFD_RELOC_RISCV_32_PCREL,
+/* Riscv, Pulp Specific */
+  BFD_RELOC_RISCV_REL12,
+  BFD_RELOC_RISCV_RELU5,
+  BFD_RELOC_RISCV_12_I,
+  BFD_RELOC_RISCV_12_S,
+
 
 /* Renesas RL78 Relocations.  */
   BFD_RELOC_RL78_NEG8,

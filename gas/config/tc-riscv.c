@@ -33,6 +33,9 @@
 #include "elf/riscv.h"
 #include "opcode/riscv.h"
 
+#define _WITH_PULP_CHIP_INFO_FUNCT_
+#include "pulp-opts.h"
+
 #include <stdint.h>
 
 /* Information about an instruction, including its format, operands
@@ -94,6 +97,12 @@ static struct riscv_set_options riscv_opts =
   DEFAULT_RISCV_ATTR, /* arch_attr */
 };
 
+static struct Pulp_Target_Chip Pulp_Chip = {PULP_CHIP_NONE, PULP_NONE, -1, -1, -1, -1, -1};
+
+static void pulp_set_chip(const char *arg);
+static void pulp_add_chip_info(void);
+
+
 static void
 riscv_set_rvc (bfd_boolean rvc_value)
 {
@@ -138,6 +147,12 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
       return riscv_subset_supports ("f") && riscv_subset_supports ("c");
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
+    case INSN_CLASS_XPULP_SLIM: return riscv_subset_supports ("xpulpslim");
+    case INSN_CLASS_XPULP_V0: return riscv_subset_supports ("xpulpv0");
+    case INSN_CLASS_XPULP_V1: return riscv_subset_supports ("xpulpv1");
+    case INSN_CLASS_XPULP_V2: return riscv_subset_supports ("xpulpv2");
+    case INSN_CLASS_XGAP8: return riscv_subset_supports ("xgap8");
+    case INSN_CLASS_XPULP_V3: return riscv_subset_supports ("xpulpv3");
 
     default:
       as_fatal ("Unreachable");
@@ -565,8 +580,8 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 
   if ((used_bits & opc->match) != (opc->match & required_bits))
     {
-      as_bad (_("internal: bad RISC-V opcode (mask error): %s %s"),
-	      opc->name, opc->args);
+      as_bad (_("internal: bad RISC-V opcode (mask error): %s %s. Used bits: %lX, Match bits: %lX, Required bits: %lX, Eval: %lX, Insn width=%d"),
+              opc->name, opc->args, used_bits, opc->match, required_bits, (used_bits & opc->match), insn_width);
       return FALSE;
     }
 
@@ -629,6 +644,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
       case ',': break;
       case '(': break;
       case ')': break;
+      case '!': break;
       case '<': USE_BITS (OP_MASK_SHAMTW,	OP_SH_SHAMTW);	break;
       case '>':	USE_BITS (OP_MASK_SHAMT,	OP_SH_SHAMT);	break;
       case 'A': break;
@@ -640,7 +656,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
       case 'S':	USE_BITS (OP_MASK_RS1,		OP_SH_RS1);	break;
       case 'U':	USE_BITS (OP_MASK_RS1,		OP_SH_RS1);	/* fallthru */
       case 'T':	USE_BITS (OP_MASK_RS2,		OP_SH_RS2);	break;
-      case 'd':	USE_BITS (OP_MASK_RD,		OP_SH_RD);	break;
+      case 'd':	USE_BITS (OP_MASK_RD,		OP_SH_RD);	if (*p == 'i') ++p; break;
       case 'm':	USE_BITS (OP_MASK_RM,		OP_SH_RM);	break;
       case 's':	USE_BITS (OP_MASK_RS1,		OP_SH_RS1);	break;
       case 't':	USE_BITS (OP_MASK_RS2,		OP_SH_RS2);	break;
@@ -648,7 +664,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
       case 'P':	USE_BITS (OP_MASK_PRED,		OP_SH_PRED); break;
       case 'Q':	USE_BITS (OP_MASK_SUCC,		OP_SH_SUCC); break;
       case 'o':
-      case 'j': used_bits |= ENCODE_ITYPE_IMM (-1U); break;
+      case 'j': used_bits |= ENCODE_ITYPE_IMM (-1U); if (*p == 'i') ++p; break;
       case 'a':	used_bits |= ENCODE_UJTYPE_IMM (-1U); break;
       case 'p':	used_bits |= ENCODE_SBTYPE_IMM (-1U); break;
       case 'q':	used_bits |= ENCODE_STYPE_IMM (-1U); break;
@@ -683,6 +699,29 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	     return FALSE;
 	  }
 	break;
+      case 'b':
+                if (*p == '1') {
+                        used_bits |= ENCODE_ITYPE_IMM(-1U); /* For loop I type pc rel displacement */
+                        ++p; break;
+                } else if (*p == '2') {
+                        used_bits |= ENCODE_I1TYPE_UIMM(-1U); /* For loop I1 type pc rel displacement */
+                        ++p; break;
+                } else if (*p == '3') {
+                        used_bits |= ENCODE_I1TYPE_UIMM(-1U); /* For scallimm  */
+                        ++p; break;
+                } else if (*p == '5') {
+                        used_bits |= ENCODE_I5TYPE_UIMM(-1U);
+                        ++p; break;
+                } else if (*p == 'i') {
+                        used_bits |= ENCODE_I5_1_TYPE_UIMM(-1U);
+                        ++p; break;
+                } else if (*p == 'I') {
+                        used_bits |= ENCODE_I5_1_TYPE_IMM(-1U);
+                        ++p; break;
+                } else if (*p == 's' || *p == 'u' || *p == 'U' || *p == 'f' || *p == 'F') {
+                        used_bits |= ENCODE_I6TYPE_IMM(-1U);
+                        ++p; break;
+                }
       default:
 	as_bad (_("internal: bad RISC-V opcode "
 		  "(unknown operand type `%c'): %s %s"),
@@ -692,9 +731,8 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 #undef USE_BITS
   if (used_bits != required_bits)
     {
-      as_bad (_("internal: bad RISC-V opcode (bits 0x%lx undefined): %s %s"),
-	      ~(unsigned long)(used_bits & required_bits),
-	      opc->name, opc->args);
+      as_bad (_("internal: bad RISC-V opcode (bits 0x%lx undefined): %s %s, width=%d"),
+              ~(long)(used_bits & required_bits), opc->name, opc->args, insn_width);
       return FALSE;
     }
   return TRUE;
@@ -783,6 +821,55 @@ md_begin (void)
 
   /* Set the default alignment for the text section.  */
   record_alignment (text_section, riscv_opts.rvc ? 1 : 2);
+}
+
+#define PULPINFO_NAME "Pulp_Info"
+#define PULPINFO_NAMESZ 10
+#define PULPINFO_TYPE 1
+
+static void pulp_add_chip_info(void)
+
+{
+        segT Pulp_Chip_Info;
+        segT old_section = now_seg;
+        int old_subsection = now_subseg;
+        char *p;
+        char LineBuffer[512];
+        unsigned int Len=0;
+        char *Msg = NULL;
+
+        PulpChipInfoImage(&Pulp_Chip, LineBuffer);
+        Len = strlen(LineBuffer);
+        Msg = (char *) xmalloc(Len+5);
+        strcpy(Msg, LineBuffer);
+        Len++;
+        do Msg[Len++] = 0; while ((Len & 3) != 0);
+
+        Pulp_Chip_Info = subseg_new(".Pulp_Chip.Info", 0);
+        bfd_set_section_flags(Pulp_Chip_Info, SEC_READONLY | SEC_HAS_CONTENTS);
+
+        /* Follow the standard note section layout: First write the length of the name string.  */
+        p = frag_more(4);
+        md_number_to_chars (p, (valueT) PULPINFO_NAMESZ, 4);
+
+        /* Next comes the length of the "descriptor", i.e., the actual data.  */
+        p = frag_more(4);
+        md_number_to_chars (p, (valueT) Len, 4);
+
+        /* Write the note type.  */
+        p = frag_more(4);
+        md_number_to_chars (p, (valueT) PULPINFO_TYPE, 4);
+
+        /* Write the name field.  */
+        p = frag_more (PULPINFO_NAMESZ);
+        memcpy (p, PULPINFO_NAME, PULPINFO_NAMESZ);
+
+        /* Finally, write the descriptor.  */
+        p = frag_more (Len);
+        memcpy (p, Msg, Len);
+
+        free(Msg);
+        subseg_set (old_section, old_subsection);
 }
 
 static insn_t
@@ -1230,6 +1317,7 @@ static const struct percent_op_match percent_op_itype[] =
   {"%lo", BFD_RELOC_RISCV_LO12_I},
   {"%tprel_lo", BFD_RELOC_RISCV_TPREL_LO12_I},
   {"%pcrel_lo", BFD_RELOC_RISCV_PCREL_LO12_I},
+  {"%tiny", BFD_RELOC_RISCV_12_I},
   {0, 0}
 };
 
@@ -1238,6 +1326,7 @@ static const struct percent_op_match percent_op_stype[] =
   {"%lo", BFD_RELOC_RISCV_LO12_S},
   {"%tprel_lo", BFD_RELOC_RISCV_TPREL_LO12_S},
   {"%pcrel_lo", BFD_RELOC_RISCV_PCREL_LO12_S},
+  {"%tiny", BFD_RELOC_RISCV_12_S},
   {0, 0}
 };
 
@@ -1772,6 +1861,7 @@ rvc_lui:
 	    case ')':
 	    case '[':
 	    case ']':
+            case '!':
 	      if (*s++ == *args)
 		continue;
 	      break;
@@ -1864,6 +1954,12 @@ rvc_lui:
 		      INSERT_OPERAND (RS1, *ip, regno);
 		      break;
 		    case 'd':
+                      if (args[1]=='i') {
+                          ++args;
+                          if (regno>1)
+                                as_fatal (_("internal error: wrong loop number argument: x%d, range:[x0,x1]"),
+                                          (int) regno);
+                      }
 		      INSERT_OPERAND (RD, *ip, regno);
 		      break;
 		    case 't':
@@ -1940,10 +2036,122 @@ rvc_lui:
 	      s = expr_end;
 	      continue;
 
+            case 'b':
+                /* b1: pc rel 12 bits offset for lp.starti and lp.endi sign-extended immediate as pc rel displacement for hwloop
+                   b2: pc rel 5 bits unsigned offset for lp.setupi
+                   b3: 5 bits immediate for scallimm
+                   b5: 5 bits unsigned immediate bits[29..25]
+                   bi: 5 bits unsigned immediate bits[24..20]
+                   bI: 5 bits signed immediate bits[24..20]
+                   bs: 6 bits signed immediate for vector instructions
+                   bu: 6 bits unsigned immediate for vector instructions
+                   bU: 6 bits unsigned imm
+                   bf: 1 bit unsigned imm
+                   bF: 2 bits unsigned imm
+                 */
+              if (args[1]=='1') {
+                char *saved_s=s;
+                ++args;
+                my_getExpression (imm_expr, s);
+                s = expr_end;
+                if (imm_expr->X_op == O_constant) {
+                        if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 0x0FFF))
+                                as_fatal (_("internal error: %s constant too large for lp.start/lp.endi, range:[0, %d]"),
+                                  saved_s, 0x1FFF);
+                        INSERT_OPERAND (IMM12, *ip, (imm_expr->X_add_number>>1));
+                } else *imm_reloc = BFD_RELOC_RISCV_REL12;
+              } else if (args[1]=='2') {
+                char *saved_s=s;
+                ++args;
+                my_getExpression (imm_expr, s);
+                s = expr_end;
+                if (imm_expr->X_op == O_constant) {
+                        if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 31))
+                                as_fatal (_("internal error: %s constant too large for lp.setupi, range:[0, %d]"),
+                                  saved_s, 63);
+                        INSERT_OPERAND (IMM5, *ip, (imm_expr->X_add_number>>1));
+                } else *imm_reloc = BFD_RELOC_RISCV_RELU5;
+              } else if (args[1]=='3') {
+                ++args;
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                INSERT_OPERAND (IMM5, *ip, imm_expr->X_add_number);
+              } else if (args[1]=='s' || args[1]=='u') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if ((args[1]=='u' && (imm_expr->X_add_number<0 || imm_expr->X_add_number>63)) ||
+                    (args[1]=='s' && (imm_expr->X_add_number<(-32) || imm_expr->X_add_number>31))) break;
+                ip->insn_opcode |= ENCODE_I6TYPE_IMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='U') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<0 || imm_expr->X_add_number>31) break;
+                ip->insn_opcode |= ENCODE_I6TYPE_IMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='f') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<0 || imm_expr->X_add_number>1) break;
+                ip->insn_opcode |= ENCODE_I6TYPE_IMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='F') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<0 || imm_expr->X_add_number>3) break;
+                ip->insn_opcode |= ENCODE_I6TYPE_IMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='5') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<0 || imm_expr->X_add_number>31) break;
+                ip->insn_opcode |= ENCODE_I5TYPE_UIMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='I') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<-16 || imm_expr->X_add_number>15) break;
+                ip->insn_opcode |= ENCODE_I5_1_TYPE_IMM (imm_expr->X_add_number);
+                ++args;
+              } else if (args[1]=='i') {
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_add_number<0 || imm_expr->X_add_number>31) break;
+                ip->insn_opcode |= ENCODE_I5_1_TYPE_UIMM (imm_expr->X_add_number);
+                ++args;
+              } else {
+                my_getExpression (imm_expr, s);
+                s = expr_end;
+              }
+              continue;
 	    case 'j': /* Sign-extended immediate.  */
-	      p = percent_op_itype;
-	      *imm_reloc = BFD_RELOC_RISCV_LO12_I;
-	      goto alu_op;
+              if (args[1]=='i') {
+                /* immediate loop count, we don't want to use BFD_RELOC_RISCV_LO12_I to avoid colliding with relaxation */
+                char *saved_s=s;
+                ++args;
+                my_getExpression (imm_expr, s);
+                check_absolute_expr (ip, imm_expr, FALSE);
+                s = expr_end;
+                if (imm_expr->X_op != O_constant || imm_expr->X_add_number >= (signed)RISCV_IMM_REACH ||
+                    imm_expr->X_add_number < 0)
+                        as_fatal (_("internal error: non constant or too large lsetupi loop count %s, range:[0, %d["),
+                                  saved_s, (int) RISCV_IMM_REACH);
+
+                INSERT_OPERAND (IMM12, *ip, imm_expr->X_add_number);
+                continue;
+              } else {
+	        *imm_reloc = BFD_RELOC_RISCV_LO12_I;
+	        p = percent_op_itype;
+	        goto alu_op;
+	      }
 	    case 'q': /* Store displacement.  */
 	      p = percent_op_stype;
 	      *imm_reloc = BFD_RELOC_RISCV_LO12_S;
@@ -1972,6 +2180,7 @@ alu_op:
 		      || (*args == '1')
 		      || imm_expr->X_add_number >= (signed)RISCV_IMM_REACH/2
 		      || imm_expr->X_add_number < -(signed)RISCV_IMM_REACH/2)
+			// if (!(imm_expr->X_op != O_constant && (p == percent_op_itype || p == percent_op_stype)))  ????????
 		    break;
 		}
 
@@ -2187,6 +2396,15 @@ enum options
   OPTION_NO_RELAX,
   OPTION_ARCH_ATTR,
   OPTION_NO_ARCH_ATTR,
+  OPTION_MRVC,
+  OPTION_MNO_RVC,
+  OPTION_L2,
+  OPTION_L1CL,
+  OPTION_L1FC,
+  OPTION_PE,
+  OPTION_FC,
+  OPTION_CPU,
+  OPTION_CHIP,
   OPTION_END_OF_ENUM
 };
 
@@ -2201,6 +2419,16 @@ struct option md_longopts[] =
   {"mno-relax", no_argument, NULL, OPTION_NO_RELAX},
   {"march-attr", no_argument, NULL, OPTION_ARCH_ATTR},
   {"mno-arch-attr", no_argument, NULL, OPTION_NO_ARCH_ATTR},
+
+  {"mrvc", no_argument, NULL, OPTION_MRVC},
+  {"mno-rvc", no_argument, NULL, OPTION_MNO_RVC},
+  {"mL2", required_argument, NULL, OPTION_L2},
+  {"mL1Cl", required_argument, NULL, OPTION_L1CL},
+  {"mL1Fc", required_argument, NULL, OPTION_L1FC},
+  {"mPE", required_argument, NULL, OPTION_PE},
+  {"mFC", required_argument, NULL, OPTION_FC},
+  {"mcpu", required_argument, NULL, OPTION_CPU},
+  {"mchip", required_argument, NULL, OPTION_CHIP},
 
   {NULL, no_argument, NULL, 0}
 };
@@ -2226,6 +2454,8 @@ riscv_set_abi (unsigned new_xlen, enum float_abi new_float_abi, bfd_boolean rve)
 int
 md_parse_option (int c, const char *arg)
 {
+  int Arg;
+
   switch (c)
     {
     case OPTION_MARCH:
@@ -2277,6 +2507,34 @@ md_parse_option (int c, const char *arg)
 
     case OPTION_NO_ARCH_ATTR:
       riscv_opts.arch_attr = FALSE;
+    /* PULP specific mdargs */
+    case OPTION_MRVC:
+      riscv_set_rvc (TRUE);
+      break;
+    case OPTION_L2:
+        Arg = atoi(arg);
+        if (Pulp_Chip.Pulp_L2_Size == -1 || Pulp_Chip.Pulp_L2_Size == Arg) Pulp_Chip.Pulp_L2_Size = Arg;
+      break;
+    case OPTION_L1CL:
+        Arg = atoi(arg);
+        if (Pulp_Chip.Pulp_L1_Cluster_Size == -1 || Pulp_Chip.Pulp_L1_Cluster_Size == Arg) Pulp_Chip.Pulp_L1_Cluster_Size = Arg;
+      break;
+    case OPTION_L1FC:
+        Arg = atoi(arg);
+        if (Pulp_Chip.Pulp_L1_FC_Size == -1 || Pulp_Chip.Pulp_L1_FC_Size == Arg) Pulp_Chip.Pulp_L1_FC_Size = Arg;
+      break;
+    case OPTION_PE:
+        Arg = atoi(arg);
+        if (Pulp_Chip.Pulp_PE == -1 || Pulp_Chip.Pulp_PE == Arg) Pulp_Chip.Pulp_PE = Arg;
+      break;
+    case OPTION_FC:
+        Arg = atoi(arg);
+        if (Pulp_Chip.Pulp_FC == -1 || Pulp_Chip.Pulp_FC == Arg) Pulp_Chip.Pulp_FC = Arg;
+      break;
+    case OPTION_CPU:
+      break;
+    case OPTION_CHIP:
+      pulp_set_chip(arg);
       break;
 
     default:
@@ -2284,6 +2542,32 @@ md_parse_option (int c, const char *arg)
     }
 
   return 1;
+}
+
+static void pulp_set_chip(const char *arg)
+
+{
+  char *uppercase = xstrdup (arg);
+  char *p = uppercase;
+  int i;
+
+  for (i = 0; uppercase[i]; i++) uppercase[i] = TOUPPER (uppercase[i]);
+
+  if (strncmp (p, "PULPINO", 7) == 0) {
+        riscv_set_arch ("RV32IMXpulpv1");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_PULPINO]);
+  } else if (strncmp (p, "HONEY", 5) == 0) {
+        riscv_set_arch ("RV32IMXpulpv0");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_HONEY]);
+/* __GAP8 Start */
+  } else if (strncmp (p, "GAP8", 4) == 0) {
+        riscv_set_arch ("RV32IMXgap8");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP8]);
+/* __GAP8 Stop */
+  } else {
+        as_fatal ("unsupported pulp chip %s", arg);
+  }
+  free (uppercase);
 }
 
 void
@@ -2347,6 +2631,59 @@ riscv_after_parse_args (void)
      range of registers in a .cfi_return_column directive.  */
   if (flag_dwarf_cie_version == -1)
     flag_dwarf_cie_version = 3;
+
+  /* Set PULP specific options */
+  riscv_subset_t *subset;
+
+  for (subset = riscv_subsets.head; subset != NULL; subset = subset->next) {
+
+    char *p = subset->name;
+    int len;
+    /* only consider if it's a custom extension */
+    if (*p != 'x') 
+      continue;
+
+    switch (PulpDecodeCpu(p+1, &len)) {
+    case PULP_RISCV:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_RISCV) Pulp_Chip.processor = PULP_RISCV;
+      else as_fatal("-Xriscv: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_V0:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V0) Pulp_Chip.processor = PULP_V0;
+      else as_fatal("-Xpulpv0: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_V1:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V1) Pulp_Chip.processor = PULP_V1;
+      else as_fatal("-Xpulpv1: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_V2:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V2) Pulp_Chip.processor = PULP_V2;
+      else as_fatal("-Xpulpv2: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_V3:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V3) Pulp_Chip.processor = PULP_V3;
+      else as_fatal("-Xpulpv3: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+/* __GAP8 Start */
+    case PULP_GAP8:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP8) Pulp_Chip.processor = PULP_GAP8;
+      else as_fatal("-Xgap8: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+/* __GAP8 Stop */
+    case PULP_SLIM:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_SLIM) Pulp_Chip.processor = PULP_SLIM;
+      else as_fatal("-Xpulpslim: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_NONE:
+      if (len==0) {
+	as_fatal ("-march=%s: unsupported ISA substring %s", subset->name, p);
+	return;
+      }
+      break;
+    default:
+      break;
+    }
+  }
 }
 
 long
@@ -2539,6 +2876,37 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
 	}
       break;
 
+    case BFD_RELOC_RISCV_REL12:
+      if (fixP->fx_addsy)
+        {
+          reloc_howto_type *howto = bfd_reloc_type_lookup (stdoutput, fixP->fx_r_type);
+          bfd_reloc_status_type r;
+
+          /* This reloc is local, always resolvable, S_GET_VALUE returns an error in case not resolvable */
+          bfd_vma target = S_GET_VALUE (fixP->fx_addsy) + *valP;
+          bfd_vma delta = (target - md_pcrel_from (fixP)) >> howto->rightshift;
+          r = bfd_check_overflow (howto->complain_on_overflow, 12, 0, 32, delta);
+          if (r==bfd_reloc_overflow)
+                as_fatal (_("BFD_RELOC_RISCV_REL12 Overflow: Disp=%d"), (int) delta);
+          bfd_putl32 (bfd_getl32 (buf) | ENCODE_ITYPE_IMM (delta), buf);
+        }
+      break;
+    case BFD_RELOC_RISCV_RELU5:
+      if (fixP->fx_addsy)
+        {
+          reloc_howto_type *howto = bfd_reloc_type_lookup (stdoutput, fixP->fx_r_type);
+          bfd_reloc_status_type r;
+
+          /* This reloc is local, always resolvable, S_GET_VALUE returns an error in case not resolvable */
+          bfd_vma target = S_GET_VALUE (fixP->fx_addsy) + *valP;
+          bfd_vma delta = (target - md_pcrel_from (fixP)) >> howto->rightshift;
+          r = bfd_check_overflow (howto->complain_on_overflow, 5, 0, 32, delta);
+          if (r==bfd_reloc_overflow)
+                as_fatal (_("BFD_RELOC_RISCV_RELU5 Overflow: Disp=%d"), (int) delta);
+          bfd_putl32 (bfd_getl32 (buf) | ENCODE_I1TYPE_UIMM (delta), buf);
+        }
+      break;
+
     case BFD_RELOC_12_PCREL:
       if (fixP->fx_addsy)
 	{
@@ -2581,6 +2949,10 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       break;
 
     case BFD_RELOC_RISCV_ALIGN:
+      break;
+
+    case BFD_RELOC_RISCV_12_I:
+    case BFD_RELOC_RISCV_12_S:
       break;
 
     default:
@@ -3022,6 +3394,12 @@ RISC-V options:\n\
   -mno-relax     disable relax\n\
   -march-attr    generate RISC-V arch attribute\n\
   -mno-arch-attr don't generate RISC-V arch attribute\n\
+  -mL2           set pulp L2 size to Value\n\
+  -mL1Cl=Value   set pulp cluster L1 size to Value\n\
+  -mL1Fc=Value   set pulp fabric controller L1 size, if any, to Value\n\
+  -mPE=Value     define number of processing element in Pulp cluster\n\
+  -mFC=Value     if Value=0 assume there is no fabric controler, if Value!=0 assume there is one FC\n\
+  -mchip=Name    define targeted chip as Name\n\
 "));
 }
 
@@ -3049,6 +3427,12 @@ tc_riscv_regname_to_dw2regnum (char *regname)
 
   as_bad (_("unknown register `%s'"), regname);
   return -1;
+}
+
+void pulp_md_end(void)
+
+{
+    pulp_add_chip_info();
 }
 
 void

@@ -2,6 +2,9 @@
    Copyright (C) 2011-2020 Free Software Foundation, Inc.
    Contributed by Andrew Waterman
 
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
+
    This file is part of GDB, GAS, and the GNU binutils.
 
    GDB, GAS, and the GNU binutils are free software; you can redistribute
@@ -100,6 +103,17 @@ static const char * const riscv_pred_succ[16] =
 #define EXTRACT_RVC_J_IMM(x) \
   ((RV_X(x, 3, 3) << 1) | (RV_X(x, 11, 1) << 4) | (RV_X(x, 2, 1) << 5) | (RV_X(x, 7, 1) << 6) | (RV_X(x, 6, 1) << 7) | (RV_X(x, 9, 2) << 8) | (RV_X(x, 8, 1) << 10) | (-RV_X(x, 12, 1) << 11))
 
+#define EXTRACT_I1TYPE_UIMM(x) \
+  (RV_X(x, 15, 5))
+#define EXTRACT_I6TYPE_IMM(x) \
+  ((RV_X(x, 20, 5)<<1)|RV_X(x, 25, 1))
+#define EXTRACT_I5TYPE_UIMM(x) \
+  (RV_X(x, 25, 5))
+#define EXTRACT_I5_1_TYPE_UIMM(x) \
+  (RV_X(x, 20, 5))
+#define EXTRACT_I5_1_TYPE_IMM(x) \
+  (RV_X(x, 20, 5))
+
 #define ENCODE_ITYPE_IMM(x) \
   (RV_X(x, 0, 12) << 20)
 #define ENCODE_STYPE_IMM(x) \
@@ -139,6 +153,17 @@ static const char * const riscv_pred_succ[16] =
 #define ENCODE_RVC_J_IMM(x) \
   ((RV_X(x, 1, 3) << 3) | (RV_X(x, 4, 1) << 11) | (RV_X(x, 5, 1) << 2) | (RV_X(x, 6, 1) << 7) | (RV_X(x, 7, 1) << 6) | (RV_X(x, 8, 2) << 9) | (RV_X(x, 10, 1) << 8) | (RV_X(x, 11, 1) << 12))
 
+#define ENCODE_I1TYPE_UIMM(x) \
+  (RV_X(x, 0, 5) << 15)
+#define ENCODE_I6TYPE_IMM(x) \
+  ((RV_X(x, 1, 5)<<20)|(RV_X(x, 0, 1)<<25))
+#define ENCODE_I5TYPE_UIMM(x) \
+  (RV_X(x, 0, 5) << 25)
+#define ENCODE_I5_1_TYPE_UIMM(x) \
+  (RV_X(x, 0, 5) << 20)
+#define ENCODE_I5_1_TYPE_IMM(x) \
+  (RV_X(x, 0, 5) << 20)
+
 #define VALID_ITYPE_IMM(x) (EXTRACT_ITYPE_IMM(ENCODE_ITYPE_IMM(x)) == (x))
 #define VALID_STYPE_IMM(x) (EXTRACT_STYPE_IMM(ENCODE_STYPE_IMM(x)) == (x))
 #define VALID_SBTYPE_IMM(x) (EXTRACT_SBTYPE_IMM(ENCODE_SBTYPE_IMM(x)) == (x))
@@ -158,6 +183,9 @@ static const char * const riscv_pred_succ[16] =
 #define VALID_RVC_SDSP_IMM(x) (EXTRACT_RVC_SDSP_IMM(ENCODE_RVC_SDSP_IMM(x)) == (x))
 #define VALID_RVC_B_IMM(x) (EXTRACT_RVC_B_IMM(ENCODE_RVC_B_IMM(x)) == (x))
 #define VALID_RVC_J_IMM(x) (EXTRACT_RVC_J_IMM(ENCODE_RVC_J_IMM(x)) == (x))
+
+#define VALID_I1TYPE_UIMM(x) (EXTRACT_I1TYPE_UIMM(ENCODE_I1TYPE_UIMM(x)) == (x))
+#define VALID_I6TYPE_IMM(x) (EXTRACT_I6TYPE_IMM(ENCODE_I6TYPE_IMM(x)) == (x))
 
 #define RISCV_RTYPE(insn, rd, rs1, rs2) \
   ((MATCH_ ## insn) | ((rd) << OP_SH_RD) | ((rs1) << OP_SH_RS1) | ((rs2) << OP_SH_RS2))
@@ -204,6 +232,10 @@ static const char * const riscv_pred_succ[16] =
 #define OP_SH_RS2		20
 #define OP_MASK_RS1		0x1f
 #define OP_SH_RS1		15
+
+#define OP_MASK_RS3I            0x1f
+#define OP_SH_RS3I              25
+
 #define OP_MASK_RS3		0x1f
 #define OP_SH_RS3		27
 #define OP_MASK_RD		0x1f
@@ -222,6 +254,14 @@ static const char * const riscv_pred_succ[16] =
 #define OP_SH_AQ		26
 #define OP_MASK_RL		0x1
 #define OP_SH_RL		25
+
+#define OP_MASK_IMM12           0xfff
+#define OP_SH_IMM12             20
+#define OP_MASK_IMM5            0x1f
+#define OP_SH_IMM5              15
+#define OP_MASK_IMM6            0x3f
+#define OP_SH_IMM6              20
+
 
 #define OP_MASK_CUSTOM_IMM	0x7f
 #define OP_SH_CUSTOM_IMM	25
@@ -309,6 +349,14 @@ enum riscv_insn_class
    INSN_CLASS_D_AND_C,
    INSN_CLASS_F_AND_C,
    INSN_CLASS_Q,
+   /* PULP extensions */
+   /* TODO: these could be merged by cleaning up the riscv-opc table */
+   INSN_CLASS_XPULP_SLIM,
+   INSN_CLASS_XPULP_V0,
+   INSN_CLASS_XPULP_V1,
+   INSN_CLASS_XPULP_V2,
+   INSN_CLASS_XGAP8,
+   INSN_CLASS_XPULP_V3,
   };
 
 /* This structure holds information for a particular instruction.  */
