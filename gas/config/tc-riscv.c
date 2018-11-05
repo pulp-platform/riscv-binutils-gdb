@@ -166,6 +166,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
     case INSN_CLASS_XPULP_V3:
       return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
 
+    case INSN_CLASS_XGAP9:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
+
     default:
       as_fatal ("Unreachable");
       return FALSE;
@@ -671,10 +674,12 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
       case 'd':	USE_BITS (OP_MASK_RD,		OP_SH_RD);	if (*p == 'i') ++p; break;
       case 'm':	USE_BITS (OP_MASK_RM,		OP_SH_RM);	break;
       case 's':	USE_BITS (OP_MASK_RS1,		OP_SH_RS1);	break;
+      case 'w':	USE_BITS (OP_MASK_RS1,          OP_SH_RS1);     /* fallthru */ /* PULP */
       case 't':	USE_BITS (OP_MASK_RS2,		OP_SH_RS2);	break;
       case 'r':	USE_BITS (OP_MASK_RS3,          OP_SH_RS3);     break;
 	/* balasr: PULP V0/V1 legacy compatibility */
       case 'y': USE_BITS (OP_MASK_PULP_RS3,     OP_SH_PULP_RS3); break;
+      case 'e':	USE_BITS (OP_MASK_RS3,          OP_SH_RS3);  break; /* PULP */
       case 'P':	USE_BITS (OP_MASK_PRED,		OP_SH_PRED); break;
       case 'Q':	USE_BITS (OP_MASK_SUCC,		OP_SH_SUCC); break;
       case 'o':
@@ -1964,6 +1969,8 @@ rvc_lui:
 	    case 't':		/* Target register.  */
 	    case 'r':		/* rs3.  */
 	    case 'y':           /* PULP specific legacy */
+	    case 'e':           /* rs3. PULP */
+	    case 'w':           /* rs1 and rs2 PULP */
 	      if (reg_lookup (&s, RCLASS_GPR, &regno))
 		{
 		  c = *args;
@@ -1986,15 +1993,21 @@ rvc_lui:
                       }
 		      INSERT_OPERAND (RD, *ip, regno);
 		      break;
+                    case 'w':
+                      INSERT_OPERAND (RS1, *ip, regno); /* fallthru */
 		    case 't':
 		      INSERT_OPERAND (RS2, *ip, regno);
 		      break;
+		    /* TODO: 'r' and 'e' seem to do the same thing. 'r' seems to have no disassembly though */
 		    case 'r':
 		      INSERT_OPERAND (RS3, *ip, regno);
 		      break;
 		    case 'y':
 		      INSERT_OPERAND (PULP_RS3, *ip, regno);
 		      break;
+                    case 'e':
+                      INSERT_OPERAND (RS3, *ip, regno);
+                      break;
 		    }
 		  continue;
 		}
@@ -2482,11 +2495,12 @@ int
 md_parse_option (int c, const char *arg)
 {
   int Arg;
+  static int Defined = 0;
 
   switch (c)
     {
     case OPTION_MARCH:
-      riscv_set_arch (arg);
+      if (!Defined) riscv_set_arch (arg);
       break;
 
     case OPTION_NO_PIC:
@@ -2561,7 +2575,7 @@ md_parse_option (int c, const char *arg)
     case OPTION_CPU:
       break;
     case OPTION_CHIP:
-      pulp_set_chip(arg);
+      pulp_set_chip(arg); Defined = 1;
       break;
 
     default:
@@ -2581,16 +2595,19 @@ static void pulp_set_chip(const char *arg)
   for (i = 0; uppercase[i]; i++) uppercase[i] = TOUPPER (uppercase[i]);
 
   if (strncmp (p, "PULPINO", 7) == 0) {
-        riscv_set_arch ("RV32IMXpulpv1");
+        riscv_set_arch ("RV32IMCXpulpv1");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_PULPINO]);
   } else if (strncmp (p, "HONEY", 5) == 0) {
-        riscv_set_arch ("RV32IMXpulpv0");
+        riscv_set_arch ("RV32IMCXpulpv0");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_HONEY]);
 /* __GAP8 Start */
   } else if (strncmp (p, "GAP8", 4) == 0) {
-        riscv_set_arch ("RV32IMXgap8");
+        riscv_set_arch ("RV32IMCXgap8");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP8]);
 /* __GAP8 Stop */
+  } else if (strncmp (p, "GAP9", 4) == 0) {
+        riscv_set_arch ("RV32IMCXgap9");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else {
         as_fatal ("unsupported pulp chip %s", arg);
   }
@@ -2667,7 +2684,7 @@ riscv_after_parse_args (void)
     char *p = subset->name;
     int len;
     /* only consider if it's a custom extension */
-    if (*p != 'x') 
+    if (*p != 'x')
       continue;
 
     /* balasr hack: concatenate major version that was stripped back to string before parsing */
@@ -2705,6 +2722,10 @@ riscv_after_parse_args (void)
     case PULP_SLIM:
       if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_SLIM) Pulp_Chip.processor = PULP_SLIM;
       else as_fatal("-Xpulpslim: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_GAP9:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP9) Pulp_Chip.processor = PULP_GAP9;
+      else as_fatal("-Xgap9: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
       break;
       /* ignore PULP_NONE since tests are expecting us not to crash here */
     default:
@@ -3424,6 +3445,7 @@ RISC-V options:\n\
   -mno-relax     disable relax\n\
   -march-attr    generate RISC-V arch attribute\n\
   -mno-arch-attr don't generate RISC-V arch attribute\n\
+  -mchip=CHIP    set Pulp chip target\n\
   -mL2           set pulp L2 size to Value\n\
   -mL1Cl=Value   set pulp cluster L1 size to Value\n\
   -mL1Fc=Value   set pulp fabric controller L1 size, if any, to Value\n\
