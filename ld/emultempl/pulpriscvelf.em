@@ -76,6 +76,7 @@ riscv_elf_after_open(void)
 static int MergeChipInfo(struct Pulp_Target_Chip *Cur, struct Pulp_Target_Chip *Ref, int Final)
 
 {
+
         int Ok = 1;
         if (Ref->chip == PULP_CHIP_NONE) Ref->chip = Cur->chip;
         else if (Ref->chip != Cur->chip && Cur->chip != PULP_CHIP_NONE) {
@@ -122,6 +123,7 @@ static int MergeChipInfo(struct Pulp_Target_Chip *Cur, struct Pulp_Target_Chip *
 static void
 riscv_elf_before_allocation (void)
 {
+	int Check = 0;
 	char CharBuff[1024];
 	bfd *b, *first_b = NULL;
 	struct bfd_section *s, *first_s = NULL;
@@ -154,7 +156,7 @@ riscv_elf_before_allocation (void)
 					fprintf(stderr, "Found Chip Info Section in In BFD %s: %s\n",
 						b->filename, PulpChipInfoImage(&CurChipInfo, CharBuff));
 
-				if (MergeChipInfo(&CurChipInfo, &ChipInfo, 0) == 0) {
+				if (Check && (MergeChipInfo(&CurChipInfo, &ChipInfo, 0) == 0)) {
 					if (Warn_Chip_Info || Error_Chip_Info)
 						einfo(_("Can't merge .Pulp_Chip.Info section in %s with current\n"), b->filename);
 					if (Error_Chip_Info) Error++;
@@ -177,7 +179,7 @@ riscv_elf_before_allocation (void)
 	}
 	if (TRACE) fprintf(stderr, "Merged Config, before applying linker one's: %s\n", PulpChipInfoImage(&ChipInfo, CharBuff));
 
-	if (MergeChipInfo(&Pulp_Chip, &ChipInfo, 1) == 0) {
+	if (Check && (MergeChipInfo(&Pulp_Chip, &ChipInfo, 1) == 0)) {
 		if (Warn_Chip_Info||Error_Chip_Info) einfo(_("Can't merge .Pulp_Chip.Info from sections with linker passed infos\n"));
 		if (Error_Chip_Info) Error++;
 		NoMerge=1;
@@ -449,6 +451,10 @@ static void ParsePulpArch(const char *arg)
                   	if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_SLIM) Pulp_Chip.processor = PULP_SLIM;
                   	else einfo(_("%F -Xpulpslim: pulp architecture is already defined as %s"), PulpProcessorImage(Pulp_Chip.processor));
 			break;
+		case PULP_GAP9:
+                  	if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP9) Pulp_Chip.processor = PULP_GAP9;
+                  	else einfo(_("%F -Xgap9: pulp architecture is already defined as %s"), PulpProcessorImage(Pulp_Chip.processor));
+			break;
 		case PULP_NONE:
 			if (Len==0) {
                   		einfo(_ ("%F -march=%s: unsupported ISA substring %s"), arg, p); return;
@@ -491,6 +497,9 @@ static void ParsePulpChip(const char *arg)
         ParsePulpArch ("IXgap8");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP8]);
 /* __GAP8 Stop */
+  } else if (strncmp (p, "GAP9", 4) == 0) {
+        ParsePulpArch ("IXgap9");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else {
         einfo(_("%F Unsupported pulp chip %s"), arg);
   }
