@@ -2778,6 +2778,38 @@ const struct riscv_opcode riscv_opcodes[] =
 {"p.beqimm",            0, INSN_CLASS_XGAP9,  "s,bI,p",  MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,    0},
 {"p.bneimm",            0, INSN_CLASS_XGAP9,  "s,bI,p",  MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,    0},
 
+/* Complex numbers */
+{"pv.cplxmul.h.r",      0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div2", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div4", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div8", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+
+{"pv.cplxmul.h.i",      0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div2", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div4", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div8", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+
+{"pv.subrotmj.h",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S0, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div2",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S1, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div4",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S2, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div8",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S3, MASK_V_OP,      match_opcode,   0},
+
+{"pv.cplxconj.h",       0, INSN_CLASS_XGAP9,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
+
+{"pv.add.h.div2",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div4",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div8",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
+{"pv.sub.h.div2",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div4",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div8",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
+{"pv.pack.h.h",         0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_PACKH|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+
+/* Bit reverse */
+
+{"p.bitrev",            0, INSN_CLASS_XGAP9,   "d,s,bi,b5",     MATCH_BITREV,                           MASK_BITREV,    match_opcode,   0},
+
 /* Load from event unit */
 
 {"p.elw",               0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
