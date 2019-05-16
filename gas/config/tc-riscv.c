@@ -169,6 +169,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
     case INSN_CLASS_XGAP9:
       return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
 
+    case INSN_CLASS_XPULP_NN:
+      return riscv_subset_supports ("xpulpnn");
+
     default:
       as_fatal ("Unreachable");
       return FALSE;
@@ -2726,6 +2729,10 @@ riscv_after_parse_args (void)
     case PULP_GAP9:
       if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP9) Pulp_Chip.processor = PULP_GAP9;
       else as_fatal("-Xgap9: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      break;
+    case PULP_NN:
+      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_NN) Pulp_Chip.processor = PULP_NN;
+      else as_fatal("-Xpulpnn: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
       break;
       /* ignore PULP_NONE since tests are expecting us not to crash here */
     default:

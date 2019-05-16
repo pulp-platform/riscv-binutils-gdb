@@ -362,6 +362,7 @@ enum riscv_insn_class
    INSN_CLASS_XGAP8,
    INSN_CLASS_XPULP_V3,
    INSN_CLASS_XGAP9,
+   INSN_CLASS_XPULP_NN,
   };
 
 /* This structure holds information for a particular instruction.  */
