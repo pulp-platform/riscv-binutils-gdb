@@ -500,6 +500,10 @@ static void ParsePulpChip(const char *arg)
   } else if (strncmp (p, "GAP9", 4) == 0) {
         ParsePulpArch ("IXgap9");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
+  } else if (strncmp (p, "HUA20", 5) == 0) {
+        ParsePulpArch ("IXgap9");
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
+
   } else {
         einfo(_("%F Unsupported pulp chip %s"), arg);
   }
