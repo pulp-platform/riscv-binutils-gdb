@@ -2611,6 +2611,10 @@ static void pulp_set_chip(const char *arg)
   } else if (strncmp (p, "GAP9", 4) == 0) {
         riscv_set_arch ("rv32imcxgap9");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
+  } else if (strncmp (p, "HUA20", 5) == 0) {
+        riscv_set_arch ("RV32IMCXgap9");
+	as_fatal ("#### unsupported pulp chip %s", p);
+        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else {
         as_fatal ("unsupported pulp chip %s", arg);
   }
@@ -2729,6 +2733,7 @@ riscv_after_parse_args (void)
     case PULP_GAP9:
       if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP9) Pulp_Chip.processor = PULP_GAP9;
       else as_fatal("-Xgap9: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
+      strcpy(subset, "XGAP9");
       break;
     case PULP_NN:
       if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_NN) Pulp_Chip.processor = PULP_NN;
