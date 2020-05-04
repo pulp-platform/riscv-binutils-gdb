@@ -842,18 +842,18 @@ const struct riscv_opcode riscv_opcodes[] =
 
 {"p.sb",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
 {"p.sb",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,r(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,r(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 {"p.sh",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
 {"p.sh",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,r(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,r(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 {"p.sw",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
 {"p.sw",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,r(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,r(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 /* additional ALU operations */
 
@@ -894,36 +894,36 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* 32x32 into 32 MAC operation */
 
-{"p.mac",               0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MAC,                              MASK_MAC,       match_opcode,   0},
+{"p.mac",               0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MAC,                              MASK_MAC,       match_opcode,   0},
 
 /* 16x16 into 32 MAC operations */
 
-{"p.mac.zl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZLZH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.machlu",            0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.macu",              0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.machlu",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
+{"p.machhu",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
 
-{"p.mac.zl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZLSH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACZHSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHSH,                          MASK_MAC,       match_opcode,   0},
 
-{"p.mac.sl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSLZH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.machlsu",           0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.machlsu",           0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZH,                          MASK_MAC,       match_opcode,   0},
 
-{"p.mac.sl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.macs",              0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSLSH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.machls",            0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XPULP_V0, "d,s,t,r",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.macs",              0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.machls",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
+{"p.machhs",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
 
 /* Pulp v1 */
 /* post-increment and register-register loads */
@@ -957,18 +957,18 @@ const struct riscv_opcode riscv_opcodes[] =
 
 {"p.sb",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
 {"p.sb",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,r(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,r(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 {"p.sh",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
 {"p.sh",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,r(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,r(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 {"p.sw",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
 {"p.sw",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,r(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,r(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
 
 /* additional ALU operations */
 
