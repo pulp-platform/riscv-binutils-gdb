@@ -771,8 +771,10 @@ init_opcode_hash (const struct riscv_opcode *opcodes,
     {
       const char *name = opcodes[i].name;
 
-      /* PULP: prevent duplicate entries */
-      if (!riscv_multi_subset_supports (opcodes[i].insn_class))
+      /* PULP: prevent duplicate entries. We add the RVC extension, regardless
+       * of -march, to support .option rvc. */
+      if (!riscv_multi_subset_supports (opcodes[i].insn_class)
+	  && !(opcodes[i].insn_class == INSN_CLASS_C))
       {
 	++i;
 	continue;
