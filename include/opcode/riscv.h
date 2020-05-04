@@ -255,6 +255,10 @@ static const char * const riscv_pred_succ[16] =
 #define OP_MASK_RL		0x1
 #define OP_SH_RL		25
 
+/* balasr: PULP V0/V1 legacy for p.sb */
+#define OP_MASK_PULP_RS3        0x1f
+#define OP_SH_PULP_RS3          25
+
 #define OP_MASK_IMM12           0xfff
 #define OP_SH_IMM12             20
 #define OP_MASK_IMM5            0x1f
