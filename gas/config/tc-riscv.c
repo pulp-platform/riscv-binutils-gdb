@@ -758,6 +758,13 @@ init_opcode_hash (const struct riscv_opcode *opcodes,
   while (opcodes[i].name)
     {
       const char *name = opcodes[i].name;
+
+      /* PULP: prevent duplicate entries */
+      if (!riscv_multi_subset_supports (opcodes[i].insn_class))
+      {
+	++i;
+	continue;
+      }
       const char *hash_error =
 	hash_insert (hash, name, (void *) &opcodes[i]);
 
