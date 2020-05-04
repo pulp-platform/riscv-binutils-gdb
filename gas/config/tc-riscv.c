@@ -147,12 +147,24 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
       return riscv_subset_supports ("f") && riscv_subset_supports ("c");
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
-    case INSN_CLASS_XPULP_SLIM: return riscv_subset_supports ("xpulpslim");
-    case INSN_CLASS_XPULP_V0: return riscv_subset_supports ("xpulpv0");
-    case INSN_CLASS_XPULP_V1: return riscv_subset_supports ("xpulpv1");
-    case INSN_CLASS_XPULP_V2: return riscv_subset_supports ("xpulpv2");
-    case INSN_CLASS_XGAP8: return riscv_subset_supports ("xgap8");
-    case INSN_CLASS_XPULP_V3: return riscv_subset_supports ("xpulpv3");
+
+    case INSN_CLASS_XPULP_SLIM:
+      return riscv_subset_supports ("xpulpslim");
+
+    case INSN_CLASS_XPULP_V0:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V1:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V2:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP8:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V3:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
 
     default:
       as_fatal ("Unreachable");
@@ -2656,7 +2668,12 @@ riscv_after_parse_args (void)
     if (*p != 'x') 
       continue;
 
-    switch (PulpDecodeCpu(p+1, &len)) {
+    /* balasr hack: concatenate major version that was stripped back to string before parsing */
+    int buflen = snprintf (NULL, 0, "%d", subset->major_version) + strlen (subset->name);
+    char* full_subset_name = xmalloc (buflen + 1);
+    snprintf (full_subset_name, buflen + 1, "%s%d", subset->name, subset->major_version);
+
+    switch (PulpDecodeCpu(full_subset_name+1, &len)) {
     case PULP_RISCV:
       if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_RISCV) Pulp_Chip.processor = PULP_RISCV;
       else as_fatal("-Xriscv: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
@@ -2696,6 +2713,9 @@ riscv_after_parse_args (void)
     default:
       break;
     }
+
+    if (!full_subset_name)
+      free (full_subset_name);
   }
 }
 
