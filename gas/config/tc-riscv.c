@@ -2595,18 +2595,18 @@ static void pulp_set_chip(const char *arg)
   for (i = 0; uppercase[i]; i++) uppercase[i] = TOUPPER (uppercase[i]);
 
   if (strncmp (p, "PULPINO", 7) == 0) {
-        riscv_set_arch ("RV32IMCXpulpv1");
+        riscv_set_arch ("rv32imcxpulpv1");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_PULPINO]);
   } else if (strncmp (p, "HONEY", 5) == 0) {
-        riscv_set_arch ("RV32IMCXpulpv0");
+        riscv_set_arch ("rv32imcxpulpv0");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_HONEY]);
 /* __GAP8 Start */
   } else if (strncmp (p, "GAP8", 4) == 0) {
-        riscv_set_arch ("RV32IMCXgap8");
+        riscv_set_arch ("rv32imcxgap8");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP8]);
 /* __GAP8 Stop */
   } else if (strncmp (p, "GAP9", 4) == 0) {
-        riscv_set_arch ("RV32IMCXgap9");
+        riscv_set_arch ("rv32imcxgap9");
         UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else {
         as_fatal ("unsupported pulp chip %s", arg);
