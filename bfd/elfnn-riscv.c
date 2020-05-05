@@ -4635,6 +4635,7 @@ _bfd_riscv_relax_pc  (bfd *abfd ATTRIBUTE_UNUSED,
 		      bfd_vma symval,
 		      bfd_vma max_alignment,
 		      bfd_vma reserve_size,
+		      bfd_boolean is_import ATTRIBUTE_UNUSED,
 		      bfd_boolean *again ATTRIBUTE_UNUSED,
 		      riscv_pcgp_relocs *pcgp_relocs,
 		      bfd_boolean undefined_weak)
