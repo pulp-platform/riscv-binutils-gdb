@@ -23,6 +23,8 @@
 
 #include "config.h"
 
+#include <strings.h>
+#include <limits.h>
 #include <inttypes.h>
 #include <time.h>
 #include <ctype.h>
@@ -32,6 +34,10 @@
 #include "sim-main.h"
 #include "sim-fpu.h"
 #include "sim-syscall.h"
+#include "sim-bits.h"
+
+#include "elf/riscv.h"
+#include "elfxx-riscv.h"
 
 #include "opcode/riscv.h"
 
@@ -64,6 +70,122 @@ static const struct riscv_opcode *riscv_hash[OP_MASK_OP + 1];
 	sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL); \
       } \
   } while (0)
+
+#ifndef DEFAULT_RISCV_ATTR
+#define DEFAULT_RISCV_ATTR 0
+#endif
+
+static unsigned gxlen = 0; /* width of an x-register */
+
+struct riscv_set_options
+{
+  int pic; /* Generate position-independent code.  */
+  int rvc; /* Generate RVC code.  */
+  int rve; /* Generate RVE code.  */
+  int relax; /* Emit relocs the linker is allowed to relax.  */
+  int arch_attr; /* Emit arch attribute.  */
+};
+
+static struct riscv_set_options riscv_opts =
+{
+  0,	/* pic */
+  0,	/* rvc */
+  0,	/* rve */
+  1,	/* relax */
+  DEFAULT_RISCV_ATTR, /* arch_attr */
+};
+
+static riscv_subset_list_t riscv_subsets;
+
+static bfd_boolean
+riscv_subset_supports (const char *feature)
+{
+  if (riscv_opts.rvc && (strcasecmp (feature, "c") == 0))
+    return TRUE;
+
+  return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
+}
+
+static bfd_boolean
+riscv_multi_subset_supports (enum riscv_insn_class insn_class)
+{
+  switch (insn_class)
+    {
+    case INSN_CLASS_I: return riscv_subset_supports ("i");
+    case INSN_CLASS_C: return riscv_subset_supports ("c");
+    case INSN_CLASS_A: return riscv_subset_supports ("a");
+    case INSN_CLASS_M: return riscv_subset_supports ("m");
+    case INSN_CLASS_F: return riscv_subset_supports ("f");
+    case INSN_CLASS_D: return riscv_subset_supports ("d");
+    case INSN_CLASS_D_AND_C:
+      return riscv_subset_supports ("d") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_F_AND_C:
+      return riscv_subset_supports ("f") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_Q: return riscv_subset_supports ("q");
+
+    case INSN_CLASS_XPULP_SLIM:
+      return riscv_subset_supports ("xpulpslim");
+
+    case INSN_CLASS_XPULP_V0:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V1:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V2:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP8:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V3:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP9:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9,
+					  RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_NN:
+      return riscv_subset_supports ("xpulpnn");
+
+    default:
+      fprintf(stderr, "Unreachable");
+      return FALSE;
+    }
+}
+
+/* Print error and exit */
+static void
+riscv_sim_error_handler (const char *fmt, ...)
+{
+  va_list ap;
+
+  va_start (ap, fmt);
+  vfprintf (stderr, fmt, ap);
+  va_end (ap);
+  exit(1);
+}
+
+/* Set which ISA and extensions are available.  */
+
+static void
+riscv_set_arch (const char *s)
+{
+  riscv_parse_subset_t rps;
+  rps.subset_list = &riscv_subsets;
+  rps.error_handler = riscv_sim_error_handler;
+  rps.xlen = &gxlen;
+
+  riscv_release_subset_list (&riscv_subsets);
+  riscv_parse_subset (&rps, s);
+}
 
 static INLINE void
 store_rd (SIM_CPU *cpu, int rd, unsigned_word val)
@@ -133,6 +255,25 @@ store_csr (SIM_CPU *cpu, const char *name, int csr, unsigned_word *reg,
     case CSR_INSTRETH:
     case CSR_TIMEH:
       RISCV_ASSERT_RV32 (cpu, "CSR: %s", name);
+
+    case CSR_LPSTART0:
+      cpu->csr.lpstart0 = val;
+      break;
+    case CSR_LPEND0:
+      cpu->csr.lpend0 = val;
+      break;
+    case CSR_LPCOUNT0:
+      cpu->csr.lpcount0 = val;
+      break;
+    case CSR_LPSTART1:
+      cpu->csr.lpstart1 = val;
+      break;
+    case CSR_LPEND1:
+      cpu->csr.lpend1 = val;
+      break;
+    case CSR_LPCOUNT1:
+      cpu->csr.lpcount1 = val;
+      break;
 
     /* All the rest are immutable.  */
     default:
@@ -2154,6 +2295,1034 @@ execute_a (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
   return pc;
 }
 
+static unsigned_word
+sext (unsigned_word w, int bit)
+{
+  const int shift = sizeof(unsigned_word) * CHAR_BIT - bit;
+  return ((signed_word)w << shift) >> shift;
+}
+
+static unsigned_word
+zext (unsigned_word w, int bit)
+{
+  const int shift = sizeof(unsigned_word) * CHAR_BIT - bit;
+  return ((unsigned_word)w << shift) >> shift;
+}
+
+static int
+clip (long long int low, long long int x, long long int high)
+{
+  if (x > high)
+    return high;
+  else if (x < low)
+    return low;
+  else
+    return x;
+}
+
+
+static sim_cia
+execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
+{
+  SIM_DESC sd = CPU_STATE (cpu);
+  int rd = (iw >> OP_SH_RD) & OP_MASK_RD;
+  int rs1 = (iw >> OP_SH_RS1) & OP_MASK_RS1;
+  int rs2 = (iw >> OP_SH_RS2) & OP_MASK_RS2;
+  int rs3 = rd; /* PULP sometimes uses rd as rs3 */
+  int imm5 = ((((signed_word)iw >> OP_SH_RS2) & OP_MASK_RS2) << 27) >> 27; /* rs2, but sign extended */
+  int uimm5 = (iw >> OP_SH_RS2) & OP_MASK_RS2; /* rs2 */
+  int luimm5 = (iw >> OP_SH_RS3I) & OP_MASK_RS3I;
+  int uimms = (iw >> OP_SH_RS1) & OP_MASK_RS1; /* loop immediate */
+  int loopindex = (iw >> 7) & 1;
+
+  const char *rd_name = riscv_gpr_names_abi[rd];
+  const char *rs1_name = riscv_gpr_names_abi[rs1];
+  const char *rs2_name = riscv_gpr_names_abi[rs2];
+  const char *rs3_name = riscv_gpr_names_abi[rs3];
+
+  unsigned int csr = (iw >> OP_SH_CSR) & OP_MASK_CSR;
+  unsigned_word i_imm = EXTRACT_ITYPE_IMM (iw);
+  unsigned_word u_imm = EXTRACT_UTYPE_IMM ((unsigned64) iw);
+  unsigned_word s_imm = EXTRACT_STYPE_IMM (iw);
+  unsigned_word sb_imm = EXTRACT_SBTYPE_IMM (iw);
+  unsigned_word shamt_imm = ((iw >> OP_SH_SHAMT) & OP_MASK_SHAMT);
+  unsigned_word tmp;
+  int shift;
+  sim_cia pc = cpu->pc + 4;
+
+  TRACE_EXTRACT (cpu, "rd:%-2i:%-4s  rs1:%-2i:%-4s %0*"PRIxTW"  rs2:%-2i:%-4s %0*"PRIxTW"  match:%#x mask:%#x",
+		 rd, rd_name,
+		 rs1, rs1_name, (int)sizeof (unsigned_word) * 2, cpu->regs[rs1],
+		 rs2, rs2_name, (int)sizeof (unsigned_word) * 2, cpu->regs[rs2],
+		 (unsigned) op->match, (unsigned) op->mask);
+
+  /* PULP branches */
+  if ((op->match & MASK_BEQM1) == MATCH_BEQM1)
+    {
+      TRACE_INSN (cpu, "p.beqimm %s, %d, %#" PRIxTW ";  // if (%s == %d) goto %#" PRIxTW,
+		  rs1_name, imm5, sb_imm, rs1_name, imm5, cpu->pc + sb_imm);
+      if(cpu->regs[rs1] == imm5)
+	{
+	  pc = cpu->pc + sb_imm;
+	  TRACE_BRANCH (cpu, "to %#" PRIxTW, pc);
+	}
+      goto done;
+    }
+
+  if ((op->match & MASK_BNEM1) == MATCH_BNEM1)
+    {
+      TRACE_INSN (cpu, "p.bneimm %s, %d, %#" PRIxTW ";  // if (%s != %d) goto %#" PRIxTW,
+		  rs1_name, imm5, sb_imm, rs1_name, imm5, cpu->pc + sb_imm);
+      if(cpu->regs[rs1] != imm5)
+	{
+	  pc = cpu->pc + sb_imm;
+	  TRACE_BRANCH (cpu, "to %#" PRIxTW, pc);
+	}
+      goto done;
+    }
+
+  /* PULP clip and bit manipulation */
+
+  switch (op->match & MASK_PALU1)
+    {
+    case MATCH_CLIP:
+      {
+	signed_word high = (1 << MAX (uimm5 - 1, 0)) - 1;
+	signed_word low = -(1 << MAX (uimm5 - 1, 0));
+	TRACE_INSN (cpu, "p.clip %s, %s, %"PRIiTW";  // %s = clip(%"PRIiTW", %s, %"PRIiTW")",
+		    rd_name, rs1_name, uimm5, rd_name, low, rs1_name, high);
+	store_rd (cpu, rd, clip (low, (signed_word)cpu->regs[rs1], high));
+      }
+      goto done;
+    case MATCH_CLIPU:
+      {
+	signed_word high = (1 << MAX (uimm5 - 1, 0)) - 1;
+	signed_word low = 0;
+	TRACE_INSN (cpu, "p.clipu %s, %s, %"PRIiTW";  // %s = clip(%"PRIiTW", %s, %"PRIiTW")",
+		    rd_name, rs1_name, uimm5, rd_name, low, rs1_name, high);
+	store_rd (cpu, rd, clip (low, (signed_word)cpu->regs[rs1], high));
+      }
+      goto done;
+    }
+
+  switch (op->match & MASK_PALU)
+    {
+    case MATCH_CLIPR:
+      {
+	signed_word high = cpu->regs[rs2];
+	signed_word low = -cpu->regs[rs2] - 1;
+	TRACE_INSN (cpu, "p.clipr %s, %s, %s;  // %s = clip(-%s-1, %s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs2_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, clip (low, (signed_word)cpu->regs[rs1], high));
+      }
+      goto done;
+    case MATCH_CLIPUR:
+      {
+	signed_word high = cpu->regs[rs2];
+	signed_word low = 0;
+	TRACE_INSN (cpu, "p.clipur %s, %s, %s;  // %s = clip(-%"PRIiTW", %s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, low, rs1_name, rs2_name);
+	store_rd (cpu, rd, clip (low, (signed_word)cpu->regs[rs1], high));
+      }
+      goto done;
+    case MATCH_EXTRACTR:
+      {
+	unsigned_word width = (cpu->regs[rs2] >> 5 & 0x1f) + 1;
+	unsigned_word shift = cpu->regs[rs2] & 0x1f;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if ((width - 1) + shift > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.extract %s, %s, %s;  // %s = sext(extract(%s, %s[9:5], %s[4:0]))",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name, rs2_name);
+	store_rd (cpu, rd, sext ((cpu->regs[rs1] & (mask << shift)) >> shift, width));
+      }
+      goto done;
+    case MATCH_EXTRACTUR:
+      {
+	unsigned_word width = (cpu->regs[rs2] >> 5 & 0x1f) + 1;
+	unsigned_word shift = cpu->regs[rs2] & 0x1f;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if ((width - 1) + shift > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.extract %s, %s, %s;  // %s = (extract(%s, %s[9:5], %s[4:0]))",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name, rs2_name);
+	store_rd (cpu, rd, zext ((cpu->regs[rs1] & (mask << shift)) >> shift, width));
+      }
+      goto done;
+    case MATCH_INSERTR:
+      {
+	unsigned_word width = (cpu->regs[rs2] >> 5 & 0x1f) + 1;
+	unsigned_word shift = cpu->regs[rs2] & 0x1f;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if ((width - 1) + shift > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu,  "p.insertr %s, %s, %s;  // %s = insert(%s, %s[9:5], %s[4:0])",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name, rs2_name);
+	store_rd (cpu, rd, (cpu->regs[rd] & ~(mask << shift))
+		  | ((cpu->regs[rs1] & mask) << shift));
+      }
+      goto done;
+    case MATCH_BSETR:
+      {
+	unsigned_word width = (cpu->regs[rs2] >> 5 & 0x1f) + 1;
+	unsigned_word shift = cpu->regs[rs2] & 0x1f;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if ((width - 1) + shift > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu,  "p.bsetr %s, %s, %s;  // %s = bsetr(%s, %s[9:5], %s[4:0])",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name, rs2_name);
+	store_rd (cpu, rd, cpu->regs[rs1] | (mask << shift));
+      }
+      goto done;
+    case MATCH_BCLRR:
+      {
+	unsigned_word width = (cpu->regs[rs2] >> 5 & 0x1f) + 1;
+	unsigned_word shift = cpu->regs[rs2] & 0x1f;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if ((width - 1) + shift > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu,  "p.bclrr %s, %s, %s;  // %s = bclrr(%s, %s[9:5], %s[4:0])",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name, rs2_name);
+	store_rd (cpu, rd, cpu->regs[rs1] & ~(mask << shift));
+      }
+      goto done;
+    }
+
+  switch (op->match & MASK_PALU2)
+    {
+    case MATCH_EXTRACT:
+      {
+	unsigned_word width = luimm5 + 1;
+	unsigned_word shift = uimm5;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if (luimm5 + uimm5 > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.extract %s, %s, %d, %d;  // %s = sext(extract(%s, %d, %d))",
+		    rd_name, rs1_name, luimm5, uimm5, rd_name, rs1_name, luimm5, uimm5);
+	store_rd (cpu, rd, sext ((cpu->regs[rs1] & (mask << shift)) >> shift, width));
+      }
+      goto done;
+    case MATCH_EXTRACTU:
+      {
+	unsigned_word width = luimm5 + 1;
+	unsigned_word shift = uimm5;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if (luimm5 + uimm5 > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.extract %s, %s, %d, %d;  // %s = extract(%s, %d, %d)",
+		    rd_name, rs1_name, luimm5, uimm5, rd_name, rs1_name, luimm5, uimm5);
+	store_rd (cpu, rd, zext ((cpu->regs[rs1] & (mask << shift)) >> shift, width));
+      }
+      goto done;
+    case MATCH_INSERT:
+      {
+	unsigned_word width = luimm5 + 1;
+	unsigned_word shift = uimm5;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if (luimm5 + uimm5 > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.insert %s, %s, %d, %d;  // %s = insert(%s, %d, %d)",
+		    rd_name, rs1_name, luimm5, uimm5, rd_name, rs1_name, luimm5, uimm5);
+	store_rd (cpu, rd, (cpu->regs[rd] & ~(mask << shift))
+		  | ((cpu->regs[rs1] & mask) << shift));
+      }
+      goto done;
+    case MATCH_BSET:
+      {
+	unsigned_word width = luimm5 + 1;
+	unsigned_word shift = uimm5;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if (luimm5 + uimm5 > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.bset %s, %s, %d, %d;  // %s = bset(%s, %d, %d)",
+		    rd_name, rs1_name, luimm5, uimm5, rd_name, rs1_name, luimm5, uimm5);
+	store_rd (cpu, rd, cpu->regs[rs1] | (mask << shift));
+      }
+      goto done;
+    case MATCH_BCLR:
+      {
+	unsigned_word width = luimm5 + 1;
+	unsigned_word shift = uimm5;
+	unsigned_word mask = width == 32 ? -1 : ((1 << width) - 1);
+	if (luimm5 + uimm5 > 32)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+	TRACE_INSN (cpu, "p.bclr %s, %s, %d, %d;  // %s = bclr(%s, %d, %d)",
+		    rd_name, rs1_name, luimm5, uimm5, rd_name, rs1_name, luimm5, uimm5);
+	store_rd (cpu, rd, cpu->regs[rs1] & ~(mask << shift));
+      }
+      goto done;
+    }
+
+  /* PULP additional ALU operations with only a single source operand */
+  switch (op->match & MASK_PALUS)
+    {
+    case MATCH_FF1:
+      TRACE_INSN (cpu, "p.ff1 %s, %s;  // %s = ffs(%s)",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, cpu->regs[rs1] == 0 ? 32 : ffs(cpu->regs[rs1]) - 1);
+      goto done;
+    case MATCH_FL1:
+      {
+	unsigned_word t;
+	TRACE_INSN (cpu, "p.fl1 %s, %s;  // %s = fls(%s)",
+		    rd_name, rs1_name, rd_name, rs1_name);
+	t = cpu->regs[rs1];
+	/* reverse bits and ffs */
+	t = (((t & 0xaaaaaaaa) >> 1) | ((t & 0x55555555) << 1));
+	t = (((t & 0xcccccccc) >> 2) | ((t & 0x33333333) << 2));
+	t = (((t & 0xf0f0f0f0) >> 4) | ((t & 0x0f0f0f0f) << 4));
+	t = (((t & 0xff00ff00) >> 8) | ((t & 0x00ff00ff) << 8));
+	t = ffs ((t >> 16) | (t << 16));
+	store_rd (cpu, rd, (0 == t ? 32 : 32 - t));
+      }
+      goto done;
+    case MATCH_CLB:
+      TRACE_INSN (cpu, "p.clb %s, %s;  // %s = count_leading_bits(%s)",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, cpu->regs[rs1] == 0 ?
+		0 : __builtin_clrsb(cpu->regs[rs1]));
+      goto done;
+    case MATCH_CNT:
+      TRACE_INSN (cpu, "p.cnt %s, %s;  // %s = popcount(%s)",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, __builtin_popcount(cpu->regs[rs1]));
+      goto done;
+    case MATCH_EXTHS:
+      TRACE_INSN (cpu, "p.exths %s, %s;  // %s = sext(%s[15:0])",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, sext(cpu->regs[rs1], 16));
+      goto done;
+    case MATCH_EXTHZ:
+      TRACE_INSN (cpu, "p.exthz %s, %s;  // %s = zext(%s[15:0])",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, zext(cpu->regs[rs1], 16));
+      goto done;
+    case MATCH_EXTBS:
+      TRACE_INSN (cpu, "p.extbs %s, %s;  // %s = sext(%s[7:0])",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, sext(cpu->regs[rs1], 8));
+      goto done;
+    case MATCH_EXTBZ:
+      TRACE_INSN (cpu, "p.extbz %s, %s;  // %s = zext(%s[7:0])",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, zext(cpu->regs[rs1], 8));
+      goto done;
+    case MATCH_AVG: /* TODO: binutils says MATCH_AVG, weird. Fix binutils */
+      TRACE_INSN (cpu, "p.abs %s, %s;  // %s = abs(%s)",
+		  rd_name, rs1_name, rd_name, rs1_name);
+      store_rd (cpu, rd, (signed_word)cpu->regs[rs1] < 0 ?
+		-cpu->regs[rs1] : cpu->regs[rs1]);
+      goto done;
+    }
+
+  /* PULP additional ALU operations */
+  switch (op->match & MASK_PALU)
+    {
+    case MATCH_SLET:
+      {
+	signed_word gpr1 = cpu->regs[rs1];
+	signed_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.slet %s, %s, %s;  // %s = slet(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, gpr1 <= gpr2 ? 1 : 0);
+      }
+      goto done;
+    case MATCH_SLETU:
+      {
+	unsigned_word gpr1 = cpu->regs[rs1];
+	unsigned_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.sletu %s, %s, %s;  // %s = sletu(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, gpr1 <= gpr2 ? 1 : 0);
+      }
+      goto done;
+    case MATCH_MIN:
+      {
+	signed_word gpr1 = cpu->regs[rs1];
+	signed_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.min %s, %s, %s;  // %s = min(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, MIN (gpr1, gpr2));
+      }
+      goto done;
+    case MATCH_MINU:
+      {
+	unsigned_word gpr1 = cpu->regs[rs1];
+	unsigned_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.minu %s, %s, %s;  // %s = minu(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, MIN (gpr1, gpr2));
+      }
+      goto done;
+    case MATCH_MAX:
+      {
+	signed_word gpr1 = cpu->regs[rs1];
+	signed_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.max %s, %s, %s;  // %s = max(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, MAX (gpr1, gpr2));
+      }
+      goto done;
+    case MATCH_MAXU:
+      {
+	unsigned_word gpr1 = cpu->regs[rs1];
+	unsigned_word gpr2 = cpu->regs[rs2];
+	TRACE_INSN (cpu, "p.maxu %s, %s, %s;  // %s = maxu(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	store_rd (cpu, rd, MAX (gpr1, gpr2));
+      }
+      goto done;
+    case MATCH_ROR:
+      {
+	unsigned_word gpr1 = cpu->regs[rs1];
+	unsigned_word gpr2 = cpu->regs[rs2];
+	unsigned_word tmp1;
+	unsigned_word tmp2;
+	if (gpr2 >= 32 || gpr2 < 0)
+	  {
+	    TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+	    sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	  }
+
+	TRACE_INSN (cpu, "p.ror %s, %s, %s;  // %s = ror(%s, %s)",
+		    rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+	tmp1 = gpr2 == 32 ? 0 : gpr1 >> gpr2;
+	tmp2 = gpr2 == 0 ? 0 : gpr1 << (32 - gpr2);
+	store_rd (cpu, rd, tmp1 | tmp2);
+      }
+      goto done;
+    }
+
+  /* PULP post-increment and reg-reg stores */
+
+  switch (op->match & MASK_SPOST)
+    {
+    case MATCH_SBPOST:
+      TRACE_INSN (cpu, "p.sb %s, %" PRIiTW "(%s!); // ",
+		  rs2_name, s_imm, rs1_name);
+      sim_core_write_unaligned_1 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
+      goto done;
+    case MATCH_SHPOST:
+      TRACE_INSN (cpu, "p.sh %s, %" PRIiTW "(%s!); // ",
+		  rs2_name, s_imm, rs1_name);
+      sim_core_write_unaligned_2 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
+
+      goto done;
+    case MATCH_SWPOST:
+      TRACE_INSN (cpu, "p.sw %s, %" PRIiTW "(%s!); // ",
+		  rs2_name, s_imm, rs1_name);
+      sim_core_write_unaligned_4 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
+      goto done;
+    }
+
+  switch (op->match & MASK_PALU)
+    {
+    case MATCH_SBRR:
+      TRACE_INSN (cpu, "p.sb %s, %s(%s); // ", rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_1 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1] + cpu->regs[rs3],
+				  cpu->regs[rs2]);
+      goto done;
+    case MATCH_SHRR:
+      TRACE_INSN (cpu, "p.sh %s, %s(%s); // ", rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_2 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1] + cpu->regs[rs3],
+				  cpu->regs[rs2]);
+      goto done;
+    case MATCH_SWRR:
+      TRACE_INSN (cpu, "p.sw %s, %s(%s); // ", rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_4 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1] + cpu->regs[rs3],
+				  cpu->regs[rs2]);
+      goto done;
+    case MATCH_SBRRPOST:
+      TRACE_INSN (cpu, "p.sb %s, %s(%s!); // ",
+		  rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_1 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      goto done;
+    case MATCH_SHRRPOST:
+      TRACE_INSN (cpu, "p.sh %s, %s(%s!); // ",
+		  rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_2 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      goto done;
+    case MATCH_SWRRPOST:
+      TRACE_INSN (cpu, "p.sw %s, %s(%s!); // ",
+		  rs2_name, rs3_name, rs1_name);
+      sim_core_write_unaligned_4 (cpu, cpu->pc, write_map,
+				  cpu->regs[rs1], cpu->regs[rs2]);
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      goto done;
+    }
+
+  /* PULP post-increment and reg-reg loads */
+
+  switch (op->match & MASK_LPOST)
+    {
+    case MATCH_LBPOST:
+      TRACE_INSN (cpu, "p.lb %s, %" PRIiTW "(%s!); // ",
+		  rd_name, i_imm, rs1_name);
+      store_rd (cpu, rd, EXTEND8 (
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1])));
+      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      goto done;
+    case MATCH_LBUPOST:
+      TRACE_INSN (cpu, "p.lbu %s, %" PRIiTW "(%s!); // ",
+		  rd_name, i_imm, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      goto done;
+    case MATCH_LHPOST:
+      TRACE_INSN (cpu, "p.lh %s, %" PRIiTW "(%s!); // ",
+		  rd_name, i_imm, rs1_name);
+      store_rd (cpu, rd, EXTEND16 (
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1])));
+      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      goto done;
+    case MATCH_LHUPOST:
+      TRACE_INSN (cpu, "p.lhu %s, %" PRIiTW "(%s!); // ",
+		  rd_name, i_imm, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      goto done;
+    case MATCH_LWPOST:
+      TRACE_INSN (cpu, "p.lw %s, %" PRIiTW "(%s!); // ",
+		  rd_name, i_imm, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_4 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      goto done;
+    }
+
+  switch (op->match & MASK_LRR)
+    {
+    case MATCH_LBRR:
+      TRACE_INSN (cpu, "p.lb %s, %s(%s); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd, EXTEND8 (
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1] + cpu->regs[rs2])));
+      goto done;
+    case MATCH_LBURR:
+      TRACE_INSN (cpu, "p.lbu %s, %s(%s); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1] + cpu->regs[rs2]));
+      goto done;
+    case MATCH_LHRR:
+      TRACE_INSN (cpu, "p.lh %s, %s(%s); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd, EXTEND16 (
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1] + cpu->regs[rs2])));
+      goto done;
+    case MATCH_LHURR:
+      TRACE_INSN (cpu, "p.lhu %s, %s(%s); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1] + cpu->regs[rs2]));
+      goto done;
+    case MATCH_LWRR:
+      TRACE_INSN (cpu, "p.lw %s, %s(%s); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_4 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1] + cpu->regs[rs2]));
+      goto done;
+    }
+
+  switch (op->match & MASK_LRRPOST)
+    {
+    case MATCH_LBRRPOST:
+      TRACE_INSN (cpu, "p.lb %s, %s(%s!); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd, EXTEND8 (
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1])));
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      goto done;
+    case MATCH_LBURRPOST:
+      TRACE_INSN (cpu, "p.lbu %s, %s(%s!); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      goto done;
+    case MATCH_LHRRPOST:
+      TRACE_INSN (cpu, "p.lh %s, %s(%s!); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd, EXTEND16 (
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1])));
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      goto done;
+    case MATCH_LHURRPOST:
+      TRACE_INSN (cpu, "p.lhu %s, %s(%s!); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      goto done;
+    case MATCH_LWRRPOST:
+      TRACE_INSN (cpu, "p.lw %s, %s(%s!); // ",
+		  rd_name, rs2_name, rs1_name);
+      store_rd (cpu, rd,
+	sim_core_read_unaligned_4 (cpu, cpu->pc, read_map,
+				   cpu->regs[rs1]));
+      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      goto done;
+    }
+
+  /* PULP hardware loops */
+
+  if ((op->match & MASK_HWLP_STARTI) == MATCH_HWLP_STARTI)
+    {
+      TRACE_INSN (cpu, "lp.starti %"PRIiTW", %"PRIiTW"; // start at %#"PRIxTW"",
+		  loopindex, i_imm, cpu->pc + (i_imm << 1));
+      if (loopindex)
+	cpu->csr.lpstart1 = cpu->pc + (i_imm << 1);
+      else
+	cpu->csr.lpstart0 = cpu->pc + (i_imm << 1);
+      goto done;
+    }
+  else if ((op->match & MASK_HWLP_ENDI) == MATCH_HWLP_ENDI)
+    {
+      TRACE_INSN (cpu, "lp.endi %"PRIiTW", %"PRIiTW";  // end loop at %#"PRIxTW"",
+		  loopindex, i_imm, cpu->pc + (i_imm << 1));
+      if (loopindex)
+	cpu->csr.lpend1 = cpu->pc + (i_imm << 1);
+      else
+	cpu->csr.lpend0 = cpu->pc + (i_imm << 1);
+      goto done;
+    }
+  else if ((op->match & MASK_HWLP_COUNT) == MATCH_HWLP_COUNT)
+    {
+      TRACE_INSN (cpu, "lp.count %"PRIiTW", %s;  // iterate %s",
+		  loopindex, rs1_name, rs1_name);
+      if (loopindex)
+	cpu->csr.lpcount1 = cpu->regs[rs1];
+      else
+	cpu->csr.lpcount0 = cpu->regs[rs1];
+      goto done;
+    }
+  else if ((op->match & MASK_HWLP_COUNTI) == MATCH_HWLP_COUNTI)
+    {
+      TRACE_INSN (cpu, "lp.counti %"PRIiTW", %"PRIiTW";  // iterate %"PRIiTW"",
+		  loopindex, i_imm, i_imm);
+      if (loopindex)
+	cpu->csr.lpcount1 = i_imm;
+      else
+	cpu->csr.lpcount0 = i_imm;
+      goto done;
+    }
+  else if ((op->match & MASK_HWLP_SETUP) == MATCH_HWLP_SETUP)
+    {
+      TRACE_INSN (cpu, "lp.setup %"PRIiTW", %s, %"PRIiTW";  "
+		  "// start at %#"PRIxTW", end at %#"PRIxTW", count %s",
+		  loopindex, rs1_name, i_imm,
+		  cpu->pc + 4, cpu->pc + (i_imm << 1), rs1_name);
+      if (loopindex)
+	{
+	  cpu->csr.lpstart1 = cpu->pc + 4;
+	  cpu->csr.lpend1 = cpu->pc + (i_imm << 1);
+	  cpu->csr.lpcount1 = cpu->regs[rs1];
+	}
+      else
+	{
+	  cpu->csr.lpstart0 = cpu->pc + 4;
+	  cpu->csr.lpend0 = cpu->pc + (i_imm << 1);
+	  cpu->csr.lpcount0 = cpu->regs[rs1];
+	}
+      goto done;
+    }
+  else if ((op->match & MASK_HWLP_SETUPI) == MATCH_HWLP_SETUPI)
+    {
+      TRACE_INSN (cpu, "lp.setupi %"PRIiTW", %"PRIiTW", %"PRIiTW";  "
+		  "// start at %#"PRIxTW", end at %#"PRIxTW", count %"PRIiTW"",
+		  loopindex, i_imm, uimms,
+		  cpu->pc + 4, cpu->pc + (uimms << 1), i_imm);
+      if (loopindex)
+	{
+	  cpu->csr.lpstart1 = cpu->pc + 4;
+	  cpu->csr.lpend1 = cpu->pc + (uimms << 1);
+	  cpu->csr.lpcount1 = i_imm;
+	}
+      else
+	{
+	  cpu->csr.lpstart0 = cpu->pc + 4;
+	  cpu->csr.lpend0 = cpu->pc + (uimms << 1);
+	  cpu->csr.lpcount0 = i_imm;
+	}
+      goto done;
+    }
+
+  /* PULP mac operations */
+
+  switch (op->match & MASK_MACMSU32)
+    {
+    case MATCH_MAC32:
+      TRACE_INSN (cpu, "p.mac %s, %s, %s;  // %s += %s * %s",
+		  rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] + cpu->regs[rs1] * cpu->regs[rs2]);
+      goto done;
+    case MATCH_MSU32:
+      TRACE_INSN (cpu, "p.msu %s, %s, %s;  // %s -= %s * %s",
+		  rd_name, rs1_name, rs2_name, rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] - cpu->regs[rs1] * cpu->regs[rs2]);
+      goto done;
+    }
+
+#define RISCV_SL(reg) (EXTEND16 (cpu->regs[reg] & 0xffff))
+#define RISCV_UL(reg) (cpu->regs[reg] & 0xffff)
+#define RISCV_SH(reg) (EXTEND16 (cpu->regs[reg] >> 16 & 0xffff))
+#define RISCV_UH(reg) (cpu->regs[reg] >> 16 & 0xffff)
+
+  switch (op->match & MASK_MACMUL)
+    {
+    case MATCH_MULS:
+      TRACE_INSN (cpu, "p.muls %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, RISCV_SL(rs1) * RISCV_SL(rs2));
+      goto done;
+    case MATCH_MULHHS:
+      TRACE_INSN (cpu, "p.mulhhs %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, RISCV_SH(rs1) * RISCV_SH(rs2));
+      goto done;
+    case MATCH_MULU:
+      TRACE_INSN (cpu, "p.mulu %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, RISCV_UL(rs1) * RISCV_UL(rs2));
+      goto done;
+    case MATCH_MULHHU:
+      TRACE_INSN (cpu, "p.mulhhu %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, RISCV_UH(rs1) * RISCV_UH(rs2));
+      goto done;
+    case MATCH_MACS:
+      TRACE_INSN (cpu, "p.macs %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2)));
+      goto done;
+    case MATCH_MACHHS:
+      TRACE_INSN (cpu, "p.machhs %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2)));
+      goto done;
+    case MATCH_MACU:
+      TRACE_INSN (cpu, "p.macu %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2)));
+      goto done;
+    case MATCH_MACHHU:
+      TRACE_INSN (cpu, "p.machhu %s, %s, %s;  //",
+		  rd_name, rs1_name, rs2_name);
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2)));
+      goto done;
+    }
+
+  switch (op->match & MASK_MACMULNR)
+    {
+    case MATCH_MULSN:
+      TRACE_INSN (cpu, "p.mulsn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd,
+		(signed_word)(RISCV_SL(rs1) * RISCV_SL(rs2)) >> luimm5);
+      goto done;
+    case MATCH_MULHHSN:
+      TRACE_INSN (cpu, "p.mulhhsn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd,
+		(signed_word)(RISCV_SH(rs1) * RISCV_SH(rs2)) >> luimm5);
+      goto done;
+    case MATCH_MULSRN:
+      TRACE_INSN (cpu, "p.mulsrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = RISCV_SL(rs1) * RISCV_SL(rs2);
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MULHHSRN:
+      TRACE_INSN (cpu, "p.mulhhsrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = RISCV_SH(rs1) * RISCV_SH(rs2);
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MULUN:
+      TRACE_INSN (cpu, "p.mulun %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd, (RISCV_UL(rs1) * RISCV_UL(rs2)) >> luimm5);
+      goto done;
+    case MATCH_MULHHUN:
+      TRACE_INSN (cpu, "p.mulhhun %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd, (RISCV_UH(rs1) * RISCV_UH(rs2)) >> luimm5);
+      goto done;
+    case MATCH_MULURN:
+      TRACE_INSN (cpu, "p.mulurn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = RISCV_UL(rs1) * RISCV_UL(rs2);
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MULHHURN:
+      TRACE_INSN (cpu, "p.mulhhurn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = RISCV_UH(rs1) * RISCV_UH(rs2);
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MACSN:
+      TRACE_INSN (cpu, "p.macsn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2));
+      store_rd (cpu, rd, (signed_word)tmp >> luimm5);
+      goto done;
+    case MATCH_MACHHSN:
+      TRACE_INSN (cpu, "p.machhsn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2));
+      store_rd (cpu, rd, (signed_word)tmp >> luimm5);
+      goto done;
+    case MATCH_MACSRN:
+      TRACE_INSN (cpu, "p.macsrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2));
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MACHHSRN:
+      TRACE_INSN (cpu, "p.machhsrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2));
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MACUN:
+      TRACE_INSN (cpu, "p.macun %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2));
+      store_rd (cpu, rd, tmp >> luimm5);
+      goto done;
+    case MATCH_MACHHUN:
+      TRACE_INSN (cpu, "p.machhun %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2));
+      store_rd (cpu, rd, tmp >> luimm5);
+      goto done;
+    case MATCH_MACURN:
+      TRACE_INSN (cpu, "p.macurn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2));
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_MACHHURN:
+      TRACE_INSN (cpu, "p.machhurn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2));
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  /* PULP add and sub with norm and rounding */
+
+  switch (op->match & MASK_MACMULNR)
+    {
+    case MATCH_ADDN:
+      TRACE_INSN (cpu, "p.addn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd,
+		(signed_word)(cpu->regs[rs1] + cpu->regs[rs2]) >> luimm5);
+      goto done;
+    case MATCH_ADDUN:
+      TRACE_INSN (cpu, "p.addn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd, (cpu->regs[rs1] + cpu->regs[rs2]) >> luimm5);
+      goto done;
+    case MATCH_ADDRN:
+      TRACE_INSN (cpu, "p.addrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_ADDURN:
+      TRACE_INSN (cpu, "p.addurn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_SUBN:
+      TRACE_INSN (cpu, "p.subn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd,
+		(signed_word)(cpu->regs[rs1] - cpu->regs[rs2]) >> luimm5);
+      goto done;
+    case MATCH_SUBUN:
+      TRACE_INSN (cpu, "p.subun %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      store_rd (cpu, rd, (cpu->regs[rs1] - cpu->regs[rs2]) >> luimm5);
+      goto done;
+    case MATCH_SUBRN:
+      TRACE_INSN (cpu, "p.subrn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rs1] - cpu->regs[rs2];
+      if (luimm5 > 0)
+	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_SUBURN:
+      TRACE_INSN (cpu, "p.suburn %s, %s, %s, %"PRIiTW";  //",
+		  rd_name, rs1_name, rs2_name, luimm5);
+      tmp = cpu->regs[rs1] - cpu->regs[rs2];
+      if (luimm5 > 0)
+	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      store_rd (cpu, rd, tmp);
+      goto done;
+  }
+
+  switch (op->match & MASK_PALU)
+    {
+    case MATCH_ADDNR:
+      TRACE_INSN (cpu, "p.addnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] + cpu->regs[rs1];
+      store_rd (cpu, rd, (signed_word)tmp >> (cpu->regs[rs2] & 0x1f));
+      goto done;
+    case MATCH_ADDUNR:
+      TRACE_INSN (cpu, "p.addunr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] + cpu->regs[rs1];
+      store_rd (cpu, rd, tmp >> (cpu->regs[rs2] & 0x1f));
+      goto done;
+    case MATCH_ADDRNR:
+      TRACE_INSN (cpu, "p.addrnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] + cpu->regs[rs1];
+      shift = cpu->regs[rs2] & 0x1f;
+      if (shift > 0)
+	tmp = (signed_word)(tmp + (1 << (shift - 1))) >> shift;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_ADDURNR:
+      TRACE_INSN (cpu, "p.addurnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] + cpu->regs[rs1];
+      shift = cpu->regs[rs2] & 0x1f;
+      if (shift > 0)
+	tmp = (tmp + (1 << (shift - 1))) >> shift;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_SUBNR:
+      TRACE_INSN (cpu, "p.subnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] - cpu->regs[rs1];
+      store_rd (cpu, rd, (signed_word)tmp >> (cpu->regs[rs2] & 0x1f));
+      goto done;
+    case MATCH_SUBUNR:
+      TRACE_INSN (cpu, "p.subunr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] - cpu->regs[rs1];
+      store_rd (cpu, rd, tmp >> (cpu->regs[rs2] & 0x1f));
+      goto done;
+    case MATCH_SUBRNR:
+      TRACE_INSN (cpu, "p.subrnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] - cpu->regs[rs1];
+      shift = cpu->regs[rs2] & 0x1f;
+      if (shift > 0)
+	tmp = (signed_word)(tmp + (1 << (shift - 1))) >> shift;
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_SUBURNR:
+     TRACE_INSN (cpu, "p.suburnr %s, %s, %s;  //",
+		    rd_name, rs1_name, rs2_name);
+      tmp = cpu->regs[rd] - cpu->regs[rs1];
+      shift = cpu->regs[rs2] & 0x1f;
+      if (shift > 0)
+	tmp = (tmp + (1 << (shift - 1))) >> shift;
+      store_rd (cpu, rd, tmp);
+      goto done;
+  }
+
+  /* trap unimplemented insn */
+
+  if (op->match_func (op, iw))
+    {
+      TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+    }
+
+ done:
+  return pc;
+}
+
+
+
 static sim_cia
 execute_one (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 {
@@ -2181,6 +3350,10 @@ execute_one (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       return execute_i (cpu, iw, op);
     case INSN_CLASS_M:
       return execute_m (cpu, iw, op);
+    /* case INSN_CLASS_XPULP_V0: */
+    /* case INSN_CLASS_XPULP_V1: */
+    case INSN_CLASS_XPULP_V2:
+      return execute_xpulp (cpu, iw, op);
     case_default:
     default:
       TRACE_INSN (cpu, "UNHANDLED EXTENSION: %d", op->insn_class);
@@ -2197,6 +3370,7 @@ void step_once (SIM_CPU *cpu)
   unsigned_word iw;
   unsigned int len;
   sim_cia pc = cpu->pc;
+  sim_cia new_pc = pc;
   const struct riscv_opcode *op;
   int xlen = RISCV_XLEN (cpu);
 
@@ -2228,8 +3402,35 @@ void step_once (SIM_CPU *cpu)
       /* Is this instruction restricted to a certain value of XLEN?  */
       if (op->xlen_requirement != 0 && op->xlen_requirement != xlen)
 	continue;
+      /* is this supported by the current subsets? */
+      if (!riscv_multi_subset_supports (op->insn_class))
+	continue;
+
       /* It's a match.  */
-      pc = execute_one (cpu, iw, op);
+      new_pc = execute_one (cpu, iw, op);
+      /* hardware loop specific next pc update */
+      /* TODO: verify hwloop constraints */
+      if (cpu->csr.lpcount0 && cpu->csr.lpend0 == pc)
+	{
+	  cpu->csr.lpcount0--;
+	  if (cpu->csr.lpcount0)
+	    {
+	      pc = cpu->csr.lpstart0;
+	      break;
+	    }
+	}
+
+      if (cpu->csr.lpcount1 && cpu->csr.lpend1 == pc)
+	{
+	  cpu->csr.lpcount1--;
+	  if (cpu->csr.lpcount1)
+	    {
+	      pc = cpu->csr.lpstart1;
+	      break;
+	    }
+	}
+      /* if we didn't update the pc yet */
+      pc = new_pc;
       break;
     }
 
@@ -2337,6 +3538,7 @@ void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid)
 {
   const char *extensions;
   int i;
+  char *p, *low_ext; /* lower cased extension string */
 
   memset (cpu->regs, 0, sizeof (cpu->regs));
 
@@ -2345,13 +3547,27 @@ void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid)
   CPU_REG_FETCH (cpu) = reg_fetch;
   CPU_REG_STORE (cpu) = reg_store;
 
+  p = xmalloc (strlen (MODEL_NAME (CPU_MODEL (cpu))));
+  strcpy (p, MODEL_NAME (CPU_MODEL (cpu)));
+  low_ext = p;
+  for ( ; *p; ++p)
+    *p = tolower (*p);
+
+  /* FIXME: Note that is somehow not configurable. We always get the first entry
+   * of model_list.def no matter the configure flags. For now we enable all the
+   * extensions that are available. */
+  riscv_set_arch (low_ext);
+  riscv_opts.rvc = TRUE;
+
   if (!riscv_hash[0])
     {
       const struct riscv_opcode *op;
 
       for (op = riscv_opcodes; op->name; op++)
-	if (!riscv_hash[OP_HASH_IDX (op->match)])
-	  riscv_hash[OP_HASH_IDX (op->match)] = op;
+	/* only add requested insn subsets, because they overlap */
+        if (riscv_multi_subset_supports (op->insn_class))
+	  if (!riscv_hash[OP_HASH_IDX (op->match)])
+	    riscv_hash[OP_HASH_IDX (op->match)] = op;
     }
 
   cpu->csr.misa = 0;
@@ -2382,6 +3598,8 @@ void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid)
   cpu->csr.cycleh = 0;
   cpu->csr.instret = 0;
   cpu->csr.instreth = 0;
+
+  free (low_ext);
 }
 
 /* Some utils don't like having a NULL environ.  */

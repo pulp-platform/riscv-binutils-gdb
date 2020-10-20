@@ -394,7 +394,7 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
           } else if (d[1]=='5') {
              print (info->stream, "%d", ((int) EXTRACT_I5TYPE_UIMM (l))&0x1F); ++d;
           } else if (d[1]=='I') {
-             print (info->stream, "%d", ((int) EXTRACT_I5_1_TYPE_IMM (l)<<27)>>27); ++d;
+             print (info->stream, "%d", ((int) EXTRACT_I5_1_TYPE_IMM (l)<<27)>>27); ++d; /* TODO: this shift hack is actually only needed because the macro is incorrectly defined */
           } else if (d[1]=='i') {
              print (info->stream, "%d", ((int) EXTRACT_I5_1_TYPE_UIMM (l))&0x1F); ++d;
           } else if (d[1]=='s') {

@@ -112,7 +112,7 @@ static const char * const riscv_pred_succ[16] =
 #define EXTRACT_I5_1_TYPE_UIMM(x) \
   (RV_X(x, 20, 5))
 #define EXTRACT_I5_1_TYPE_IMM(x) \
-  (RV_X(x, 20, 5))
+  (RV_X(x, 20, 5)) /* TODO: where is the sign here, probably need RV_IMM_SIGN */
 
 #define ENCODE_ITYPE_IMM(x) \
   (RV_X(x, 0, 12) << 20)
