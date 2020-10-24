@@ -2295,14 +2295,14 @@ execute_a (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
   return pc;
 }
 
-static unsigned_word
+static INLINE unsigned_word
 sext (unsigned_word w, int bit)
 {
   const int shift = sizeof(unsigned_word) * CHAR_BIT - bit;
   return ((signed_word)w << shift) >> shift;
 }
 
-static unsigned_word
+static INLINE unsigned_word
 zext (unsigned_word w, int bit)
 {
   const int shift = sizeof(unsigned_word) * CHAR_BIT - bit;
@@ -2320,6 +2320,23 @@ clip (long long int low, long long int x, long long int high)
     return x;
 }
 
+static INLINE unsigned_word
+round_u (unsigned_word v, int shift)
+{
+  if (shift > 0)
+    return (v + (1 << (shift - 1))) >> shift;
+  else
+    return v;
+}
+
+static INLINE unsigned_word
+round_s (unsigned_word v, int shift)
+{
+  if (shift > 0)
+    return (signed_word)(v + (1 << (shift - 1))) >> shift;
+  else
+    return v;
+}
 
 static sim_cia
 execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
@@ -3089,16 +3106,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.mulsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = RISCV_SL(rs1) * RISCV_SL(rs2);
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULHHSRN:
       TRACE_INSN (cpu, "p.mulhhsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = RISCV_SH(rs1) * RISCV_SH(rs2);
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULUN:
@@ -3115,16 +3130,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.mulurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = RISCV_UL(rs1) * RISCV_UL(rs2);
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULHHURN:
       TRACE_INSN (cpu, "p.mulhhurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = RISCV_UH(rs1) * RISCV_UH(rs2);
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACSN:
@@ -3143,16 +3156,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.macsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2));
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACHHSRN:
       TRACE_INSN (cpu, "p.machhsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2));
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACUN:
@@ -3171,16 +3182,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.macurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2));
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACHHURN:
       TRACE_INSN (cpu, "p.machhurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2));
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     }
@@ -3204,16 +3213,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.addrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rs1] + cpu->regs[rs2];
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_ADDURN:
       TRACE_INSN (cpu, "p.addurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rs1] + cpu->regs[rs2];
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_SUBN:
@@ -3231,16 +3238,14 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.subrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rs1] - cpu->regs[rs2];
-      if (luimm5 > 0)
-	tmp = (signed_word)(tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_SUBURN:
       TRACE_INSN (cpu, "p.suburn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       tmp = cpu->regs[rs1] - cpu->regs[rs2];
-      if (luimm5 > 0)
-	tmp = (tmp + (1 << (luimm5 - 1))) >> luimm5;
+      tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
   }
@@ -3264,8 +3269,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		    rd_name, rs1_name, rs2_name);
       tmp = cpu->regs[rd] + cpu->regs[rs1];
       shift = cpu->regs[rs2] & 0x1f;
-      if (shift > 0)
-	tmp = (signed_word)(tmp + (1 << (shift - 1))) >> shift;
+      tmp = round_s (tmp, shift);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_ADDURNR:
@@ -3273,8 +3277,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		    rd_name, rs1_name, rs2_name);
       tmp = cpu->regs[rd] + cpu->regs[rs1];
       shift = cpu->regs[rs2] & 0x1f;
-      if (shift > 0)
-	tmp = (tmp + (1 << (shift - 1))) >> shift;
+      tmp = round_u (tmp, shift);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_SUBNR:
@@ -3294,8 +3297,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		    rd_name, rs1_name, rs2_name);
       tmp = cpu->regs[rd] - cpu->regs[rs1];
       shift = cpu->regs[rs2] & 0x1f;
-      if (shift > 0)
-	tmp = (signed_word)(tmp + (1 << (shift - 1))) >> shift;
+      tmp = round_s (tmp, shift);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_SUBURNR:
@@ -3303,8 +3305,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		    rd_name, rs1_name, rs2_name);
       tmp = cpu->regs[rd] - cpu->regs[rs1];
       shift = cpu->regs[rs2] & 0x1f;
-      if (shift > 0)
-	tmp = (tmp + (1 << (shift - 1))) >> shift;
+      tmp = round_u (tmp, shift);
       store_rd (cpu, rd, tmp);
       goto done;
   }
