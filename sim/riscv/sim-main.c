@@ -2374,7 +2374,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		 (unsigned) op->match, (unsigned) op->mask);
 
   /* PULP branches */
-  if ((op->match & MASK_BEQM1) == MATCH_BEQM1)
+  if ((iw & MASK_BEQM1) == MATCH_BEQM1)
     {
       TRACE_INSN (cpu, "p.beqimm %s, %d, %#" PRIxTW ";  // if (%s == %d) goto %#" PRIxTW,
 		  rs1_name, imm5, sb_imm, rs1_name, imm5, cpu->pc + sb_imm);
@@ -2386,7 +2386,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  if ((op->match & MASK_BNEM1) == MATCH_BNEM1)
+  if ((iw & MASK_BNEM1) == MATCH_BNEM1)
     {
       TRACE_INSN (cpu, "p.bneimm %s, %d, %#" PRIxTW ";  // if (%s != %d) goto %#" PRIxTW,
 		  rs1_name, imm5, sb_imm, rs1_name, imm5, cpu->pc + sb_imm);
@@ -2400,7 +2400,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP clip and bit manipulation */
 
-  switch (op->match & MASK_PALU1)
+  switch (iw & MASK_PALU1)
     {
     case MATCH_CLIP:
       {
@@ -2422,7 +2422,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_PALU)
+  switch (iw & MASK_PALU)
     {
     case MATCH_CLIPR:
       {
@@ -2520,7 +2520,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_PALU2)
+  switch (iw & MASK_PALU2)
     {
     case MATCH_EXTRACT:
       {
@@ -2601,7 +2601,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     }
 
   /* PULP additional ALU operations with only a single source operand */
-  switch (op->match & MASK_PALUS)
+  switch (iw & MASK_PALUS)
     {
     case MATCH_FF1:
       TRACE_INSN (cpu, "p.ff1 %s, %s;  // %s = ffs(%s)",
@@ -2663,7 +2663,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     }
 
   /* PULP additional ALU operations */
-  switch (op->match & MASK_PALU)
+  switch (iw & MASK_PALU)
     {
     case MATCH_SLET:
       {
@@ -2742,7 +2742,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP post-increment and reg-reg stores */
 
-  switch (op->match & MASK_SPOST)
+  switch (iw & MASK_SPOST)
     {
     case MATCH_SBPOST:
       TRACE_INSN (cpu, "p.sb %s, %" PRIiTW "(%s!); // ",
@@ -2768,7 +2768,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_PALU)
+  switch (iw & MASK_PALU)
     {
     case MATCH_SBRR:
       TRACE_INSN (cpu, "p.sb %s, %s(%s); // ", rs2_name, rs3_name, rs1_name);
@@ -2813,7 +2813,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP post-increment and reg-reg loads */
 
-  switch (op->match & MASK_LPOST)
+  switch (iw & MASK_LPOST)
     {
     case MATCH_LBPOST:
       TRACE_INSN (cpu, "p.lb %s, %" PRIiTW "(%s!); // ",
@@ -2857,7 +2857,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_LRR)
+  switch (iw & MASK_LRR)
     {
     case MATCH_LBRR:
       TRACE_INSN (cpu, "p.lb %s, %s(%s); // ",
@@ -2896,7 +2896,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_LRRPOST)
+  switch (iw & MASK_LRRPOST)
     {
     case MATCH_LBRRPOST:
       TRACE_INSN (cpu, "p.lb %s, %s(%s!); // ",
@@ -2942,7 +2942,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP hardware loops */
 
-  if ((op->match & MASK_HWLP_STARTI) == MATCH_HWLP_STARTI)
+  if ((iw & MASK_HWLP_STARTI) == MATCH_HWLP_STARTI)
     {
       TRACE_INSN (cpu, "lp.starti %"PRIiTW", %"PRIiTW"; // start at %#"PRIxTW"",
 		  loopindex, i_imm, cpu->pc + (i_imm << 1));
@@ -2952,7 +2952,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 	cpu->csr.lpstart0 = cpu->pc + (i_imm << 1);
       goto done;
     }
-  else if ((op->match & MASK_HWLP_ENDI) == MATCH_HWLP_ENDI)
+  else if ((iw & MASK_HWLP_ENDI) == MATCH_HWLP_ENDI)
     {
       TRACE_INSN (cpu, "lp.endi %"PRIiTW", %"PRIiTW";  // end loop at %#"PRIxTW"",
 		  loopindex, i_imm, cpu->pc + (i_imm << 1));
@@ -2962,7 +2962,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 	cpu->csr.lpend0 = cpu->pc + (i_imm << 1);
       goto done;
     }
-  else if ((op->match & MASK_HWLP_COUNT) == MATCH_HWLP_COUNT)
+  else if ((iw & MASK_HWLP_COUNT) == MATCH_HWLP_COUNT)
     {
       TRACE_INSN (cpu, "lp.count %"PRIiTW", %s;  // iterate %s",
 		  loopindex, rs1_name, rs1_name);
@@ -2972,7 +2972,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 	cpu->csr.lpcount0 = cpu->regs[rs1];
       goto done;
     }
-  else if ((op->match & MASK_HWLP_COUNTI) == MATCH_HWLP_COUNTI)
+  else if ((iw & MASK_HWLP_COUNTI) == MATCH_HWLP_COUNTI)
     {
       TRACE_INSN (cpu, "lp.counti %"PRIiTW", %"PRIiTW";  // iterate %"PRIiTW"",
 		  loopindex, i_imm, i_imm);
@@ -2982,7 +2982,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 	cpu->csr.lpcount0 = i_imm;
       goto done;
     }
-  else if ((op->match & MASK_HWLP_SETUP) == MATCH_HWLP_SETUP)
+  else if ((iw & MASK_HWLP_SETUP) == MATCH_HWLP_SETUP)
     {
       TRACE_INSN (cpu, "lp.setup %"PRIiTW", %s, %"PRIiTW";  "
 		  "// start at %#"PRIxTW", end at %#"PRIxTW", count %s",
@@ -3002,7 +3002,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 	}
       goto done;
     }
-  else if ((op->match & MASK_HWLP_SETUPI) == MATCH_HWLP_SETUPI)
+  else if ((iw & MASK_HWLP_SETUPI) == MATCH_HWLP_SETUPI)
     {
       TRACE_INSN (cpu, "lp.setupi %"PRIiTW", %"PRIiTW", %"PRIiTW";  "
 		  "// start at %#"PRIxTW", end at %#"PRIxTW", count %"PRIiTW"",
@@ -3025,7 +3025,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP mac operations */
 
-  switch (op->match & MASK_MACMSU32)
+  switch (iw & MASK_MACMSU32)
     {
     case MATCH_MAC32:
       TRACE_INSN (cpu, "p.mac %s, %s, %s;  // %s += %s * %s",
@@ -3044,7 +3044,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 #define RISCV_SH(reg) (EXTEND16 (cpu->regs[reg] >> 16 & 0xffff))
 #define RISCV_UH(reg) (cpu->regs[reg] >> 16 & 0xffff)
 
-  switch (op->match & MASK_MACMUL)
+  switch (iw & MASK_MACMUL)
     {
     case MATCH_MULS:
       TRACE_INSN (cpu, "p.muls %s, %s, %s;  //",
@@ -3088,7 +3088,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
     }
 
-  switch (op->match & MASK_MACMULNR)
+  switch (iw & MASK_MACMULNR)
     {
     case MATCH_MULSN:
       TRACE_INSN (cpu, "p.mulsn %s, %s, %s, %"PRIiTW";  //",
@@ -3196,7 +3196,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* PULP add and sub with norm and rounding */
 
-  switch (op->match & MASK_MACMULNR)
+  switch (iw & MASK_MACMULNR)
     {
     case MATCH_ADDN:
       TRACE_INSN (cpu, "p.addn %s, %s, %s, %"PRIiTW";  //",
@@ -3250,7 +3250,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       goto done;
   }
 
-  switch (op->match & MASK_PALU)
+  switch (iw & MASK_PALU)
     {
     case MATCH_ADDNR:
       TRACE_INSN (cpu, "p.addnr %s, %s, %s;  //",
