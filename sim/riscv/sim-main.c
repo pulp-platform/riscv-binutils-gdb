@@ -3049,42 +3049,42 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_MULS:
       TRACE_INSN (cpu, "p.muls %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, RISCV_SL(rs1) * RISCV_SL(rs2));
+      store_rd (cpu, rd, RISCV_SL (rs1) * RISCV_SL (rs2));
       goto done;
     case MATCH_MULHHS:
       TRACE_INSN (cpu, "p.mulhhs %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, RISCV_SH(rs1) * RISCV_SH(rs2));
+      store_rd (cpu, rd, RISCV_SH (rs1) * RISCV_SH (rs2));
       goto done;
     case MATCH_MULU:
       TRACE_INSN (cpu, "p.mulu %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, RISCV_UL(rs1) * RISCV_UL(rs2));
+      store_rd (cpu, rd, RISCV_UL (rs1) * RISCV_UL (rs2));
       goto done;
     case MATCH_MULHHU:
       TRACE_INSN (cpu, "p.mulhhu %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, RISCV_UH(rs1) * RISCV_UH(rs2));
+      store_rd (cpu, rd, RISCV_UH (rs1) * RISCV_UH (rs2));
       goto done;
     case MATCH_MACS:
       TRACE_INSN (cpu, "p.macs %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2)));
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SL (rs1) * RISCV_SL (rs2)));
       goto done;
     case MATCH_MACHHS:
       TRACE_INSN (cpu, "p.machhs %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2)));
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_SH (rs1) * RISCV_SH (rs2)));
       goto done;
     case MATCH_MACU:
       TRACE_INSN (cpu, "p.macu %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2)));
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UL (rs1) * RISCV_UL (rs2)));
       goto done;
     case MATCH_MACHHU:
       TRACE_INSN (cpu, "p.machhu %s, %s, %s;  //",
 		  rd_name, rs1_name, rs2_name);
-      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2)));
+      store_rd (cpu, rd, cpu->regs[rd] + (RISCV_UH (rs1) * RISCV_UH (rs2)));
       goto done;
     }
 
@@ -3094,101 +3094,101 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "p.mulsn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       store_rd (cpu, rd,
-		(signed_word)(RISCV_SL(rs1) * RISCV_SL(rs2)) >> luimm5);
+		(signed_word)(RISCV_SL (rs1) * RISCV_SL (rs2)) >> luimm5);
       goto done;
     case MATCH_MULHHSN:
       TRACE_INSN (cpu, "p.mulhhsn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
       store_rd (cpu, rd,
-		(signed_word)(RISCV_SH(rs1) * RISCV_SH(rs2)) >> luimm5);
+		(signed_word)(RISCV_SH (rs1) * RISCV_SH (rs2)) >> luimm5);
       goto done;
     case MATCH_MULSRN:
       TRACE_INSN (cpu, "p.mulsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = RISCV_SL(rs1) * RISCV_SL(rs2);
+      tmp = RISCV_SL (rs1) * RISCV_SL (rs2);
       tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULHHSRN:
       TRACE_INSN (cpu, "p.mulhhsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = RISCV_SH(rs1) * RISCV_SH(rs2);
+      tmp = RISCV_SH (rs1) * RISCV_SH (rs2);
       tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULUN:
       TRACE_INSN (cpu, "p.mulun %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      store_rd (cpu, rd, (RISCV_UL(rs1) * RISCV_UL(rs2)) >> luimm5);
+      store_rd (cpu, rd, (RISCV_UL (rs1) * RISCV_UL (rs2)) >> luimm5);
       goto done;
     case MATCH_MULHHUN:
       TRACE_INSN (cpu, "p.mulhhun %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      store_rd (cpu, rd, (RISCV_UH(rs1) * RISCV_UH(rs2)) >> luimm5);
+      store_rd (cpu, rd, (RISCV_UH (rs1) * RISCV_UH (rs2)) >> luimm5);
       goto done;
     case MATCH_MULURN:
       TRACE_INSN (cpu, "p.mulurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = RISCV_UL(rs1) * RISCV_UL(rs2);
+      tmp = RISCV_UL (rs1) * RISCV_UL (rs2);
       tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MULHHURN:
       TRACE_INSN (cpu, "p.mulhhurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = RISCV_UH(rs1) * RISCV_UH(rs2);
+      tmp = RISCV_UH (rs1) * RISCV_UH (rs2);
       tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACSN:
       TRACE_INSN (cpu, "p.macsn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2));
+      tmp = cpu->regs[rd] + (RISCV_SL (rs1) * RISCV_SL (rs2));
       store_rd (cpu, rd, (signed_word)tmp >> luimm5);
       goto done;
     case MATCH_MACHHSN:
       TRACE_INSN (cpu, "p.machhsn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2));
+      tmp = cpu->regs[rd] + (RISCV_SH (rs1) * RISCV_SH (rs2));
       store_rd (cpu, rd, (signed_word)tmp >> luimm5);
       goto done;
     case MATCH_MACSRN:
       TRACE_INSN (cpu, "p.macsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_SL(rs1) * RISCV_SL(rs2));
+      tmp = cpu->regs[rd] + (RISCV_SL (rs1) * RISCV_SL (rs2));
       tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACHHSRN:
       TRACE_INSN (cpu, "p.machhsrn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_SH(rs1) * RISCV_SH(rs2));
+      tmp = cpu->regs[rd] + (RISCV_SH (rs1) * RISCV_SH (rs2));
       tmp = round_s (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACUN:
       TRACE_INSN (cpu, "p.macun %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2));
+      tmp = cpu->regs[rd] + (RISCV_UL (rs1) * RISCV_UL (rs2));
       store_rd (cpu, rd, tmp >> luimm5);
       goto done;
     case MATCH_MACHHUN:
       TRACE_INSN (cpu, "p.machhun %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2));
+      tmp = cpu->regs[rd] + (RISCV_UH (rs1) * RISCV_UH (rs2));
       store_rd (cpu, rd, tmp >> luimm5);
       goto done;
     case MATCH_MACURN:
       TRACE_INSN (cpu, "p.macurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_UL(rs1) * RISCV_UL(rs2));
+      tmp = cpu->regs[rd] + (RISCV_UL (rs1) * RISCV_UL (rs2));
       tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_MACHHURN:
       TRACE_INSN (cpu, "p.machhurn %s, %s, %s, %"PRIiTW";  //",
 		  rd_name, rs1_name, rs2_name, luimm5);
-      tmp = cpu->regs[rd] + (RISCV_UH(rs1) * RISCV_UH(rs2));
+      tmp = cpu->regs[rd] + (RISCV_UH (rs1) * RISCV_UH (rs2));
       tmp = round_u (tmp, luimm5);
       store_rd (cpu, rd, tmp);
       goto done;
