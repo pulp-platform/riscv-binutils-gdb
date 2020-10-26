@@ -35,6 +35,7 @@
 #include "bfd_stdint.h"
 #include <ctype.h>
 
+#define RISCV_FALLBACK_MARCH "rv32imafdcxpulpv3"
 
 #ifndef DEFAULT_RISCV_ATTR
 #define DEFAULT_RISCV_ATTR 0
@@ -52,6 +53,9 @@ static const char * const *riscv_fpr_names;
 
 /* Other options.  */
 static int no_aliases;	/* If set disassemble as most general inst.  */
+
+/* Indicate arch attribute is explictly set.  */
+static bfd_boolean explicit_arch_attr = FALSE;
 
 static unsigned gxlen = 0; /* width of an x-register */
 
@@ -146,6 +150,22 @@ riscv_set_arch (const char *s)
 
   riscv_release_subset_list (&riscv_subsets);
   riscv_parse_subset (&rps, s);
+}
+
+/* Parse a .attribute directive.  */
+
+static void
+parse_riscv_attribute (bfd *abfd)
+{
+  obj_attribute *attr;
+  attr = elf_known_obj_attributes_proc (abfd);
+  if (attr && attr[Tag_RISCV_arch].s)
+    {
+      explicit_arch_attr = TRUE;
+      riscv_set_arch (attr[Tag_RISCV_arch].s);
+    }
+  else
+    riscv_set_arch (RISCV_FALLBACK_MARCH);
 }
 
 /* Set default options except for arch */
@@ -729,6 +749,25 @@ riscv_symbol_is_valid (asymbol * sym,
   return (strcmp (name, RISCV_FAKE_LABEL_NAME) != 0);
 }
 
+disassembler_ftype
+riscv_get_disassembler (bfd *abfd)
+{
+  /* BFD my be absent, if opcodes is invoked from the debugger that
+     has connected to remote target and doesn't have an ELF file.  */
+  if (abfd != NULL)
+    {
+      /* set arch depending on attribute values */
+      parse_riscv_attribute (abfd);
+    }
+  else
+    {
+      /* fallback value */
+      riscv_set_arch (RISCV_FALLBACK_MARCH);
+    }
+
+  return print_insn_riscv;
+}
+
 void
 print_riscv_disassembler_options (FILE *stream)
 {
@@ -742,6 +781,11 @@ with the -M switch (multiple options should be separated by commas):\n"));
   fprintf (stream, _("\n\
   no-aliases    Disassemble only into canonical instructions, rather\n\
                 than into pseudoinstructions.\n"));
+
+  fprintf (stream, _("\n\
+  march         Disassemble assuming the given extensions are \n\
+                available. By default they are derived from the \n\
+                RISCV_arch attribute, if available.\n"));
 
   fprintf (stream, _("\n"));
 }
