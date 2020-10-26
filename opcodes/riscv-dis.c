@@ -30,9 +30,15 @@
 #include "opintl.h"
 #include "elf-bfd.h"
 #include "elf/riscv.h"
+#include "elfxx-riscv.h"
 
 #include "bfd_stdint.h"
 #include <ctype.h>
+
+
+#ifndef DEFAULT_RISCV_ATTR
+#define DEFAULT_RISCV_ATTR 0
+#endif
 
 struct riscv_private_data
 {
@@ -47,111 +53,102 @@ static const char * const *riscv_fpr_names;
 /* Other options.  */
 static int no_aliases;	/* If set disassemble as most general inst.  */
 
-struct riscv_subset
+static unsigned gxlen = 0; /* width of an x-register */
+
+struct riscv_set_options
 {
-  const char *name;
-  struct riscv_subset *next;
+  int pic; /* Generate position-independent code.  */
+  int rvc; /* Generate RVC code.  */
+  int rve; /* Generate RVE code.  */
+  int relax; /* Emit relocs the linker is allowed to relax.  */
+  int arch_attr; /* Emit arch attribute.  */
 };
 
-static struct riscv_subset *riscv_subsets;
-
-static void
-riscv_add_subset (const char *subset)
+static struct riscv_set_options riscv_opts =
 {
-  struct riscv_subset *s = xmalloc (sizeof *s);
-  s->name = xstrdup (subset);
-  s->next = riscv_subsets;
-  riscv_subsets = s;
+  0,	/* pic */
+  0,	/* rvc */
+  0,	/* rve */
+  1,	/* relax */
+  DEFAULT_RISCV_ATTR, /* arch_attr */
+};
+
+static riscv_subset_list_t riscv_subsets;
+
+static bfd_boolean
+riscv_subset_supports (const char *feature)
+{
+  if (riscv_opts.rvc && (strcasecmp (feature, "c") == 0))
+    return TRUE;
+
+  return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
-static void
-riscv_set_arch (const char *arg)
+static bfd_boolean
+riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 {
-  char *uppercase = xstrdup (arg);
-  char *p = uppercase;
-  const char *all_subsets = "IMAFDC";
-  const char *extension = NULL;
-  int rvc = 0;
-  int i;
-  for (i = 0; uppercase[i]; i++) uppercase[i] = toupper (uppercase[i]);
-
-  if (strncmp (p, "RV32", 4) == 0)
+  switch (insn_class)
     {
-      p += 4;
+    case INSN_CLASS_I: return riscv_subset_supports ("i");
+    case INSN_CLASS_C: return riscv_subset_supports ("c");
+    case INSN_CLASS_A: return riscv_subset_supports ("a");
+    case INSN_CLASS_M: return riscv_subset_supports ("m");
+    case INSN_CLASS_F: return riscv_subset_supports ("f");
+    case INSN_CLASS_D: return riscv_subset_supports ("d");
+    case INSN_CLASS_D_AND_C:
+      return riscv_subset_supports ("d") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_F_AND_C:
+      return riscv_subset_supports ("f") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_Q: return riscv_subset_supports ("q");
+
+    case INSN_CLASS_XPULP_SLIM:
+      return riscv_subset_supports ("xpulpslim");
+
+    case INSN_CLASS_XPULP_V0:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V1:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V2:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP8:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V3:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP9:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_NN:
+      return riscv_subset_supports ("xpulpnn");
+
+    default:
+      /* as_fatal ("Unreachable"); */
+      opcodes_error_handler ("Unreachable");
+      return FALSE;
     }
-  else if (strncmp (p, "RV64", 4) == 0)
-    {
-      p += 4;
-    }
-  else if (strncmp (p, "RV", 2) == 0)
-    p += 2;
-
-  switch (*p)
-    {
-      case 'I':
-        break;
-
-      case 'G':
-        p++;
-        /* Fall through.  */
-
-      case '\0':
-        for (i = 0; all_subsets[i] != '\0'; i++)
-          {
-            const char subset[] = {all_subsets[i], '\0'};
-            riscv_add_subset (subset);
-          }
-        break;
-
-      default:
-        fprintf (stderr, "`I' must be the first ISA subset name specified (got %c). Ignoring -march", *p);
-        riscv_subsets=NULL;
-        return;
-    }
-
-  while (*p)
-    {
-      if (*p == 'X')
-        {
-          char *subset = xstrdup (p), *q = subset;
-
-          while (*++q != '\0' && *q != '_')
-            ;
-          *q = '\0';
-
-          if (extension) {
-                fprintf (stderr, "only one eXtension is supported (found %s and %s). Ignoring -march", extension, subset);
-                riscv_subsets=NULL;
-                return;
-          }
-          extension = subset;
-          riscv_add_subset (subset);
-          p += strlen (subset);
-          free (subset);
-        }
-      else if (*p == '_')
-        p++;
-      else if ((all_subsets = strchr (all_subsets, *p)) != NULL)
-        {
-          const char subset[] = {*p, 0};
-          riscv_add_subset (subset);
-          if (*p == 'C')
-            rvc = 1;
-          all_subsets++;
-          p++;
-        }
-      else {
-        fprintf(stderr, "unsupported ISA subset %c. Ignoring -march", *p);
-        riscv_subsets=NULL;
-        return;
-      }
-    }
-  if (!rvc)
-    /* Add RVC anyway.  -m[no-]rvc toggles its availability.  */
-    riscv_add_subset ("C");
-
-  free (uppercase);
 }
+
+/* Set which ISA and extensions are available.  */
+
+static void
+riscv_set_arch (const char *s)
+{
+  riscv_parse_subset_t rps;
+  rps.subset_list = &riscv_subsets;
+  rps.error_handler = opcodes_error_handler;
+  rps.xlen = &gxlen;
+
+  riscv_release_subset_list (&riscv_subsets);
+  riscv_parse_subset (&rps, s);
+}
+
+/* Set default options except for arch */
 
 static void
 set_default_riscv_dis_options (void)
@@ -537,22 +534,6 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
     }
 }
 
-static bfd_boolean
-riscv_subset_supports (const char *feature)
-{
-  struct riscv_subset *s;
-  char *p;
-
-  if (!riscv_subsets) return TRUE;
-  (void) strtoul (feature, &p, 10);
-
-  for (s = riscv_subsets; s != NULL; s = s->next)
-    if (strcasecmp (s->name, p) == 0)
-      return TRUE;
-
-  return FALSE;
-}
-
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -573,11 +554,10 @@ riscv_disassemble_insn (bfd_vma memaddr, insn_t word, disassemble_info *info)
   if (! init)
     {
       for (op = riscv_opcodes; op->name; op++)
-	/* TODO: check if we can really remove that */
-        /* if (riscv_subset_supports (op->subset)) { */
+	/* only add requested insn subsets, because they overlap */
+        if (riscv_multi_subset_supports (op->insn_class))
 	  if (!riscv_hash[OP_HASH_IDX (op->match)])
 	    riscv_hash[OP_HASH_IDX (op->match)] = op;
-        /* } */
 
       init = 1;
     }
@@ -633,10 +613,10 @@ riscv_disassemble_insn (bfd_vma memaddr, insn_t word, disassemble_info *info)
 
       for (; op->name; op++)
 	{
-	  /* TODO: check if we really can remove that */
-          /* if (!riscv_subset_supports (op->subset)) */
-          /*   continue; */
-
+	  /* is this instruction really supported by the current subset (due to
+	     overlapping pulp subsets) */
+	  if (!riscv_multi_subset_supports (op->insn_class))
+            continue;
 	  /* Does the opcode match?  */
 	  if (! (op->match_func) (op, word))
 	    continue;
