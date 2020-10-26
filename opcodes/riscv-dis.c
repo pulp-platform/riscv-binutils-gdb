@@ -756,14 +756,14 @@ riscv_get_disassembler (bfd *abfd)
      has connected to remote target and doesn't have an ELF file.  */
   if (abfd != NULL)
     {
-      /* set arch depending on attribute values */
+      /* Set arch depending on attribute values. */
       parse_riscv_attribute (abfd);
     }
   else
-    {
-      /* fallback value */
-      riscv_set_arch (RISCV_FALLBACK_MARCH);
-    }
+    riscv_set_arch (RISCV_FALLBACK_MARCH);
+
+  /* Enable rvc regardless of -march to support .option rvc. */
+  riscv_opts.rvc = TRUE;
 
   return print_insn_riscv;
 }
