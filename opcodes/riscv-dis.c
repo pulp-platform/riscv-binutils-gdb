@@ -4,6 +4,9 @@
    Contributed by Andrew Waterman (andrew@sifive.com).
    Based on MIPS target.
 
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
+
    This file is part of the GNU opcodes library.
 
    This library is free software; you can redistribute it and/or modify
@@ -27,9 +30,16 @@
 #include "opintl.h"
 #include "elf-bfd.h"
 #include "elf/riscv.h"
+#include "elfxx-riscv.h"
 
 #include "bfd_stdint.h"
 #include <ctype.h>
+
+#define RISCV_FALLBACK_MARCH "rv32imafdcxpulpv3"
+
+#ifndef DEFAULT_RISCV_ATTR
+#define DEFAULT_RISCV_ATTR 0
+#endif
 
 struct riscv_private_data
 {
@@ -44,6 +54,122 @@ static const char * const *riscv_fpr_names;
 /* Other options.  */
 static int no_aliases;	/* If set disassemble as most general inst.  */
 
+/* Indicate arch attribute is explictly set.  */
+static bfd_boolean explicit_arch_attr = FALSE;
+
+static unsigned gxlen = 0; /* width of an x-register */
+
+struct riscv_set_options
+{
+  int pic; /* Generate position-independent code.  */
+  int rvc; /* Generate RVC code.  */
+  int rve; /* Generate RVE code.  */
+  int relax; /* Emit relocs the linker is allowed to relax.  */
+  int arch_attr; /* Emit arch attribute.  */
+};
+
+static struct riscv_set_options riscv_opts =
+{
+  0,	/* pic */
+  0,	/* rvc */
+  0,	/* rve */
+  1,	/* relax */
+  DEFAULT_RISCV_ATTR, /* arch_attr */
+};
+
+static riscv_subset_list_t riscv_subsets;
+
+static bfd_boolean
+riscv_subset_supports (const char *feature)
+{
+  if (riscv_opts.rvc && (strcasecmp (feature, "c") == 0))
+    return TRUE;
+
+  return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
+}
+
+static bfd_boolean
+riscv_multi_subset_supports (enum riscv_insn_class insn_class)
+{
+  switch (insn_class)
+    {
+    case INSN_CLASS_I: return riscv_subset_supports ("i");
+    case INSN_CLASS_C: return riscv_subset_supports ("c");
+    case INSN_CLASS_A: return riscv_subset_supports ("a");
+    case INSN_CLASS_M: return riscv_subset_supports ("m");
+    case INSN_CLASS_F: return riscv_subset_supports ("f");
+    case INSN_CLASS_D: return riscv_subset_supports ("d");
+    case INSN_CLASS_D_AND_C:
+      return riscv_subset_supports ("d") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_F_AND_C:
+      return riscv_subset_supports ("f") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_Q: return riscv_subset_supports ("q");
+
+    case INSN_CLASS_XPULP_SLIM:
+      return riscv_subset_supports ("xpulpslim");
+
+    case INSN_CLASS_XPULP_V0:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V1:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V2:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP8:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_V3:
+      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XGAP9:
+      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
+
+    case INSN_CLASS_XPULP_NN:
+      return riscv_subset_supports ("xpulpnn");
+
+    default:
+      /* as_fatal ("Unreachable"); */
+      opcodes_error_handler ("Unreachable");
+      return FALSE;
+    }
+}
+
+/* Set which ISA and extensions are available.  */
+
+static void
+riscv_set_arch (const char *s)
+{
+  riscv_parse_subset_t rps;
+  rps.subset_list = &riscv_subsets;
+  rps.error_handler = opcodes_error_handler;
+  rps.xlen = &gxlen;
+
+  riscv_release_subset_list (&riscv_subsets);
+  riscv_parse_subset (&rps, s);
+}
+
+/* Parse a .attribute directive.  */
+
+static void
+parse_riscv_attribute (bfd *abfd)
+{
+  obj_attribute *attr;
+  attr = elf_known_obj_attributes_proc (abfd);
+  if (attr && attr[Tag_RISCV_arch].s)
+    {
+      explicit_arch_attr = TRUE;
+      riscv_set_arch (attr[Tag_RISCV_arch].s);
+    }
+  else
+    riscv_set_arch (RISCV_FALLBACK_MARCH);
+}
+
+/* Set default options except for arch */
+
 static void
 set_default_riscv_dis_options (void)
 {
@@ -55,6 +181,7 @@ set_default_riscv_dis_options (void)
 static void
 parse_riscv_dis_option (const char *option)
 {
+  const char *where=NULL;
   if (strcmp (option, "no-aliases") == 0)
     no_aliases = 1;
   else if (strcmp (option, "numeric") == 0)
@@ -62,8 +189,36 @@ parse_riscv_dis_option (const char *option)
       riscv_gpr_names = riscv_gpr_names_numeric;
       riscv_fpr_names = riscv_fpr_names_numeric;
     }
+  else if ((where = strstr(option, "march="))&&(where==option))
+    {
+      char *comma;
+      where = option+6;
+      comma = strstr(where, ",");
+      if (comma) *comma = '\0';
+      riscv_set_arch(where);
+      if (comma) *comma = ',';
+    }
+  else if ((where = strstr(option, "mchip="))&&(where==option))
+    {
+      int i;
+      char *uppercase;
+      char *comma;
+      where = option+6;
+      comma = strstr(where, ",");
+      if (comma) *comma = '\0';
+      uppercase = xstrdup (where);
+      for (i = 0; uppercase[i]; i++) uppercase[i] = toupper (uppercase[i]);
+      if (strstr(uppercase, "PULPINO")) riscv_set_arch ("rv32imcxpulpv1");
+      else if (strstr(uppercase, "HONEY")) riscv_set_arch ("rv32imcxpulpv0");
+      else if (strstr(uppercase, "GAP8")) riscv_set_arch ("rv32imcxgap8");
+      else if (strstr(uppercase, "GAP9")) riscv_set_arch ("rv32imcxgap9");
+      else if (strstr(uppercase, "HUA20")) riscv_set_arch ("rv32imcxgap9");
+      else fprintf (stderr, _("Unrecognized mchip= : %s\n"), uppercase);
+      if (comma) *comma = ',';
+    }
   else
     {
+      /* Invalid option.  */
       /* xgettext:c-format */
       opcodes_error_handler (_("unrecognized disassembler option: %s"), option);
     }
@@ -99,7 +254,9 @@ arg_print (struct disassemble_info *info, unsigned long val,
 static void
 maybe_print_address (struct riscv_private_data *pd, int base_reg, int offset)
 {
-  if (pd->hi_addr[base_reg] != (bfd_vma)-1)
+  if (base_reg == 0) { /* %tiny(Symbol_Expr)(x0) */
+    pd->print_addr = offset;
+  } else if (pd->hi_addr[base_reg] != (bfd_vma)-1)
     {
       pd->print_addr = (base_reg != 0 ? pd->hi_addr[base_reg] : 0) + offset;
       pd->hi_addr[base_reg] = -1;
@@ -211,6 +368,7 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	  break;
 
 	case ',':
+        case '!':
 	case '(':
 	case ')':
 	case '[':
@@ -225,12 +383,49 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	  break;
 
 	case 'b':
+          if (d[1]=='1') {
+             info->target = (EXTRACT_ITYPE_IMM (l)<<1) + pc; ++d;
+             (*info->print_address_func) (info->target, info);
+          } else if (d[1]=='2') {
+             info->target = (EXTRACT_I1TYPE_UIMM (l)<<1) + pc; ++d;
+             (*info->print_address_func) (info->target, info);
+          } else if (d[1]=='3') {
+             print (info->stream, "%d", (int) EXTRACT_I1TYPE_UIMM (l)); ++d;
+          } else if (d[1]=='5') {
+             print (info->stream, "%d", ((int) EXTRACT_I5TYPE_UIMM (l))&0x1F); ++d;
+          } else if (d[1]=='I') {
+             print (info->stream, "%d", ((int) EXTRACT_I5_1_TYPE_IMM (l)<<27)>>27); ++d;
+          } else if (d[1]=='i') {
+             print (info->stream, "%d", ((int) EXTRACT_I5_1_TYPE_UIMM (l))&0x1F); ++d;
+          } else if (d[1]=='s') {
+             print (info->stream, "%d", ((int) EXTRACT_I6TYPE_IMM (l)<<26)>>26); ++d;
+          } else if (d[1]=='u') {
+             print (info->stream, "%d", ((int) EXTRACT_I6TYPE_IMM (l))&0x1F); ++d;
+          } else if (d[1]=='U') {
+             print (info->stream, "%d", ((int) EXTRACT_I6TYPE_IMM (l))&0x0F); ++d;
+          } else if (d[1]=='f') {
+             print (info->stream, "%d", ((int) EXTRACT_I6TYPE_IMM (l))&0x01); ++d;
+          } else if (d[1]=='F') {
+             print (info->stream, "%d", ((int) EXTRACT_I6TYPE_IMM (l))&0x03); ++d;
+          } else (*info->print_address_func) (info->target, info);
+          break;
+
 	case 's':
 	  if ((l & MASK_JALR) == MATCH_JALR)
 	    maybe_print_address (pd, rs1, 0);
 	  print (info->stream, "%s", riscv_gpr_names[rs1]);
 	  break;
 
+        case 'y':
+          print (info->stream, "%s", riscv_gpr_names[EXTRACT_OPERAND (PULP_RS3, l)]);
+          break;
+
+        case 'e':
+          print (info->stream, "%s", riscv_gpr_names[EXTRACT_OPERAND (RS3, l)]);
+          break;
+
+	case 'w':
+	  print (info->stream, "%s", riscv_gpr_names[EXTRACT_OPERAND (RS1, l)]);
 	case 't':
 	  print (info->stream, "%s",
 		 riscv_gpr_names[EXTRACT_OPERAND (RS2, l)]);
@@ -260,6 +455,11 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	  maybe_print_address (pd, rs1, EXTRACT_ITYPE_IMM (l));
 	  /* Fall through.  */
 	case 'j':
+          if (d[1]=='i') {
+             ++d;
+             print (info->stream, "%d", (int) EXTRACT_ITYPE_IMM (l));
+             break;
+          }
 	  if (((l & MASK_ADDI) == MATCH_ADDI && rs1 != 0)
 	      || (l & MASK_JALR) == MATCH_JALR)
 	    maybe_print_address (pd, rs1, EXTRACT_ITYPE_IMM (l));
@@ -288,7 +488,11 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	    pd->hi_addr[rd] = EXTRACT_UTYPE_IMM (l);
 	  else if ((l & MASK_C_LUI) == MATCH_C_LUI)
 	    pd->hi_addr[rd] = EXTRACT_RVC_LUI_IMM (l);
-	  print (info->stream, "%s", riscv_gpr_names[rd]);
+          if (d[1]=='i') {
+             ++d;
+             print (info->stream, "x%d", (int) rd);
+          } else print (info->stream, "%s", riscv_gpr_names[rd]);
+
 	  break;
 
 	case 'z':
@@ -370,8 +574,10 @@ riscv_disassemble_insn (bfd_vma memaddr, insn_t word, disassemble_info *info)
   if (! init)
     {
       for (op = riscv_opcodes; op->name; op++)
-	if (!riscv_hash[OP_HASH_IDX (op->match)])
-	  riscv_hash[OP_HASH_IDX (op->match)] = op;
+	/* only add requested insn subsets, because they overlap */
+        if (riscv_multi_subset_supports (op->insn_class))
+	  if (!riscv_hash[OP_HASH_IDX (op->match)])
+	    riscv_hash[OP_HASH_IDX (op->match)] = op;
 
       init = 1;
     }
@@ -427,6 +633,10 @@ riscv_disassemble_insn (bfd_vma memaddr, insn_t word, disassemble_info *info)
 
       for (; op->name; op++)
 	{
+	  /* is this instruction really supported by the current subset (due to
+	     overlapping pulp subsets) */
+	  if (!riscv_multi_subset_supports (op->insn_class))
+            continue;
 	  /* Does the opcode match?  */
 	  if (! (op->match_func) (op, word))
 	    continue;
@@ -539,6 +749,25 @@ riscv_symbol_is_valid (asymbol * sym,
   return (strcmp (name, RISCV_FAKE_LABEL_NAME) != 0);
 }
 
+disassembler_ftype
+riscv_get_disassembler (bfd *abfd)
+{
+  /* BFD my be absent, if opcodes is invoked from the debugger that
+     has connected to remote target and doesn't have an ELF file.  */
+  if (abfd != NULL)
+    {
+      /* Set arch depending on attribute values. */
+      parse_riscv_attribute (abfd);
+    }
+  else
+    riscv_set_arch (RISCV_FALLBACK_MARCH);
+
+  /* Enable rvc regardless of -march to support .option rvc. */
+  riscv_opts.rvc = TRUE;
+
+  return print_insn_riscv;
+}
+
 void
 print_riscv_disassembler_options (FILE *stream)
 {
@@ -552,6 +781,11 @@ with the -M switch (multiple options should be separated by commas):\n"));
   fprintf (stream, _("\n\
   no-aliases    Disassemble only into canonical instructions, rather\n\
                 than into pseudoinstructions.\n"));
+
+  fprintf (stream, _("\n\
+  march         Disassemble assuming the given extensions are \n\
+                available. By default they are derived from the \n\
+                RISCV_arch attribute, if available.\n"));
 
   fprintf (stream, _("\n"));
 }

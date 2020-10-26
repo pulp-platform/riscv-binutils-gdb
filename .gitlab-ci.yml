@@ -1,0 +1,126 @@
+# Copyright 2020 ETH Zurich and University of Bologna
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+before_script:
+  - pwd
+
+stages:
+  - build
+  - test
+
+dejagnu:
+  stage: build
+  before_script:
+    - git clone git@iis-git.ee.ethz.ch:gnu/riscv-dejagnu.git
+  script:
+    # we make a separate install dir for dejagnu to make the arficat easier to glob
+    - echo "Creating install directory"
+    - mkdir -p dejagnu
+    - echo "Running configure"
+    - cd riscv-dejagnu
+    -  ./configure --prefix=$(pwd)/../dejagnu
+    - echo "Compiling"
+    - make -j 32
+    - echo "Installing"
+    - make install
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - dejagnu/*
+      - riscv-dejagnu/contrib/sum2junit.sh
+
+binutils:
+  stage: build
+  before_script:
+  script:
+    - echo "Creating install directory"
+    - mkdir -p toolchain
+    - echo "Running configure"
+    - ./configure --target=riscv32-unknown-elf --prefix=$(pwd)/toolchain --disable-werror --with-expat=yes --disable-gdb --disable-libdecnumber --disable-readline
+    - echo "Compiling"
+    - make -j 32
+    - echo "Installing"
+    - make install
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - toolchain/*
+      # required to run tests
+      - Makefile
+      - "*/Makefile"
+      - "*/*/Makefile"
+      - "*/*/*/Makefile"
+#      - autom4te.cache
+#      - config.cache
+#      - config.h
+#      - config.intl
+      - "config.log"
+      - "**/config.log"
+      - "config.status"
+      - "*/config.status"
+      - "*/*/config.status"
+      - "*/.deps"
+      - "*/*/.deps"
+      - "**/.libs"
+      - "*/libtool"
+      - "**/*.a"
+      - "**/*.la"
+      # binutils binaries
+      - binutils/*
+      - gas/*
+      - ld/*
+
+
+# Use sdk-releases to run all tests
+make_check:
+  stage: test
+  script:
+    - echo "Running tests"
+    - make check RUNTEST=$(pwd)/dejagnu/bin/runtest RUNTESTFLAGS="--target_board=riscv-sim"
+    - echo "Generating junit test results"
+    - /usr/sepp/bin/pip3.4 install --user junit2html
+    # the contrib script can only with file endings that are like .sum.*
+    - cp ld/ld.sum ld.sum.x
+    - cp gas/testsuite/gas.sum gas.sum.x
+    - cp binutils/binutils.sum binutils.sum.x
+    # sum -> junit.xml
+    - ./sum2junit.sh ld.sum.x
+    - ./sum2junit.sh gas.sum.x
+    - ./sum2junit.sh binutils.sum.x
+    # junit.xml -> html
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport ld.xml
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport gas.xml
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport binutils.xml
+    # format output for log
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport --summary-matrix ld.xml
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport --summary-matrix gas.xml
+    - /usr/sepp/bin/python3.4 -m junit2htmlreport --summary-matrix binutils.xml
+
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - toolchain/*
+      - ld/ld.sum
+      - gas/testsuite/gas.sum
+      - binutils/binutils.sum
+      - ld/ld.log
+      - gas/testsuite/gas.log
+      - binutils/binutils.log
+      - "*.html"
+    reports:
+      junit: "*.xml"
+
+    #reports:
+    #  junit: tests/sequential_bare_tests/junit-reports/TEST-*.xml

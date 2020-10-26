@@ -3,6 +3,8 @@
 
    Contributed by Andrew Waterman (andrew@sifive.com).
    Based on MIPS ELF support for BFD, by Ian Lance Taylor.
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -88,6 +90,12 @@ START_RELOC_NUMBERS (elf_riscv_reloc_type)
   RELOC_NUMBER (R_RISCV_SET16, 55)
   RELOC_NUMBER (R_RISCV_SET32, 56)
   RELOC_NUMBER (R_RISCV_32_PCREL, 57)
+
+  /* Pulp specific relocs */
+  RELOC_NUMBER (R_RISCV_REL12, 58)
+  RELOC_NUMBER (R_RISCV_RELU5, 59)
+  RELOC_NUMBER (R_RISCV_12_I, 60)
+  RELOC_NUMBER (R_RISCV_12_S, 61)
 END_RELOC_NUMBERS (R_RISCV_max)
 
 /* Processor specific flags for the ELF header e_flags field.  */

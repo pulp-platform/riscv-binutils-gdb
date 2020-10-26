@@ -4,6 +4,9 @@
    Contributed by Andrew Waterman (andrew@sifive.com).
    Based on MIPS target.
 
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
+
    This file is part of BFD, the Binary File Descriptor library.
 
    This program is free software; you can redistribute it and/or modify

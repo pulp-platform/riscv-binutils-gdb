@@ -4,6 +4,9 @@
    Contributed by Andrew Waterman (andrew@sifive.com).
    Based on MIPS target.
 
+   PULP family support contributed by Eric Flamand (eflamand@iis.ee.ethz.ch) at ETH-Zurich
+   and Greenwaves Technologies (eric.flamand@greenwaves-technologies.com)
+
    This file is part of GAS.
 
    GAS is free software; you can redistribute it and/or modify
@@ -116,6 +119,9 @@ extern int tc_riscv_regname_to_dw2regnum (char *);
 
 #define elf_tc_final_processing riscv_elf_final_processing
 extern void riscv_elf_final_processing (void);
+
+extern void pulp_md_end (void);
+#define md_end()        pulp_md_end()
 
 /* Adjust debug_line after relaxation.  */
 #define DWARF2_USE_FIXED_ADVANCE_PC 1
