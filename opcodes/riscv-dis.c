@@ -633,10 +633,6 @@ riscv_disassemble_insn (bfd_vma memaddr, insn_t word, disassemble_info *info)
 
       for (; op->name; op++)
 	{
-	  /* is this instruction really supported by the current subset (due to
-	     overlapping pulp subsets) */
-	  if (!riscv_multi_subset_supports (op->insn_class))
-            continue;
 	  /* Does the opcode match?  */
 	  if (! (op->match_func) (op, word))
 	    continue;
