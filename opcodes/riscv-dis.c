@@ -107,29 +107,44 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
-    case INSN_CLASS_XPULP_SLIM:
-      return riscv_subset_supports ("xpulpslim");
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL;
 
-    case INSN_CLASS_XPULP_V0:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+    INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod");
+    INSN_CLASS(MINMAX_COMPAT, "xpulpminmax");
+    INSN_CLASS(MAC_COMPAT, "xpulpmac");
+    INSN_CLASS(ABS_COMPAT, "xpulpabs");
+#undef INSN_CLASS
 
-    case INSN_CLASS_XPULP_V1:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL;
 
-    case INSN_CLASS_XPULP_V2:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP8:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_V3:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP9:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_NN:
-      return riscv_subset_supports ("xpulpnn");
+    INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall");
+    INSN_CLASS(POSTMOD, "xpulppostmod");
+    INSN_CLASS(ABS, "xpulpabs");
+    INSN_CLASS(SLET, "xpulpslet");
+    INSN_CLASS(MINMAX, "xpulpminmax");
+    INSN_CLASS(BITOP, "xpulpbitop");
+    INSN_CLASS(CLIP, "xpulpclip");
+    INSN_CLASS(HWLOOP, "xpulphwloop");
+    INSN_CLASS(ADDSUBRN, "xpulpaddsubrn");
+    INSN_CLASS(PARTMAC, "xpulppartmac");
+    INSN_CLASS(MULMACRN, "xpulpmulmacrn");
+    INSN_CLASS(MAC, "xpulpmac");
+    INSN_CLASS(VECT, "xpulpvect");
+    INSN_CLASS(BR, "xpulpbr");
+    INSN_CLASS(ELW, "xpulpelw");
+    INSN_CLASS(VECT_GAP8, "xpulpvectgap8");
+    INSN_CLASS(VECT_GAP9, "xpulpvectgap9");
+    INSN_CLASS(NN, "xpulpnn");
+    INSN_CLASS(BITREV, "xpulpbitrev");
+    INSN_CLASS(ZFINX_GAP9, "xpulpzfinxgap9");
+    INSN_CLASS(SFP, "xpulpsfp");
+#undef INSN_CLASS
 
     default:
       /* as_fatal ("Unreachable"); */
