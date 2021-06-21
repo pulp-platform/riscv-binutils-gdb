@@ -122,6 +122,81 @@ riscv_subset_supports (const char *feature)
   return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
+/* pulp extensions (and standard extensions) encoded as bitmask */
+uint64_t pulp_ext;
+
+/* Tell whether given insn_class is support by available pulp extension groups.
+   Check the table in riscv-opc.c for the table showing which sub extensions are
+   supported in what combination. */
+
+static bfd_boolean
+riscv_pulp_ext_group_supports (enum riscv_insn_class insn_class)
+{
+#define BIT(x) (1ul << x)
+  uint64_t pulpv0_or_v1_exts = BIT (INSN_CLASS_XPULP_POSTMOD_COMPAT)
+    || BIT (INSN_CLASS_XPULP_ABS_COMPAT)
+    || BIT (INSN_CLASS_XPULP_SLET)
+    || BIT (INSN_CLASS_XPULP_MINMAX_COMPAT)
+    || BIT (INSN_CLASS_XPULP_BITOP_SMALL)
+    || BIT (INSN_CLASS_XPULP_HWLOOP)
+    || BIT (INSN_CLASS_XPULP_MAC_COMPAT)
+    || BIT (INSN_CLASS_XPULP_ELW);
+
+  uint64_t pulpv2_or_v3_exts = BIT(INSN_CLASS_XPULP_POSTMOD)
+    /* TODO: indregreg missing */
+    || BIT (INSN_CLASS_XPULP_ABS)
+    || BIT (INSN_CLASS_XPULP_SLET)
+    || BIT (INSN_CLASS_XPULP_MINMAX)
+    || BIT (INSN_CLASS_XPULP_BITOP)
+    || BIT (INSN_CLASS_XPULP_CLIP)
+    || BIT (INSN_CLASS_XPULP_HWLOOP)
+    || BIT (INSN_CLASS_XPULP_ADDSUBRN)
+    || BIT (INSN_CLASS_XPULP_PARTMAC)
+    || BIT (INSN_CLASS_XPULP_MULMACRN)
+    || BIT (INSN_CLASS_XPULP_MAC)
+    || BIT (INSN_CLASS_XPULP_VECT)
+    /* TODO: shufflepack missing */
+    || BIT (INSN_CLASS_XPULP_BR)
+    || BIT (INSN_CLASS_XPULP_ELW);
+
+  uint64_t gap8_exts = pulpv2_or_v3_exts || BIT (INSN_CLASS_XPULP_VECT_GAP8);
+  uint64_t pulpnn_exts = pulpv2_or_v3_exts || BIT (INSN_CLASS_XPULP_NN);
+  uint64_t gap9_exts = pulpv2_or_v3_exts
+    || BIT (INSN_CLASS_XPULP_VECT_GAP9)
+    || BIT (INSN_CLASS_XPULP_BITREV)
+    || BIT (INSN_CLASS_XPULP_FINX_GAP9)
+    || BIT (INSN_CLASS_XPULP_FHALF_GAP9);
+
+#undef BIT
+
+  if (insn_class == INSN_CLASS_NONE)
+    return FALSE;
+
+  /* pulpv0 and pulpv1 */
+  if (riscv_lookup_subset_version (&riscv_subsets, "xpulp", 0, 0) != NULL
+      || riscv_lookup_subset_version (&riscv_subsets, "xpulp", 1, 0) != NULL)
+    return pulpv0_or_v1_exts >> insn_class & 1;
+
+  /* pulpv2 and pulpv3 */
+  if (riscv_lookup_subset_version (&riscv_subsets, "xpulp", 2, 0) != NULL
+      || riscv_lookup_subset_version (&riscv_subsets, "xpulp", 3, 0) != NULL)
+    return pulpv2_or_v3_exts >> insn_class & 1;
+
+  /* pulpnn */
+  if (riscv_subset_supports ("xpulpnnall"))
+    return pulpnn_exts >> insn_class & 1;
+
+  /* gap8 */
+  if (riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, 0) != NULL)
+    return gap8_exts >> insn_class & 1;
+
+  /* gap9 */
+  if (riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, 0) != NULL)
+    return gap9_exts >> insn_class & 1;
+
+  return FALSE;
+}
+
 static bfd_boolean
 riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 {
@@ -141,29 +216,46 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
-    case INSN_CLASS_XPULP_SLIM:
-      return riscv_subset_supports ("xpulpslim");
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XPULP_V0:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+    INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod");
+    INSN_CLASS(MINMAX_COMPAT, "xpulpminmax");
+    INSN_CLASS(MAC_COMPAT, "xpulpmac");
+    INSN_CLASS(ABS_COMPAT, "xpulpabs");
+#undef INSN_CLASS
 
-    case INSN_CLASS_XPULP_V1:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XPULP_V2:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP8:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_V3:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP9:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_NN:
-      return riscv_subset_supports ("xpulpnn");
+    INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall");
+    INSN_CLASS(POSTMOD, "xpulppostmod");
+    INSN_CLASS(ABS, "xpulpabs");
+    INSN_CLASS(SLET, "xpulpslet");
+    INSN_CLASS(MINMAX, "xpulpminmax");
+    INSN_CLASS(BITOP, "xpulpbitop");
+    INSN_CLASS(CLIP, "xpulpclip");
+    INSN_CLASS(HWLOOP, "xpulphwloop");
+    INSN_CLASS(ADDSUBRN, "xpulpaddsubrn");
+    INSN_CLASS(PARTMAC, "xpulppartmac");
+    INSN_CLASS(MULMACRN, "xpulpmulmacrn");
+    INSN_CLASS(MAC, "xpulpmac");
+    INSN_CLASS(VECT, "xpulpvect");
+    INSN_CLASS(BR, "xpulpbr");
+    INSN_CLASS(ELW, "xpulpelw");
+    INSN_CLASS(VECT_GAP8, "xpulpvectgap8");
+    INSN_CLASS(VECT_GAP9, "xpulpvectgap9");
+    INSN_CLASS(NN, "xpulpnn");
+    INSN_CLASS(BITREV, "xpulpbitrev");
+    INSN_CLASS(FINX_GAP9, "xpulpzfinxgap9");
+    INSN_CLASS(SFP, "xpulpsfp");
+#undef INSN_CLASS
 
     default:
       as_fatal ("Unreachable");
@@ -2409,6 +2501,7 @@ struct option md_longopts[] =
 
   {"mrvc", no_argument, NULL, OPTION_MRVC},
   {"mno-rvc", no_argument, NULL, OPTION_MNO_RVC},
+
   {"mL2", required_argument, NULL, OPTION_L2},
   {"mL1Cl", required_argument, NULL, OPTION_L1CL},
   {"mL1Fc", required_argument, NULL, OPTION_L1FC},
@@ -3303,21 +3396,62 @@ md_show_usage (FILE *stream)
 {
   fprintf (stream, _("\
 RISC-V options:\n\
-  -fpic          generate position-independent code\n\
-  -fno-pic       don't generate position-independent code (default)\n\
-  -march=ISA     set the RISC-V architecture\n\
-  -mabi=ABI      set the RISC-V ABI\n\
-  -mrelax        enable relax (default)\n\
-  -mno-relax     disable relax\n\
-  -march-attr    generate RISC-V arch attribute\n\
-  -mno-arch-attr don't generate RISC-V arch attribute\n\
-  -mchip=CHIP    set Pulp chip target\n\
-  -mL2           set pulp L2 size to Value\n\
-  -mL1Cl=Value   set pulp cluster L1 size to Value\n\
-  -mL1Fc=Value   set pulp fabric controller L1 size, if any, to Value\n\
-  -mPE=Value     define number of processing element in Pulp cluster\n\
-  -mFC=Value     if Value=0 assume there is no fabric controler, if Value!=0 assume there is one FC\n\
-  -mchip=Name    define targeted chip as Name\n\
+  -fpic                  generate position-independent code\n\
+  -fno-pic               don't generate position-independent code (default)\n\
+  -march=ISA             set the RISC-V architecture\n\
+  -mabi=ABI              set the RISC-V ABI\n\
+  -mrelax                enable relax (default)\n\
+  -mno-relax             disable relax\n\
+  -march-attr            generate RISC-V arch attribute\n\
+  -mno-arch-attr         don't generate RISC-V arch attribute\n\
+  -mchip=CHIP            set PULP chip target\n\
+  -mpulp-abs             use PULP abs instruction\n\
+  -mno-pulp-abs\n\
+  -mpulp-addsubrn        use PULP add/sub with norm/round instructions\n\
+  -mno-pulp-addsubrn\n\
+  -mpulp-bitop           use PULP bit manipulation instructions\n\
+  -mno-pulp-bitop\n\
+  -mpulp-bitop-small     use PULP bit manipulation instructions. This is a subset of the PULP bit manipulation\n\
+                         instructions. Used in pulpv0 and pulpv1. Use only if you know what you do.\n\
+  -mno-pulp-bitop-small\n\
+  -mpulp-bitrev          use PULP bitreverse instruction\n\
+  -mno-pulp-bitrev\n\
+  -mpulp-br              use PULP branch instruction\n\
+  -mno-pulp-br\n\
+  -mpulp-clip            use PULP clip instructions\n\
+  -mno-pulp-clip\n\
+  -mpulp-compat          use PULP extension instructions (if any) in pulpv0 and pulpv1 compatibility mode. This\n\
+                         changes the instruction encoding (postmod) and instructions themselves (avg instead of\n\
+                         addn). Use only if you know what you do.\n\
+  -mno-pulp-compat\n\
+  -mpulp-elw             use PULP ELW instruction for cluster synchronization\n\
+  -mno-pulp-elw\n\
+  -mpulp-hwloop          use PULP hardware loop instructions\n\
+  -mno-pulp-hwloop\n\
+  -mpulp-indregreg       use PULP register offset load/store instructions\n\
+  -mno-pulp-indregreg\n\
+  -mpulp-mac             use PULP multiply accumulate instructions (32x32 into 32)\n\
+  -mno-pulp-mac\n\
+  -mpulp-mac-alt         use PULP multiply accumulate instructions. This is a small subset of the PULP mac and\n\
+                         partmac instructions plus some alternate mac instructions. Used in pulpv0. Use only if\n\
+                         you know what you do.\n\
+  -mno-pulp-mac-alt\n\
+  -mpulp-minmax          use PULP minmax instructions\n\
+  -mno-pulp-minmax\n\
+  -mpulp-mulmacrn        use PULP multiply accumulate with norm/round instructions (16x16 into 32)\n\
+  -mno-pulp-mulmacrn\n\
+  -mpulp-partmac         use PULP multiply accumulate instructions (16x16 into 32)\n\
+  -mno-pulp-partmac\n\
+  -mpulp-postmod         use PULP pointer post modification instructions\n\
+  -mno-pulp-postmod\n\
+  -mpulp-slet            use PULP slet/sletu instructions\n\
+  -mno-pulp-slet\n\
+  -mpulp-vect            use PULP SIMD instructions\n\
+  -mno-pulp-vect\n\
+  -mpulp-vectgap8        use PULP GAP8 additional SIMD instructions\n\
+  -mno-pulp-vectgap8\n\
+  -mpulp-vectshufflepack use PULP SIMD shuffle and pack instructions\n\
+  -mno-pulp-vectshufflepack\n\
 "));
 }
 
