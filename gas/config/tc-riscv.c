@@ -2593,6 +2593,10 @@ md_parse_option (int c, const char *arg)
       riscv_set_rvc (TRUE);
       break;
 
+    case OPTION_MNO_RVC:
+      riscv_set_rvc (FALSE);
+      break;
+
     case OPTION_CPU:
       break;
 
