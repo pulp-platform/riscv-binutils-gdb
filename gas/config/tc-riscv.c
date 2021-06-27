@@ -2588,6 +2588,7 @@ md_parse_option (int c, const char *arg)
 
     case OPTION_NO_ARCH_ATTR:
       riscv_opts.arch_attr = FALSE;
+      break;
     /* PULP specific mdargs */
     case OPTION_MRVC:
       riscv_set_rvc (TRUE);
