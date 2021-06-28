@@ -2644,6 +2644,103 @@ riscv_after_parse_args (void)
      range of registers in a .cfi_return_column directive.  */
   if (flag_dwarf_cie_version == -1)
     flag_dwarf_cie_version = 3;
+
+  /* PULP specific checks */
+  /* TODO: add infer disable switch (?) */
+  /* infer additional float extensions (moves and conversions) */
+  /* vfmv and vfcvt only make sense when integer reg is not smaller than float
+     reg */
+  if (riscv_subset_supports ("xfvecsingle")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecsinglenotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvechalf")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvechalfnotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvecalthalf")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecalthalfnotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvecquarter")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecquarternotthirtytwod", 2, 0);
+
+  /* automatically add conversion insns between floating point subsets */
+  if (riscv_subset_supports ("xfhalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfhalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfhalfwithd", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfalthalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfhalf"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithhalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfquarter"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithd", 2, 0);
+      if (riscv_subset_supports ("xfhalf"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithhalf", 2, 0);
+      if (riscv_subset_supports ("xfalthalf"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithalthalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecsingle"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecsinglewithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecsinglewithd", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvechalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithsingle", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecalthalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithsingle", 2, 0);
+      if (riscv_subset_supports ("xfvechalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithhalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecquarter"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithsingle", 2, 0);
+      if (riscv_subset_supports ("xfvechalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithhalf", 2, 0);
+      if (riscv_subset_supports ("xfvecalthalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithalthalf", 2, 0);
+    }
+
 }
 
 long
