@@ -122,77 +122,41 @@ riscv_subset_supports (const char *feature)
   return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
-/* pulp extensions (and standard extensions) encoded as bitmask */
-uint64_t pulp_ext;
+/* Table of known PULP extension groups.y */
 
-/* Tell whether given insn_class is support by available pulp extension groups.
-   Check the table in riscv-opc.c for the table showing which sub extensions are
-   supported in what combination. */
+static struct pulp_ext_group_info pulp_ext_groups[] =
+{
+#define PULP_EXT_GROUP(NAME, MAJOR, MINOR, FLAGS0, FLAGS1)	\
+  {NAME, MAJOR, MINOR, FLAGS0, FLAGS1},
+
+  /* from opcodes/riscv.h */
+  PULP_ALL_EXT_GROUPS
+  {NULL, 0, 0, 0, 0}
+
+#undef PULP_EXT_GROUP
+};
+
+/* Determine whether an insn_class is supported by currently enabled PULP
+   extension groups. */
 
 static bfd_boolean
 riscv_pulp_ext_group_supports (enum riscv_insn_class insn_class)
 {
-#define BIT(x) (1ul << x)
-  uint64_t pulpv0_or_v1_exts = BIT (INSN_CLASS_XPULP_POSTMOD_COMPAT)
-    || BIT (INSN_CLASS_XPULP_ABS_COMPAT)
-    || BIT (INSN_CLASS_XPULP_SLET)
-    || BIT (INSN_CLASS_XPULP_MINMAX_COMPAT)
-    || BIT (INSN_CLASS_XPULP_BITOP_SMALL)
-    || BIT (INSN_CLASS_XPULP_HWLOOP)
-    || BIT (INSN_CLASS_XPULP_MAC_COMPAT)
-    || BIT (INSN_CLASS_XPULP_ELW);
+  struct pulp_ext_group_info *group;
 
-  uint64_t pulpv2_or_v3_exts = BIT(INSN_CLASS_XPULP_POSTMOD)
-    /* TODO: indregreg missing */
-    || BIT (INSN_CLASS_XPULP_ABS)
-    || BIT (INSN_CLASS_XPULP_SLET)
-    || BIT (INSN_CLASS_XPULP_MINMAX)
-    || BIT (INSN_CLASS_XPULP_BITOP)
-    || BIT (INSN_CLASS_XPULP_CLIP)
-    || BIT (INSN_CLASS_XPULP_HWLOOP)
-    || BIT (INSN_CLASS_XPULP_ADDSUBRN)
-    || BIT (INSN_CLASS_XPULP_PARTMAC)
-    || BIT (INSN_CLASS_XPULP_MULMACRN)
-    || BIT (INSN_CLASS_XPULP_MAC)
-    || BIT (INSN_CLASS_XPULP_VECT)
-    /* TODO: shufflepack missing */
-    || BIT (INSN_CLASS_XPULP_BR)
-    || BIT (INSN_CLASS_XPULP_ELW);
-
-  uint64_t gap8_exts = pulpv2_or_v3_exts || BIT (INSN_CLASS_XPULP_VECT_GAP8);
-  uint64_t pulpnn_exts = pulpv2_or_v3_exts || BIT (INSN_CLASS_XPULP_NN);
-  uint64_t gap9_exts = pulpv2_or_v3_exts
-    || BIT (INSN_CLASS_XPULP_VECT_GAP9)
-    || BIT (INSN_CLASS_XPULP_BITREV)
-    || BIT (INSN_CLASS_XPULP_FINX_GAP9)
-    || BIT (INSN_CLASS_XPULP_FHALF_GAP9);
-
-#undef BIT
-
-  if (insn_class == INSN_CLASS_NONE)
-    return FALSE;
-
-  /* pulpv0 and pulpv1 */
-  if (riscv_lookup_subset_version (&riscv_subsets, "xpulp", 0, 0) != NULL
-      || riscv_lookup_subset_version (&riscv_subsets, "xpulp", 1, 0) != NULL)
-    return pulpv0_or_v1_exts >> insn_class & 1;
-
-  /* pulpv2 and pulpv3 */
-  if (riscv_lookup_subset_version (&riscv_subsets, "xpulp", 2, 0) != NULL
-      || riscv_lookup_subset_version (&riscv_subsets, "xpulp", 3, 0) != NULL)
-    return pulpv2_or_v3_exts >> insn_class & 1;
-
-  /* pulpnn */
-  if (riscv_subset_supports ("xpulpnnall"))
-    return pulpnn_exts >> insn_class & 1;
-
-  /* gap8 */
-  if (riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, 0) != NULL)
-    return gap8_exts >> insn_class & 1;
-
-  /* gap9 */
-  if (riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, 0) != NULL)
-    return gap9_exts >> insn_class & 1;
+  for (group = pulp_ext_groups; group->name; group++)
+    {
+      if (riscv_lookup_subset_version (&riscv_subsets, group->name,
+				       group->major, group->minor) != NULL)
+	{
+	  if (insn_class < 64)
+	    return group->ext0_flags >> insn_class & 1;
+	  else if (insn_class < 128)
+	    return group->ext1_flags >> insn_class & 1;
+	  else
+	    as_fatal (_("internal error: too many custom pulp extensions"));
+	}
+    }
 
   return FALSE;
 }
@@ -222,10 +186,9 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
       return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL \
 	|| riscv_pulp_ext_group_supports (insn_class);
 
-    INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod");
-    INSN_CLASS(MINMAX_COMPAT, "xpulpminmax");
-    INSN_CLASS(MAC_COMPAT, "xpulpmac");
-    INSN_CLASS(ABS_COMPAT, "xpulpabs");
+      /* from opcodes/riscv.h */
+      PULP_EXTENSION_COMPAT_MAP
+
 #undef INSN_CLASS
 
     /* pulpv2 onwards */
@@ -234,69 +197,8 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
       return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL \
 	|| riscv_pulp_ext_group_supports (insn_class);
 
-    INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall");
-    INSN_CLASS(POSTMOD, "xpulppostmod");
-    INSN_CLASS(ABS, "xpulpabs");
-    INSN_CLASS(SLET, "xpulpslet");
-    INSN_CLASS(MINMAX, "xpulpminmax");
-    INSN_CLASS(BITOP, "xpulpbitop");
-    INSN_CLASS(CLIP, "xpulpclip");
-    INSN_CLASS(HWLOOP, "xpulphwloop");
-    INSN_CLASS(ADDSUBRN, "xpulpaddsubrn");
-    INSN_CLASS(PARTMAC, "xpulppartmac");
-    INSN_CLASS(MULMACRN, "xpulpmulmacrn");
-    INSN_CLASS(MAC, "xpulpmac");
-    INSN_CLASS(VECT, "xpulpvect");
-    INSN_CLASS(BR, "xpulpbr");
-    INSN_CLASS(ELW, "xpulpelw");
-    INSN_CLASS(VECT_GAP8, "xpulpvectgap8");
-    INSN_CLASS(VECT_GAP9, "xpulpvectgap9");
-    INSN_CLASS(NN, "xpulpnn");
-    INSN_CLASS(BITREV, "xpulpbitrev");
-    INSN_CLASS(FINX_GAP9, "xpulpfinxgap9");
-    INSN_CLASS(FHALF_GAP9, "xpulpfhalfgap9");
-
-    INSN_CLASS(FHALF, "xfhalf");
-    INSN_CLASS(FHALFWITHF, "xfhalfwithf");
-    INSN_CLASS(FHALFWITHD, "xfhalfwithd");
-    INSN_CLASS(FALTHALF, "xfalthalf");
-    INSN_CLASS(FALTHALFWITHF, "xfalthalfwithf");
-    INSN_CLASS(FALTHALFWITHD, "xfalthalfwithd");
-    INSN_CLASS(FALTHALFWITHHALF, "xfalthalfwithhalf");
-    INSN_CLASS(FQUARTER, "xfquarter");
-    INSN_CLASS(FQUARTERWITHF, "xfquarterwithf");
-    INSN_CLASS(FQUARTERWITHD, "xfquarterwithd");
-    INSN_CLASS(FQUARTERWITHHALF, "xfquarterwithhalf");
-    INSN_CLASS(FQUARTERWITHALTHALF, "xfquarterwithalthalf");
-    INSN_CLASS(FVECSINGLE, "xfvecsingle");
-    INSN_CLASS(FVECSINGLENOTTHIRTYTWOD, "xfvecsinglenotthirtytwod");
-    INSN_CLASS(FVECSINGLEWITHF, "xfvecsinglewithf");
-    INSN_CLASS(FVECSINGLEWITHD, "xfvecsinglewithd");
-    INSN_CLASS(FVECHALF, "xfvechalf");
-    INSN_CLASS(FVECHALFNOTTHIRTYTWOD, "xfvechalfnotthirtytwod");
-    INSN_CLASS(FVECHALFWITHF, "xfvechalfwithf");
-    INSN_CLASS(FVECHALFWITHD, "xfvechalfwithd");
-    INSN_CLASS(FVECHALFWITHSINGLE, "xfvechalfwithsingle");
-    INSN_CLASS(FVECALTHALF, "xfvecalthalf");
-    INSN_CLASS(FVECALTHALFNOTTHIRTYTWOD, "xfvecalthalfnotthirtytwod");
-    INSN_CLASS(FVECALTHALFWITHF, "xfvecalthalfwithf");
-    INSN_CLASS(FVECALTHALFWITHD, "xfvecalthalfwithd");
-    INSN_CLASS(FVECALTHALFWITHSINGLE, "xfvecalthalfwithsingle");
-    INSN_CLASS(FVECALTHALFWITHHALF, "xfvecalthalfwithhalf");
-    INSN_CLASS(FVECQUARTER, "xfvecquarter");
-    INSN_CLASS(FVECQUARTERNOTTHIRTYTWOD, "xfvecquarternotthirtytwod");
-    INSN_CLASS(FVECQUARTERWITHF, "xfvecquarterwithf");
-    INSN_CLASS(FVECQUARTERWITHD, "xfvecquarterwithd");
-    INSN_CLASS(FVECQUARTERWITHSINGLE, "xfvecquarterwithsingle");
-    INSN_CLASS(FVECQUARTERWITHHALF, "xfvecquarterwithhalf");
-    INSN_CLASS(FVECQUARTERWITHALTHALF, "xfvecquarterwithalthalf");
-    INSN_CLASS(FAUXVECSINGLE, "xfauxvecsingle");
-    INSN_CLASS(FAUXHALF, "xfauxhalf");
-    INSN_CLASS(FAUXVECHALF, "xfauxvechalf");
-    INSN_CLASS(FAUXALTHALF, "xfauxalthalf");
-    INSN_CLASS(FAUXVECALTHALF, "xfauxvecalthalf");
-    INSN_CLASS(FAUXQUARTER, "xfauxquarter");
-    INSN_CLASS(FAUXVECQUARTER, "xfauxvecquarter");
+    /* from opcode/riscv.h */
+    PULP_EXTENSION_MAP
 
 #undef INSN_CLASS
 
