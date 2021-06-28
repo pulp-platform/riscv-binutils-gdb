@@ -1319,8 +1319,8 @@
 #define MASK_VFMRE_H  0xfe00707f
 #define MATCH_VFMRE_R_H 0x92006033
 #define MASK_VFMRE_R_H  0xfe00707f
-#define MATCH_VFCLASS_H 0x98106033
-#define MASK_VFCLASS_H  0xfff0707f
+#define MATCH_VFCLASS_H_GAP9 0x98106033 /* gap9 seems to have a different encoding for vfclass.h (or this is worng) */
+#define MASK_VFCLASS_H_GAP9  0xfff0707f
 #define MATCH_VFSGNJ_H 0x9a002033
 #define MASK_VFSGNJ_H  0xfe00707f
 #define MATCH_VFSGNJ_R_H 0x9a006033
@@ -1405,8 +1405,8 @@
 #define MASK_VFMRE_AH  0xfe00707f
 #define MATCH_VFMRE_R_AH 0x92005033
 #define MASK_VFMRE_R_AH  0xfe00707f
-#define MATCH_VFCLASS_AH 0x98105033
-#define MASK_VFCLASS_AH  0xfff0707f
+#define MATCH_VFCLASS_AH_GAP9 0x98105033 /* gap9 seems to have a different encoding for vfclass.h (or this is worng) */
+#define MASK_VFCLASS_AH_GAP9  0xfff0707f
 #define MATCH_VFSGNJ_AH 0x9a001033
 #define MASK_VFSGNJ_AH  0xfe00707f
 #define MATCH_VFSGNJ_R_AH 0x9a005033
