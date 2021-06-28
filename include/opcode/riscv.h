@@ -435,6 +435,166 @@ enum riscv_insn_class
    INSN_CLASS_XPULP_FAUXVECQUARTER,
   };
 
+/* PULP RISC-V extension names to insn_class mapping. We put it here to have it
+   shared among gas and the disassembler. The regular RISC-V upstream code of
+   the disassembler doesn't have to deal with overlapping instruction subsets so
+   there is no way to pass a -march flag and thus also doesn't care about which
+   extension have been enabled during compilation of the the program it's
+   disassembling */
+
+#define PULP_EXTENSION_COMPAT_MAP		\
+  INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod");	\
+  INSN_CLASS(MINMAX_COMPAT, "xpulpminmax");	\
+  INSN_CLASS(MAC_COMPAT, "xpulpmac");		\
+  INSN_CLASS(ABS_COMPAT, "xpulpabs");		\
+
+#define PULP_EXTENSION_MAP						\
+  INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall");				\
+  INSN_CLASS(POSTMOD, "xpulppostmod");					\
+  INSN_CLASS(ABS, "xpulpabs");						\
+  INSN_CLASS(SLET, "xpulpslet");					\
+  INSN_CLASS(MINMAX, "xpulpminmax");					\
+  INSN_CLASS(BITOP, "xpulpbitop");					\
+  INSN_CLASS(CLIP, "xpulpclip");					\
+  INSN_CLASS(HWLOOP, "xpulphwloop");					\
+  INSN_CLASS(ADDSUBRN, "xpulpaddsubrn");				\
+  INSN_CLASS(PARTMAC, "xpulppartmac");					\
+  INSN_CLASS(MULMACRN, "xpulpmulmacrn");				\
+  INSN_CLASS(MAC, "xpulpmac");						\
+  INSN_CLASS(VECT, "xpulpvect");					\
+  INSN_CLASS(BR, "xpulpbr");						\
+  INSN_CLASS(ELW, "xpulpelw");						\
+  INSN_CLASS(VECT_GAP8, "xpulpvectgap8");				\
+  INSN_CLASS(VECT_GAP9, "xpulpvectgap9");				\
+  INSN_CLASS(NN, "xpulpnn");						\
+  INSN_CLASS(BITREV, "xpulpbitrev");					\
+  INSN_CLASS(FINX_GAP9, "xpulpfinxgap9");				\
+  INSN_CLASS(FHALF_GAP9, "xpulpfhalfgap9");				\
+  /* float extensions */						\
+  INSN_CLASS(FHALF, "xfhalf");						\
+  INSN_CLASS(FHALFWITHF, "xfhalfwithf");				\
+  INSN_CLASS(FHALFWITHD, "xfhalfwithd");				\
+  INSN_CLASS(FALTHALF, "xfalthalf");					\
+  INSN_CLASS(FALTHALFWITHF, "xfalthalfwithf");				\
+  INSN_CLASS(FALTHALFWITHD, "xfalthalfwithd");				\
+  INSN_CLASS(FALTHALFWITHHALF, "xfalthalfwithhalf");			\
+  INSN_CLASS(FQUARTER, "xfquarter");					\
+  INSN_CLASS(FQUARTERWITHF, "xfquarterwithf");				\
+  INSN_CLASS(FQUARTERWITHD, "xfquarterwithd");				\
+  INSN_CLASS(FQUARTERWITHHALF, "xfquarterwithhalf");			\
+  INSN_CLASS(FQUARTERWITHALTHALF, "xfquarterwithalthalf");		\
+  INSN_CLASS(FVECSINGLE, "xfvecsingle");				\
+  INSN_CLASS(FVECSINGLENOTTHIRTYTWOD, "xfvecsinglenotthirtytwod");	\
+  INSN_CLASS(FVECSINGLEWITHF, "xfvecsinglewithf");			\
+  INSN_CLASS(FVECSINGLEWITHD, "xfvecsinglewithd");			\
+  INSN_CLASS(FVECHALF, "xfvechalf");					\
+  INSN_CLASS(FVECHALFNOTTHIRTYTWOD, "xfvechalfnotthirtytwod");		\
+  INSN_CLASS(FVECHALFWITHF, "xfvechalfwithf");				\
+  INSN_CLASS(FVECHALFWITHD, "xfvechalfwithd");				\
+  INSN_CLASS(FVECHALFWITHSINGLE, "xfvechalfwithsingle");		\
+  INSN_CLASS(FVECALTHALF, "xfvecalthalf");				\
+  INSN_CLASS(FVECALTHALFNOTTHIRTYTWOD, "xfvecalthalfnotthirtytwod");	\
+  INSN_CLASS(FVECALTHALFWITHF, "xfvecalthalfwithf");			\
+  INSN_CLASS(FVECALTHALFWITHD, "xfvecalthalfwithd");			\
+  INSN_CLASS(FVECALTHALFWITHSINGLE, "xfvecalthalfwithsingle");		\
+  INSN_CLASS(FVECALTHALFWITHHALF, "xfvecalthalfwithhalf");		\
+  INSN_CLASS(FVECQUARTER, "xfvecquarter");				\
+  INSN_CLASS(FVECQUARTERNOTTHIRTYTWOD, "xfvecquarternotthirtytwod");	\
+  INSN_CLASS(FVECQUARTERWITHF, "xfvecquarterwithf");			\
+  INSN_CLASS(FVECQUARTERWITHD, "xfvecquarterwithd");			\
+  INSN_CLASS(FVECQUARTERWITHSINGLE, "xfvecquarterwithsingle");		\
+  INSN_CLASS(FVECQUARTERWITHHALF, "xfvecquarterwithhalf");		\
+  INSN_CLASS(FVECQUARTERWITHALTHALF, "xfvecquarterwithalthalf");	\
+  INSN_CLASS(FAUXVECSINGLE, "xfauxvecsingle");				\
+  INSN_CLASS(FAUXHALF, "xfauxhalf");					\
+  INSN_CLASS(FAUXVECHALF, "xfauxvechalf");				\
+  INSN_CLASS(FAUXALTHALF, "xfauxalthalf");				\
+  INSN_CLASS(FAUXVECALTHALF, "xfauxvecalthalf");			\
+  INSN_CLASS(FAUXQUARTER, "xfauxquarter");				\
+  INSN_CLASS(FAUXVECQUARTER, "xfauxvecquarter");
+
+/* Tell whether given insn_class is support by available pulp extension groups.
+   Check the table in riscv-opc.c for the table showing which sub extensions are
+   supported in what combination. Again we want to share this function, but this
+   is quite hard to do */
+
+struct pulp_ext_group_info
+{
+  /* the extension groups name */
+  const char *name;
+  /* the extension groups major version */
+  int major;
+  /* the extension groups minor version */
+  int minor;
+  /* the extensions that belong to it */
+  uint64_t ext0_flags;
+  uint64_t ext1_flags;
+};
+
+#define BIT(x) (1ul << x)
+
+/* Bitmasks that signal whether a current instruction class / extension is
+   supported. */
+
+/* for pulpv0 and pulp v1 */
+#define PULP_EXT_GROUP_COMPAT						\
+    BIT (INSN_CLASS_XPULP_POSTMOD_COMPAT)				\
+      | BIT (INSN_CLASS_XPULP_ABS_COMPAT)				\
+      | BIT (INSN_CLASS_XPULP_SLET)					\
+      | BIT (INSN_CLASS_XPULP_MINMAX_COMPAT)				\
+      | BIT (INSN_CLASS_XPULP_BITOP_SMALL)				\
+      | BIT (INSN_CLASS_XPULP_HWLOOP)					\
+      | BIT (INSN_CLASS_XPULP_MAC_COMPAT)				\
+      | BIT (INSN_CLASS_XPULP_ELW)
+
+/* pulpv2 and pulpv3 */
+#define PULP_EXT_GROUP_BASE						\
+  BIT(INSN_CLASS_XPULP_POSTMOD)						\
+    /* TODO: indregreg missing */					\
+    | BIT (INSN_CLASS_XPULP_ABS)					\
+    | BIT (INSN_CLASS_XPULP_SLET)					\
+    | BIT (INSN_CLASS_XPULP_MINMAX)					\
+    | BIT (INSN_CLASS_XPULP_BITOP)					\
+    | BIT (INSN_CLASS_XPULP_CLIP)					\
+    | BIT (INSN_CLASS_XPULP_HWLOOP)					\
+    | BIT (INSN_CLASS_XPULP_ADDSUBRN)					\
+    | BIT (INSN_CLASS_XPULP_PARTMAC)					\
+    | BIT (INSN_CLASS_XPULP_MULMACRN)					\
+    | BIT (INSN_CLASS_XPULP_MAC)					\
+    | BIT (INSN_CLASS_XPULP_VECT)					\
+    /* TODO: shufflepack missing */					\
+  | BIT (INSN_CLASS_XPULP_BR)						\
+  | BIT (INSN_CLASS_XPULP_ELW)
+
+#define PULP_EXT_GROUP_NN  (PULP_EXT_GROUP_BASE			\
+			    | BIT (INSN_CLASS_XPULP_NN))
+
+#define PULP_EXT_GROUP_GAP8 (PULP_EXT_GROUP_BASE			\
+			     | BIT (INSN_CLASS_XPULP_VECT_GAP8))
+
+#define PULP_EXT_GROUP_GAP9 (PULP_EXT_GROUP_BASE			\
+			     | BIT (INSN_CLASS_XPULP_VECT_GAP9)		\
+			     | BIT (INSN_CLASS_XPULP_BITREV)		\
+			     | BIT (INSN_CLASS_XPULP_FINX_GAP9)		\
+			     | BIT (INSN_CLASS_XPULP_FHALF_GAP9))
+
+/* PULP extension groupings. These macros are used to generate tables that
+  associate the extension name, its version with a set of extension flags. Since
+  we already ran out of available bits, we have two 64-bit integers representing
+  the extensions belonging to the extension group. The latter is not used yet
+  though. A -1 in the major or minor version fields means don't care. */
+
+#define PULP_ALL_EXT_GROUPS						\
+  /* ext, major, minor, extension0 flags, extension1 flags */		\
+  PULP_EXT_GROUP ("xpulpv",      0,  0, PULP_EXT_GROUP_COMPAT, 0)	\
+  PULP_EXT_GROUP ("xpulpv",      1,  0, PULP_EXT_GROUP_COMPAT, 0)	\
+  PULP_EXT_GROUP ("xpulpv",      2,  0, PULP_EXT_GROUP_BASE, 0)		\
+  PULP_EXT_GROUP ("xpulpv",      3,  0, PULP_EXT_GROUP_BASE, 0)		\
+  PULP_EXT_GROUP ("xpulpnnall", -1, -1, PULP_EXT_GROUP_BASE, 0)		\
+  PULP_EXT_GROUP ("gap",         8,  0, PULP_EXT_GROUP_GAP8, 0)		\
+  PULP_EXT_GROUP ("gap",         9,  0, PULP_EXT_GROUP_GAP9, 0)
+
+
 /* This structure holds information for a particular instruction.  */
 
 struct riscv_opcode
