@@ -787,33 +787,33 @@ const struct riscv_opcode riscv_opcodes[] =
 {"scallimm",    0, INSN_CLASS_I, "b3", MATCH_SCALL, MASK_SCALL_IMM, match_opcode,   0 },
 
 /*
-  | extensions/arch       | pulpv0 | pulpv1 | pulpv2 | pulpv3 | gap8 | pulpnn | gap9 |
-  |-----------------------+--------+--------+--------+--------+------+--------+------|
-  | PULP_POSTMOD          | x (c)  | x (C)  | x      | x      | x    | x      | x    |
-  | PULP_INDREGREG        | x      | x      | x      | x      | x    | x      | x    |
-  | PULP_ABS              | x (c)  | x (c)  | x      | x      | x    | x      | x    |
-  | PULP_SLET             | x      | x      | x      | x      | x    | x      | x    |
-  | PULP_MINMAX           | x (c)  | x (c)  | x      | x      | x    | x      | x    |
-  | PULP_BITOP_SMALL      | x      | x      |        |        |      |        |      |
-  | PULP_BITOP            |        |        | x      | x      | x    | x      | x    |
-  | PULP_CLIP             |        |        | x      | x      | x    | x      | x    |
-  | PULP_HWLOOP           | x (d)  | x      | x      | x      | x    | x      | x    |
-  | PULP_MAC_ALT          | x      | x      |        |        |      |        |      |
-  | PULP_MAC_SI           |        |        | x      | x      | x    | x      | x    |
-  | PULP_MACRN_HI         |        |        | x      | x      | x    | x      | x    |
-  | PULP_MULRN_HI         |        |        | x      | x      | x    | x      | x    |
-  | PULP_PARTMAC          |        |        | x      | x      | x    | x      | x    |
-  | PULP_ADDSUBRN         |        |        | x      | x      | x    | x      | x    |
-  | PULP_VECT             |        |        | x      | x      | x    | x      | x    |
-  | PULP_VECT_SHUFFLEPACK |        |        | x      | x      | x    | x      | x    |
-  | PULP_VECT_GAP8        |        |        |        |        | x    |        |      |
-  | PULP_VECT_GAP9        |        |        |        |        |      |        | x    |
-  | PULP_BR               |        |        | x      | x      | x    | x      | x    |
-  | PULP_ELW              | x      | x      | x      | x      | x    | x      | x    |
-  | PULP_NN               |        |        |        |        |      | x      |      |
-  | PULP_BITREV           |        |        |        |        |      |        | x    |
-  | PULP_FINX_GAP9        |        |        |        |        |      |        | x    |
-  | PULP_HALFFLOAT_GAP9   |        |        |        |        |      |        | x    |
+  | extensions/arch       | pulpv0 | pulpv1 | pulpv2 | pulpv3 | gap8 | pulpnn | gap9 | corev |
+  |-----------------------+--------+--------+--------+--------+------+--------+------+-------|
+  | PULP_POSTMOD          | x (c)  | x (C)  | x      | x      | x    | x      | x    | x     |
+  | PULP_INDREGREG        | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_ABS              | x (c)  | x (c)  | x      | x      | x    | x      | x    | x     |
+  | PULP_SLET             | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_MINMAX           | x (c)  | x (c)  | x      | x      | x    | x      | x    | x     |
+  | PULP_BITOP_SMALL      | x      | x      |        |        |      |        |      |       |
+  | PULP_BITOP            |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_CLIP             |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_HWLOOP           | x (d)  | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_MAC_ALT          | x      | x      |        |        |      |        |      |       |
+  | PULP_MAC_SI           |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_MACRN_HI         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_MULRN_HI         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_PARTMAC          |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_ADDSUBRN         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT             |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT_SHUFFLEPACK |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT_GAP8        |        |        |        |        | x    |        |      |       |
+  | PULP_VECT_GAP9        |        |        |        |        |      |        | x    |       |
+  | PULP_BR               |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_ELW              | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_NN               |        |        |        |        |      | x      |      |       |
+  | PULP_BITREV           |        |        |        |        |      |        | x    |       |
+  | PULP_FINX_GAP9        |        |        |        |        |      |        | x    |       |
+  | PULP_HALFFLOAT_GAP9   |        |        |        |        |      |        | x    |       |
 
   c = compatibility mode
   d = disabled in compiler due to bugs
