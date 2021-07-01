@@ -583,6 +583,8 @@ struct pulp_ext_group_info
 			     | BIT (INSN_CLASS_XPULP_FINX_GAP9)		\
 			     | BIT (INSN_CLASS_XPULP_FHALF_GAP9))
 
+#define COREV_EXT_GROUP (PULP_EXT_GROUP_BASE)
+
 /* PULP extension groupings. These macros are used to generate tables that
   associate the extension name, its version with a set of extension flags. Since
   we already ran out of available bits, we have two 64-bit integers representing
@@ -596,8 +598,9 @@ struct pulp_ext_group_info
   PULP_EXT_GROUP ("xpulpv",      2,  0, PULP_EXT_GROUP_BASE, 0)		\
   PULP_EXT_GROUP ("xpulpv",      3,  0, PULP_EXT_GROUP_BASE, 0)		\
   PULP_EXT_GROUP ("xpulpnnall", -1, -1, PULP_EXT_GROUP_BASE, 0)		\
-  PULP_EXT_GROUP ("gap",         8,  0, PULP_EXT_GROUP_GAP8, 0)		\
-  PULP_EXT_GROUP ("gap",         9,  0, PULP_EXT_GROUP_GAP9, 0)
+  PULP_EXT_GROUP ("xgap",        8,  0, PULP_EXT_GROUP_GAP8, 0)		\
+  PULP_EXT_GROUP ("xgap",        9,  0, PULP_EXT_GROUP_GAP9, 0)		\
+  PULP_EXT_GROUP ("xcorev",     -1, -1, COREV_EXT_GROUP, 0)
 
 
 /* This structure holds information for a particular instruction.  */
