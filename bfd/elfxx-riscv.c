@@ -1505,6 +1505,37 @@ riscv_add_subset (riscv_subset_list_t *subset_list,
   subset_list->tail = s;
 }
 
+/* Remove subset from list.  */
+void
+riscv_remove_subset (riscv_subset_list_t *subset_list,
+		     const char *subset)
+{
+  if (subset_list->head == NULL)
+    return;
+
+  riscv_subset_t *cur = subset_list->head;
+  riscv_subset_t *prev = NULL;
+
+  while (strcmp(cur->name, subset) != 0)
+    {
+      prev = cur;
+      cur = cur->next;
+    }
+
+  if (prev)
+    {
+      prev->next = cur->next;
+      free ((void *)cur->name);
+      free (cur);
+    }
+  else
+    subset_list->head = cur->next;
+
+  /* we removed the tail, we need to update the tail pointer */
+  if (prev->next == NULL)
+    subset_list->tail = prev;
+}
+
 /* Find subset in list without version checking, return NULL if not found.  */
 
 riscv_subset_t *

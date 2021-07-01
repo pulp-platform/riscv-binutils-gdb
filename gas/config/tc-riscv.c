@@ -2422,14 +2422,47 @@ enum options
   OPTION_NO_ARCH_ATTR,
   OPTION_MRVC,
   OPTION_MNO_RVC,
-  OPTION_L2,
-  OPTION_L1CL,
-  OPTION_L1FC,
-  OPTION_PE,
-  OPTION_FC,
   OPTION_CPU,
   OPTION_CHIP,
+  OPTION_PULP_COMPAT,
+  OPTION_NO_PULP_COMPAT,
+  OPTION_NO_PULP_INFER,
+  OPTION_PRINT_EXTS,
+  /* TODO: goes into class */
+  OPTION_PULP_INDREGREG,
+  OPTION_NO_PULP_INDREGREG,
+
+#define INSN_CLASS(NAME, ARCH) \
+  OPTION_PULP_##NAME,	       \
+  OPTION_NO_PULP_##NAME,
+
+  PULP_EXTENSION_MAP
+
+#undef INSN_CLASS
+
   OPTION_END_OF_ENUM
+};
+
+bfd_boolean pulp_compat = FALSE;
+bfd_boolean pulp_no_infer = FALSE;
+bfd_boolean print_exts = FALSE;
+
+struct pulp_exts_as_opts
+{
+  /* The name of the PULP extension */
+  const char *name;
+  /* The command-line options that turn the extension on or off */
+  int option_on;
+  int option_off;
+};
+
+static const struct pulp_exts_as_opts pulp_exts_opts[] = {
+#define INSN_CLASS(NAME, ARCH) \
+  { ARCH, OPTION_PULP_##NAME, OPTION_NO_PULP_##NAME },
+
+  PULP_EXTENSION_MAP
+
+#undef INSN_CLASS
 };
 
 struct option md_longopts[] =
@@ -2444,16 +2477,58 @@ struct option md_longopts[] =
   {"march-attr", no_argument, NULL, OPTION_ARCH_ATTR},
   {"mno-arch-attr", no_argument, NULL, OPTION_NO_ARCH_ATTR},
 
+  /* PULP */
   {"mrvc", no_argument, NULL, OPTION_MRVC},
   {"mno-rvc", no_argument, NULL, OPTION_MNO_RVC},
-
-  {"mL2", required_argument, NULL, OPTION_L2},
-  {"mL1Cl", required_argument, NULL, OPTION_L1CL},
-  {"mL1Fc", required_argument, NULL, OPTION_L1FC},
-  {"mPE", required_argument, NULL, OPTION_PE},
-  {"mFC", required_argument, NULL, OPTION_FC},
   {"mcpu", required_argument, NULL, OPTION_CPU},
   {"mchip", required_argument, NULL, OPTION_CHIP},
+  {"mno-pulp-infer", no_argument, NULL, OPTION_NO_PULP_INFER},
+  {"mprint-exts", no_argument, NULL, OPTION_PRINT_EXTS},
+  /* PULP extension options */
+  {"mpulp-abs", no_argument, NULL, OPTION_PULP_ABS},
+  {"mno-pulp-abs", no_argument, NULL, OPTION_NO_PULP_ABS},
+  {"mpulp-addsubrn", no_argument, NULL, OPTION_PULP_ADDSUBRN},
+  {"mno-pulp-addsubrn", no_argument, NULL, OPTION_NO_PULP_ADDSUBRN},
+  {"mpulp-bitop", no_argument, NULL, OPTION_PULP_BITOP},
+  {"mno-pulp-bitop", no_argument, NULL, OPTION_NO_PULP_BITOP},
+  {"mpulp-bitop-small", no_argument, NULL, OPTION_PULP_BITOP_SMALL},
+  {"mno-pulp-bitop-small", no_argument, NULL, OPTION_NO_PULP_BITOP_SMALL},
+  {"mpulp-bitrev", no_argument, NULL, OPTION_PULP_BITREV},
+  {"mno-pulp-bitrev", no_argument, NULL, OPTION_NO_PULP_BITREV},
+  {"mpulp-br", no_argument, NULL, OPTION_PULP_BR},
+  {"mno-pulp-br", no_argument, NULL, OPTION_NO_PULP_BR},
+  {"mpulp-clip", no_argument, NULL, OPTION_PULP_CLIP},
+  {"mno-pulp-clip", no_argument, NULL, OPTION_NO_PULP_CLIP},
+  {"mpulp-compat", no_argument, NULL, OPTION_PULP_COMPAT},
+  {"mno-pulp-compat", no_argument, NULL, OPTION_NO_PULP_COMPAT},
+  {"mpulp-elw", no_argument, NULL, OPTION_PULP_ELW},
+  {"mno-pulp-elw", no_argument, NULL, OPTION_NO_PULP_ELW},
+  {"mpulp-hwloop", no_argument, NULL, OPTION_PULP_HWLOOP},
+  {"mno-pulp-hwloop", no_argument, NULL, OPTION_NO_PULP_HWLOOP},
+  {"mpulp-indregreg", no_argument, NULL, OPTION_PULP_INDREGREG},
+  {"mno-pulp-indregreg", no_argument, NULL, OPTION_NO_PULP_INDREGREG},
+  {"mpulp-mac-alt", no_argument, NULL, OPTION_PULP_MAC_ALT},
+  {"mno-pulp-mac-alt", no_argument, NULL, OPTION_NO_PULP_MAC_ALT},
+  {"mpulp-mac-si", no_argument, NULL, OPTION_PULP_MAC_SI},
+  {"mno-pulp-mac-si", no_argument, NULL, OPTION_NO_PULP_MAC_SI},
+  {"mpulp-macrn-hi", no_argument, NULL, OPTION_PULP_MACRN_HI},
+  {"mno-pulp-macrn-hi", no_argument, NULL, OPTION_NO_PULP_MACRN_HI},
+  {"mpulp-minmax", no_argument, NULL, OPTION_PULP_MINMAX},
+  {"mno-pulp-minmax", no_argument, NULL, OPTION_NO_PULP_MINMAX},
+  {"mpulp-mulrn-hi", no_argument, NULL, OPTION_PULP_MULRN_HI},
+  {"mno-pulp-mulrn-hi", no_argument, NULL, OPTION_NO_PULP_MULRN_HI},
+  {"mpulp-partmac", no_argument, NULL, OPTION_PULP_PARTMAC},
+  {"mno-pulp-partmac", no_argument, NULL, OPTION_NO_PULP_PARTMAC},
+  {"mpulp-postmod", no_argument, NULL, OPTION_PULP_POSTMOD},
+  {"mno-pulp-postmod", no_argument, NULL, OPTION_NO_PULP_POSTMOD},
+  {"mpulp-slet", no_argument, NULL, OPTION_PULP_SLET},
+  {"mno-pulp-slet", no_argument, NULL, OPTION_NO_PULP_SLET},
+  {"mpulp-vect", no_argument, NULL, OPTION_PULP_VECT},
+  {"mno-pulp-vect", no_argument, NULL, OPTION_NO_PULP_VECT},
+  {"mpulp-vectgap8", no_argument, NULL, OPTION_PULP_VECT_GAP8},
+  {"mno-pulp-vectgap8", no_argument, NULL, OPTION_NO_PULP_VECT_GAP8},
+  {"mpulp-vectshufflepack", no_argument, NULL, OPTION_PULP_VECT_SHUFFLEPACK},
+  {"mno-pulp-vectshufflepack", no_argument, NULL, OPTION_NO_PULP_VECT_SHUFFLEPACK},
 
   {NULL, no_argument, NULL, 0}
 };
@@ -2479,13 +2554,28 @@ riscv_set_abi (unsigned new_xlen, enum float_abi new_float_abi, bfd_boolean rve)
 int
 md_parse_option (int c, const char *arg)
 {
-  int Arg;
-  static int Defined = 0;
+  unsigned i = 0;
+
+  /* Parse pulp extension enable/disable switches. Currently, the disable
+     switches can only disable extensions, that have been added with their
+     explict subextension names (either via march or enable switches). */
+  /* TODO: Test disable switches against PULP extension groups.  */
+  for (i = 0; i < ARRAY_SIZE (pulp_exts_opts); i++)
+    if (c == pulp_exts_opts[i].option_on)
+      {
+	riscv_add_subset (&riscv_subsets, pulp_exts_opts[i].name, 2, 0);
+	return 1;
+      }
+    else if (c == pulp_exts_opts[i].option_off)
+      {
+	riscv_remove_subset (&riscv_subsets, pulp_exts_opts[i].name);
+	return 1;
+      }
 
   switch (c)
     {
     case OPTION_MARCH:
-      if (!Defined) riscv_set_arch (arg);
+      riscv_set_arch (arg);
       break;
 
     case OPTION_NO_PIC:
@@ -2544,10 +2634,27 @@ md_parse_option (int c, const char *arg)
       break;
 
     case OPTION_CPU:
+      /* TODO */
       break;
 
     case OPTION_CHIP:
-      pulp_set_chip(arg); Defined = 1;
+      pulp_set_chip(arg);
+      break;
+
+    case OPTION_PULP_COMPAT:
+      pulp_compat = TRUE;
+      break;
+
+    case OPTION_NO_PULP_COMPAT:
+      pulp_compat = FALSE;
+      break;
+
+    case OPTION_NO_PULP_INFER:
+      pulp_no_infer = TRUE;
+      break;
+
+    case OPTION_PRINT_EXTS:
+      print_exts = TRUE;
       break;
 
     default:
@@ -2646,7 +2753,37 @@ riscv_after_parse_args (void)
     flag_dwarf_cie_version = 3;
 
   /* PULP specific checks */
-  /* TODO: add infer disable switch (?) */
+  /* We downgrade certain PULP subextensions to version 0 when we want to run in
+     pulpv0/v1 compatibility mode. This is rather ugly, but good enough to kinda
+     support backwards compatibility. */
+
+  if (pulp_compat)
+    {
+      static const char *compat_exts[] = {
+#define INSN_CLASS(NAME, ARCH) \
+	ARCH,
+
+	PULP_EXTENSION_COMPAT_MAP
+#undef INSN_CLASS
+	NULL,
+      };
+
+      const char **arch;
+
+      for (arch = compat_exts; *arch; arch++)
+	{
+	  if (riscv_subset_supports(*arch))
+	    {
+	      riscv_remove_subset (&riscv_subsets, *arch);
+	      riscv_add_subset (&riscv_subsets, *arch, 0, 0);
+	    }
+	}
+    }
+
+  /* In case we want full control over used extensions */
+  if (pulp_no_infer)
+    return;
+
   /* infer additional float extensions (moves and conversions) */
   /* vfmv and vfcvt only make sense when integer reg is not smaller than float
      reg */
@@ -2741,6 +2878,10 @@ riscv_after_parse_args (void)
 	riscv_add_subset (&riscv_subsets, "xfvecquarterwithalthalf", 2, 0);
     }
 
+  /* if we want to see what extensions are enabled */
+  if (print_exts)
+    fprintf(stdout, "arch=%s\n",
+	    riscv_arch_str (xlen, &riscv_subsets));
 }
 
 long
@@ -3443,61 +3584,69 @@ md_show_usage (FILE *stream)
 {
   fprintf (stream, _("\
 RISC-V options:\n\
-  -fpic                  generate position-independent code\n\
-  -fno-pic               don't generate position-independent code (default)\n\
-  -march=ISA             set the RISC-V architecture\n\
-  -mabi=ABI              set the RISC-V ABI\n\
-  -mrelax                enable relax (default)\n\
-  -mno-relax             disable relax\n\
-  -march-attr            generate RISC-V arch attribute\n\
-  -mno-arch-attr         don't generate RISC-V arch attribute\n\
-  -mchip=CHIP            set PULP chip target\n\
-  -mpulp-abs             use PULP abs instruction\n\
+  -fpic                   Generate position-independent code\n\
+  -fno-pic                Don't generate position-independent code (default)\n\
+  -march=ISA              Set the RISC-V architecture\n\
+  -mabi=ABI               Set the RISC-V ABI\n\
+  -mrelax                 Enable relax (default)\n\
+  -mno-relax              Disable relax\n\
+  -march-attr             Generate RISC-V arch attribute\n\
+  -mno-arch-attr          Don't generate RISC-V arch attribute\n\
+  -mchip=CHIP             Set PULP chip target\n\
+  -mprint-exts            Print canonical extension string\n\
+  -mno-pulp-infer         Disable extension inference\n\
+  -mpulp-abs              Use PULP abs instruction\n\
   -mno-pulp-abs\n\
-  -mpulp-addsubrn        use PULP add/sub with norm/round instructions\n\
+  -mpulp-addsubrn         Use PULP add/sub with norm/round instructions\n\
   -mno-pulp-addsubrn\n\
-  -mpulp-bitop           use PULP bit manipulation instructions\n\
+  -mpulp-bitop            Use PULP bit manipulation instructions\n\
   -mno-pulp-bitop\n\
-  -mpulp-bitop-small     use PULP bit manipulation instructions. This is a subset of the PULP bit manipulation\n\
-                         instructions. Used in pulpv0 and pulpv1. Use only if you know what you do.\n\
+  -mpulp-bitop-small      Use PULP bit manipulation instructions. This is a\n\
+                          subset of the PULP bit manipulation instructions.\n\
+                          Used in pulpv0 and pulpv1. Use only if you know\n\
+                          what you do.\n\
   -mno-pulp-bitop-small\n\
-  -mpulp-bitrev          use PULP bitreverse instruction\n\
+  -mpulp-bitrev           Use PULP bitreverse instruction\n\
   -mno-pulp-bitrev\n\
-  -mpulp-br              use PULP branch instruction\n\
+  -mpulp-br               Use PULP branch instruction\n\
   -mno-pulp-br\n\
-  -mpulp-clip            use PULP clip instructions\n\
+  -mpulp-clip             Use PULP clip instructions\n\
   -mno-pulp-clip\n\
-  -mpulp-compat          use PULP extension instructions (if any) in pulpv0 and pulpv1 compatibility mode. This\n\
-                         changes the instruction encoding (postmod) and instructions themselves (avg instead of\n\
-                         addn). Use only if you know what you do.\n\
-  -mno-pulp-compat\n\
-  -mpulp-elw             use PULP ELW instruction for cluster synchronization\n\
+  -mpulp-compat           Use PULP extension instructions (if any) in\n\
+  -mno-pulp-compat        pulpv0 and pulpv1 compatibility mode. This\n\
+                          changes the instruction encoding (postmod) and\n\
+                          instructions themselves (avg instead of addn).\n\
+                          Use only if you know what you do.\n\
+  -mpulp-elw              Use PULP ELW instruction (cluster synchronization)\n\
   -mno-pulp-elw\n\
-  -mpulp-hwloop          use PULP hardware loop instructions\n\
+  -mpulp-hwloop           Use PULP hardware loop instructions\n\
   -mno-pulp-hwloop\n\
-  -mpulp-indregreg       use PULP register offset load/store instructions\n\
+  -mpulp-indregreg        Use PULP register offset load/store instructions\n\
   -mno-pulp-indregreg\n\
-  -mpulp-mac             use PULP multiply accumulate instructions (32x32 into 32)\n\
-  -mno-pulp-mac\n\
-  -mpulp-mac-alt         use PULP multiply accumulate instructions. This is a small subset of the PULP mac and\n\
-                         partmac instructions plus some alternate mac instructions. Used in pulpv0. Use only if\n\
-                         you know what you do.\n\
-  -mno-pulp-mac-alt\n\
-  -mpulp-minmax          use PULP minmax instructions\n\
+  -mpulp-mac-alt          Use PULP multiply accumulate instructions. This\n\
+  -mno-pulp-mac-alt       is a small subset of the PULP mac and partmac\n\
+                          instructions plus some alternate mac\n\
+                          instructions. Used in pulpv0. Use only if you\n\
+                          know what you do.\n\
+  -mpulp-mac-si           Use PULP multiply accumulate instructions (32x32\n\
+  -mno-pulp-mac-si        into 32)\n\
+  -mpulp-macrn-hi         Use PULP multiply accumulate instructions with\n\
+  -mno-pulp-macrn-hi      norm/round (16x16 into 32)\n\
+  -mpulp-minmax           Use PULP minmax instructions\n\
   -mno-pulp-minmax\n\
-  -mpulp-mulmacrn        use PULP multiply accumulate with norm/round instructions (16x16 into 32)\n\
-  -mno-pulp-mulmacrn\n\
-  -mpulp-partmac         use PULP multiply accumulate instructions (16x16 into 32)\n\
-  -mno-pulp-partmac\n\
-  -mpulp-postmod         use PULP pointer post modification instructions\n\
+  -mpulp-mulrn-hi         Use PULP multiply instructions with norm/round\n\
+  -mno-pulp-mulrn-hi      (16x16 into 32)\n\
+  -mpulp-partmac          Use PULP multiply accumulate instructions (16x16\n\
+  -mno-pulp-partmac       into 32)\n\
+  -mpulp-postmod          Use PULP pointer post modification instructions\n\
   -mno-pulp-postmod\n\
-  -mpulp-slet            use PULP slet/sletu instructions\n\
+  -mpulp-slet             Use PULP slet/sletu instructions\n\
   -mno-pulp-slet\n\
-  -mpulp-vect            use PULP SIMD instructions\n\
+  -mpulp-vect             Use PULP SIMD instructions\n\
   -mno-pulp-vect\n\
-  -mpulp-vectgap8        use PULP GAP8 additional SIMD instructions\n\
+  -mpulp-vectgap8         Use PULP GAP8 additional SIMD instructions\n\
   -mno-pulp-vectgap8\n\
-  -mpulp-vectshufflepack use PULP SIMD shuffle and pack instructions\n\
+  -mpulp-vectshufflepack  Use PULP SIMD shuffle and pack instructions\n\
   -mno-pulp-vectshufflepack\n\
 "));
 }

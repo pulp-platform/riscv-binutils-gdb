@@ -360,7 +360,7 @@ enum riscv_insn_class
    /* pulpv0 and pulpv1 */
    INSN_CLASS_XPULP_POSTMOD_COMPAT,
    INSN_CLASS_XPULP_MINMAX_COMPAT,
-   INSN_CLASS_XPULP_MAC_COMPAT,
+   INSN_CLASS_XPULP_MAC_ALT,
    INSN_CLASS_XPULP_ABS_COMPAT,
    INSN_CLASS_XPULP_BITOP_SMALL,
 
@@ -374,9 +374,11 @@ enum riscv_insn_class
    INSN_CLASS_XPULP_HWLOOP,
    INSN_CLASS_XPULP_ADDSUBRN,
    INSN_CLASS_XPULP_PARTMAC,
-   INSN_CLASS_XPULP_MULMACRN,
-   INSN_CLASS_XPULP_MAC,
+   INSN_CLASS_XPULP_MAC_SI,
+   INSN_CLASS_XPULP_MACRN_HI,
+   INSN_CLASS_XPULP_MULRN_HI,
    INSN_CLASS_XPULP_VECT,
+   INSN_CLASS_XPULP_VECT_SHUFFLEPACK,
    INSN_CLASS_XPULP_BR,
    INSN_CLASS_XPULP_ELW,
    INSN_CLASS_XPULP_VECT_GAP8,
@@ -443,75 +445,77 @@ enum riscv_insn_class
    disassembling */
 
 #define PULP_EXTENSION_COMPAT_MAP		\
-  INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod");	\
-  INSN_CLASS(MINMAX_COMPAT, "xpulpminmax");	\
-  INSN_CLASS(MAC_COMPAT, "xpulpmac");		\
-  INSN_CLASS(ABS_COMPAT, "xpulpabs");		\
+  INSN_CLASS(POSTMOD_COMPAT, "xpulppostmod") 	\
+  INSN_CLASS(MINMAX_COMPAT, "xpulpminmax") 	\
+  INSN_CLASS(ABS_COMPAT, "xpulpabs") 		\
 
 #define PULP_EXTENSION_MAP						\
-  INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall");				\
-  INSN_CLASS(POSTMOD, "xpulppostmod");					\
-  INSN_CLASS(ABS, "xpulpabs");						\
-  INSN_CLASS(SLET, "xpulpslet");					\
-  INSN_CLASS(MINMAX, "xpulpminmax");					\
-  INSN_CLASS(BITOP, "xpulpbitop");					\
-  INSN_CLASS(CLIP, "xpulpclip");					\
-  INSN_CLASS(HWLOOP, "xpulphwloop");					\
-  INSN_CLASS(ADDSUBRN, "xpulpaddsubrn");				\
-  INSN_CLASS(PARTMAC, "xpulppartmac");					\
-  INSN_CLASS(MULMACRN, "xpulpmulmacrn");				\
-  INSN_CLASS(MAC, "xpulpmac");						\
-  INSN_CLASS(VECT, "xpulpvect");					\
-  INSN_CLASS(BR, "xpulpbr");						\
-  INSN_CLASS(ELW, "xpulpelw");						\
-  INSN_CLASS(VECT_GAP8, "xpulpvectgap8");				\
-  INSN_CLASS(VECT_GAP9, "xpulpvectgap9");				\
-  INSN_CLASS(NN, "xpulpnn");						\
-  INSN_CLASS(BITREV, "xpulpbitrev");					\
-  INSN_CLASS(FINX_GAP9, "xpulpfinxgap9");				\
-  INSN_CLASS(FHALF_GAP9, "xpulpfhalfgap9");				\
+  INSN_CLASS(BITOP_SMALL, "xpulpbitopsmall")				\
+  INSN_CLASS(POSTMOD, "xpulppostmod")					\
+  INSN_CLASS(ABS, "xpulpabs")						\
+  INSN_CLASS(SLET, "xpulpslet")						\
+  INSN_CLASS(MINMAX, "xpulpminmax")					\
+  INSN_CLASS(BITOP, "xpulpbitop")					\
+  INSN_CLASS(CLIP, "xpulpclip")						\
+  INSN_CLASS(HWLOOP, "xpulphwloop")					\
+  INSN_CLASS(ADDSUBRN, "xpulpaddsubrn")					\
+  INSN_CLASS(PARTMAC, "xpulppartmac")					\
+  INSN_CLASS(MAC_ALT, "xpulpmacalt")					\
+  INSN_CLASS(MAC_SI, "xpulpmacsi")					\
+  INSN_CLASS(MACRN_HI, "xpulpmacrnhi")					\
+  INSN_CLASS(MULRN_HI, "xpulpmulrnhi")					\
+  INSN_CLASS(VECT, "xpulpvect")						\
+  INSN_CLASS(VECT_SHUFFLEPACK, "xpulpvectshufflepack")			\
+  INSN_CLASS(BR, "xpulpbr")						\
+  INSN_CLASS(ELW, "xpulpelw")						\
+  INSN_CLASS(VECT_GAP8, "xpulpvectgap8")				\
+  INSN_CLASS(VECT_GAP9, "xpulpvectgap9")				\
+  INSN_CLASS(NN, "xpulpnn")						\
+  INSN_CLASS(BITREV, "xpulpbitrev")					\
+  INSN_CLASS(FINX_GAP9, "xpulpfinxgap9")				\
+  INSN_CLASS(FHALF_GAP9, "xpulpfhalfgap9")				\
   /* float extensions */						\
-  INSN_CLASS(FHALF, "xfhalf");						\
-  INSN_CLASS(FHALFWITHF, "xfhalfwithf");				\
-  INSN_CLASS(FHALFWITHD, "xfhalfwithd");				\
-  INSN_CLASS(FALTHALF, "xfalthalf");					\
-  INSN_CLASS(FALTHALFWITHF, "xfalthalfwithf");				\
-  INSN_CLASS(FALTHALFWITHD, "xfalthalfwithd");				\
-  INSN_CLASS(FALTHALFWITHHALF, "xfalthalfwithhalf");			\
-  INSN_CLASS(FQUARTER, "xfquarter");					\
-  INSN_CLASS(FQUARTERWITHF, "xfquarterwithf");				\
-  INSN_CLASS(FQUARTERWITHD, "xfquarterwithd");				\
-  INSN_CLASS(FQUARTERWITHHALF, "xfquarterwithhalf");			\
-  INSN_CLASS(FQUARTERWITHALTHALF, "xfquarterwithalthalf");		\
-  INSN_CLASS(FVECSINGLE, "xfvecsingle");				\
-  INSN_CLASS(FVECSINGLENOTTHIRTYTWOD, "xfvecsinglenotthirtytwod");	\
-  INSN_CLASS(FVECSINGLEWITHF, "xfvecsinglewithf");			\
-  INSN_CLASS(FVECSINGLEWITHD, "xfvecsinglewithd");			\
-  INSN_CLASS(FVECHALF, "xfvechalf");					\
-  INSN_CLASS(FVECHALFNOTTHIRTYTWOD, "xfvechalfnotthirtytwod");		\
-  INSN_CLASS(FVECHALFWITHF, "xfvechalfwithf");				\
-  INSN_CLASS(FVECHALFWITHD, "xfvechalfwithd");				\
-  INSN_CLASS(FVECHALFWITHSINGLE, "xfvechalfwithsingle");		\
-  INSN_CLASS(FVECALTHALF, "xfvecalthalf");				\
-  INSN_CLASS(FVECALTHALFNOTTHIRTYTWOD, "xfvecalthalfnotthirtytwod");	\
-  INSN_CLASS(FVECALTHALFWITHF, "xfvecalthalfwithf");			\
-  INSN_CLASS(FVECALTHALFWITHD, "xfvecalthalfwithd");			\
-  INSN_CLASS(FVECALTHALFWITHSINGLE, "xfvecalthalfwithsingle");		\
-  INSN_CLASS(FVECALTHALFWITHHALF, "xfvecalthalfwithhalf");		\
-  INSN_CLASS(FVECQUARTER, "xfvecquarter");				\
-  INSN_CLASS(FVECQUARTERNOTTHIRTYTWOD, "xfvecquarternotthirtytwod");	\
-  INSN_CLASS(FVECQUARTERWITHF, "xfvecquarterwithf");			\
-  INSN_CLASS(FVECQUARTERWITHD, "xfvecquarterwithd");			\
-  INSN_CLASS(FVECQUARTERWITHSINGLE, "xfvecquarterwithsingle");		\
-  INSN_CLASS(FVECQUARTERWITHHALF, "xfvecquarterwithhalf");		\
-  INSN_CLASS(FVECQUARTERWITHALTHALF, "xfvecquarterwithalthalf");	\
-  INSN_CLASS(FAUXVECSINGLE, "xfauxvecsingle");				\
-  INSN_CLASS(FAUXHALF, "xfauxhalf");					\
-  INSN_CLASS(FAUXVECHALF, "xfauxvechalf");				\
-  INSN_CLASS(FAUXALTHALF, "xfauxalthalf");				\
-  INSN_CLASS(FAUXVECALTHALF, "xfauxvecalthalf");			\
-  INSN_CLASS(FAUXQUARTER, "xfauxquarter");				\
-  INSN_CLASS(FAUXVECQUARTER, "xfauxvecquarter");
+  INSN_CLASS(FHALF, "xfhalf")						\
+  INSN_CLASS(FHALFWITHF, "xfhalfwithf")					\
+  INSN_CLASS(FHALFWITHD, "xfhalfwithd")					\
+  INSN_CLASS(FALTHALF, "xfalthalf")					\
+  INSN_CLASS(FALTHALFWITHF, "xfalthalfwithf")				\
+  INSN_CLASS(FALTHALFWITHD, "xfalthalfwithd")				\
+  INSN_CLASS(FALTHALFWITHHALF, "xfalthalfwithhalf")			\
+  INSN_CLASS(FQUARTER, "xfquarter")					\
+  INSN_CLASS(FQUARTERWITHF, "xfquarterwithf")				\
+  INSN_CLASS(FQUARTERWITHD, "xfquarterwithd")				\
+  INSN_CLASS(FQUARTERWITHHALF, "xfquarterwithhalf")			\
+  INSN_CLASS(FQUARTERWITHALTHALF, "xfquarterwithalthalf")		\
+  INSN_CLASS(FVECSINGLE, "xfvecsingle")					\
+  INSN_CLASS(FVECSINGLENOTTHIRTYTWOD, "xfvecsinglenotthirtytwod")	\
+  INSN_CLASS(FVECSINGLEWITHF, "xfvecsinglewithf")			\
+  INSN_CLASS(FVECSINGLEWITHD, "xfvecsinglewithd")			\
+  INSN_CLASS(FVECHALF, "xfvechalf")					\
+  INSN_CLASS(FVECHALFNOTTHIRTYTWOD, "xfvechalfnotthirtytwod")		\
+  INSN_CLASS(FVECHALFWITHF, "xfvechalfwithf")				\
+  INSN_CLASS(FVECHALFWITHD, "xfvechalfwithd")				\
+  INSN_CLASS(FVECHALFWITHSINGLE, "xfvechalfwithsingle")			\
+  INSN_CLASS(FVECALTHALF, "xfvecalthalf")				\
+  INSN_CLASS(FVECALTHALFNOTTHIRTYTWOD, "xfvecalthalfnotthirtytwod")	\
+  INSN_CLASS(FVECALTHALFWITHF, "xfvecalthalfwithf")			\
+  INSN_CLASS(FVECALTHALFWITHD, "xfvecalthalfwithd")			\
+  INSN_CLASS(FVECALTHALFWITHSINGLE, "xfvecalthalfwithsingle")		\
+  INSN_CLASS(FVECALTHALFWITHHALF, "xfvecalthalfwithhalf")		\
+  INSN_CLASS(FVECQUARTER, "xfvecquarter")				\
+  INSN_CLASS(FVECQUARTERNOTTHIRTYTWOD, "xfvecquarternotthirtytwod")	\
+  INSN_CLASS(FVECQUARTERWITHF, "xfvecquarterwithf")			\
+  INSN_CLASS(FVECQUARTERWITHD, "xfvecquarterwithd")			\
+  INSN_CLASS(FVECQUARTERWITHSINGLE, "xfvecquarterwithsingle")		\
+  INSN_CLASS(FVECQUARTERWITHHALF, "xfvecquarterwithhalf")		\
+  INSN_CLASS(FVECQUARTERWITHALTHALF, "xfvecquarterwithalthalf")		\
+  INSN_CLASS(FAUXVECSINGLE, "xfauxvecsingle")				\
+  INSN_CLASS(FAUXHALF, "xfauxhalf")					\
+  INSN_CLASS(FAUXVECHALF, "xfauxvechalf")				\
+  INSN_CLASS(FAUXALTHALF, "xfauxalthalf")				\
+  INSN_CLASS(FAUXVECALTHALF, "xfauxvecalthalf")				\
+  INSN_CLASS(FAUXQUARTER, "xfauxquarter")				\
+  INSN_CLASS(FAUXVECQUARTER, "xfauxvecquarter")
 
 /* Tell whether given insn_class is support by available pulp extension groups.
    Check the table in riscv-opc.c for the table showing which sub extensions are
@@ -544,7 +548,7 @@ struct pulp_ext_group_info
       | BIT (INSN_CLASS_XPULP_MINMAX_COMPAT)				\
       | BIT (INSN_CLASS_XPULP_BITOP_SMALL)				\
       | BIT (INSN_CLASS_XPULP_HWLOOP)					\
-      | BIT (INSN_CLASS_XPULP_MAC_COMPAT)				\
+      | BIT (INSN_CLASS_XPULP_MAC_ALT)					\
       | BIT (INSN_CLASS_XPULP_ELW)
 
 /* pulpv2 and pulpv3 */
@@ -559,10 +563,11 @@ struct pulp_ext_group_info
     | BIT (INSN_CLASS_XPULP_HWLOOP)					\
     | BIT (INSN_CLASS_XPULP_ADDSUBRN)					\
     | BIT (INSN_CLASS_XPULP_PARTMAC)					\
-    | BIT (INSN_CLASS_XPULP_MULMACRN)					\
-    | BIT (INSN_CLASS_XPULP_MAC)					\
-    | BIT (INSN_CLASS_XPULP_VECT)					\
-    /* TODO: shufflepack missing */					\
+    | BIT (INSN_CLASS_XPULP_MAC_SI)					\
+    | BIT (INSN_CLASS_XPULP_MACRN_HI)					\
+  | BIT (INSN_CLASS_XPULP_MULRN_HI)					\
+  | BIT (INSN_CLASS_XPULP_VECT)						\
+  | BIT (INSN_CLASS_XPULP_VECT_SHUFFLEPACK)				\
   | BIT (INSN_CLASS_XPULP_BR)						\
   | BIT (INSN_CLASS_XPULP_ELW)
 
