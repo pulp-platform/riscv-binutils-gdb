@@ -88,6 +88,45 @@ riscv_subset_supports (const char *feature)
   return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
+/* Table of known PULP extension groups.y */
+
+static struct pulp_ext_group_info pulp_ext_groups[] =
+{
+#define PULP_EXT_GROUP(NAME, MAJOR, MINOR, FLAGS0, FLAGS1)	\
+  {NAME, MAJOR, MINOR, FLAGS0, FLAGS1},
+
+  /* from opcodes/riscv.h */
+  PULP_ALL_EXT_GROUPS
+  {NULL, 0, 0, 0, 0}
+
+#undef PULP_EXT_GROUP
+};
+
+/* Determine whether an insn_class is supported by currently enabled PULP
+   extension groups. */
+
+static bfd_boolean
+riscv_pulp_ext_group_supports (enum riscv_insn_class insn_class)
+{
+  struct pulp_ext_group_info *group;
+
+  for (group = pulp_ext_groups; group->name; group++)
+    {
+      if (riscv_lookup_subset_version (&riscv_subsets, group->name,
+				       group->major, group->minor) != NULL)
+	{
+	  if (insn_class < 64)
+	    return group->ext0_flags >> insn_class & 1;
+	  else if (insn_class < 128)
+	    return group->ext1_flags >> insn_class & 1;
+	  else
+	    opcodes_error_handler ("internal error: too many custom pulp extensions");
+	}
+    }
+
+  return FALSE;
+}
+
 static bfd_boolean
 riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 {
@@ -107,29 +146,27 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
-    case INSN_CLASS_XPULP_SLIM:
-      return riscv_subset_supports ("xpulpslim");
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XPULP_V0:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+      /* from opcodes/riscv.h */
+      PULP_EXTENSION_COMPAT_MAP
 
-    case INSN_CLASS_XPULP_V1:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+#undef INSN_CLASS
 
-    case INSN_CLASS_XPULP_V2:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XGAP8:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
+    /* from opcode/riscv.h */
+    PULP_EXTENSION_MAP
 
-    case INSN_CLASS_XPULP_V3:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP9:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_NN:
-      return riscv_subset_supports ("xpulpnn");
+#undef INSN_CLASS
 
     default:
       /* as_fatal ("Unreachable"); */
@@ -457,7 +494,7 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	case 'j':
           if (d[1]=='i') {
              ++d;
-             print (info->stream, "%d", (int) EXTRACT_ITYPE_IMM (l));
+             print (info->stream, "%d", (int)ENCODE_LOOP_UIMM(l));
              break;
           }
 	  if (((l & MASK_ADDI) == MATCH_ADDI && rs1 != 0)

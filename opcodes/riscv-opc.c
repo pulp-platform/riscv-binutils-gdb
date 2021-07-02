@@ -786,1999 +786,609 @@ const struct riscv_opcode riscv_opcodes[] =
 
 {"scallimm",    0, INSN_CLASS_I, "b3", MATCH_SCALL, MASK_SCALL_IMM, match_opcode,   0 },
 
-/* Pulp slim */
-
-{"p.mul",               0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_MUL,                              MASK_MUL,       match_opcode,  0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XPULP_SLIM, "d,s,t",      MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* Load from event unit */
-
-{"p.elw",               0, INSN_CLASS_XPULP_SLIM, "d,o(s)",     MATCH_LWU,                              MASK_LWU,       match_opcode,  0},
-
-/* Pulp slim end */
-
-/* Pulp v0 => move to pulp v0, Sven version. Disable HW loop since hw is buggy */
-
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XPULP_V0, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V0, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V0, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V0, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XPULP_V0, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V0, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V0, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V0, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XPULP_V0, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V0, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V0, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V0, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XPULP_V0, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V0, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V0, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V0, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XPULP_V0, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V0, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V0, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V0, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,y(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V0, "t,y(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.avg",               0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_AVG,                              MASK_PALU,      match_opcode,   0},
-{"p.avgu",              0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.abs",               0, INSN_CLASS_XPULP_V0, "d,s",          MATCH_ABS,                              MASK_PALUS,     match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XPULP_V0, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XPULP_V0, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XPULP_V0, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XPULP_V0, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XPULP_V0, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XPULP_V0, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XPULP_V0, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 32 MAC operation */
-
-{"p.mac",               0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MAC,                              MASK_MAC,       match_opcode,   0},
-
-/* 16x16 into 32 MAC operations */
-
-{"p.mac.zl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLZH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.machlu",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
-
-{"p.mac.zl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZLSH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.zh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACZHSH,                          MASK_MAC,       match_opcode,   0},
-
-{"p.mac.sl.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sl.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLZH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.zl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.machlsu",           0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.zh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHZH,                          MASK_MAC,       match_opcode,   0},
-
-{"p.mac.sl.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.macs",              0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sl.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSLSH,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.sl",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.machls",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
-{"p.mac.sh.sh",         0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XPULP_V0, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
-
-/* Pulp v1 */
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XPULP_V1, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V1, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V1, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V1, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XPULP_V1, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V1, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V1, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V1, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XPULP_V1, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V1, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V1, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V1, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XPULP_V1, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V1, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V1, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V1, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XPULP_V1, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V1, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V1, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V1, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,y(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V1, "t,y(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.avg",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_AVG,                              MASK_PALU,      match_opcode,   0},
-{"p.avgu",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.abs",               0, INSN_CLASS_XPULP_V1, "d,s",          MATCH_ABS,                              MASK_PALUS,     match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XPULP_V1, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XPULP_V1, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XPULP_V1, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XPULP_V1, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XPULP_V1, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XPULP_V1, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 32 MAC operation */
-
-{"p.mac",               0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MULH,                             MASK_MULH,      match_opcode,   0},
-
-/* 16x16 into 32 MAC operations */
-
-{"p.macs",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XPULP_V1, "d,s,t",        MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-/* Pulp v2 */
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V2, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V2, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V2, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V2, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V2, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V2, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V2, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V2, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V2, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V2, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V2, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V2, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V2, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V2, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V2, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XPULP_V2, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V2, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V2, "t,d(s)",       MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V2, "t,d(s!)",      MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XPULP_V2, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V2, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V2, "t,d(s)",       MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V2, "t,d(s!)",      MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XPULP_V2, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V2, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V2, "t,d(s)",       MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V2, "t,d(s!)",      MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.abs",               0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_AVG,                              MASK_PALUS,     match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-
-/* clip and bit manipulation */
-
-
-{"p.clip",              0, INSN_CLASS_XPULP_V2, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipi",             0, INSN_CLASS_XPULP_V2, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipr",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
-{"p.clipu",             0, INSN_CLASS_XPULP_V2, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipui",            0, INSN_CLASS_XPULP_V2, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipur",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
-
-{"p.extract",           0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extracti",          0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extractr",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
-{"p.extractu",          0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractui",         0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractur",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
-{"p.insert",            0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.inserti",           0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.insertr",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
-{"p.bset",              0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bseti",             0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bsetr",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
-{"p.bclr",              0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclri",             0, INSN_CLASS_XPULP_V2, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclrr",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XPULP_V2, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XPULP_V2, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XPULP_V2, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XPULP_V2, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XPULP_V2, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XPULP_V2, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* 32x32 into 32 Mac/Msu */
-
-{"p.mac",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,   0},
-{"p.msu",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,   0},
-
-/*  16x16 into 32 Mult/Mac with optional norm and rounding */
-
-{"p.muls",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhs",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.mulu",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhu",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.macs",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.mulsn",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsn",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulsrn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsrn",          0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.mulun",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhun",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulurn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhurn",          0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macsn",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsn",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macsrn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsrn",          0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macun",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhun",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macurn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhurn",          0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-/*  Add/Sub with norm and rounding */
-
-{"p.addn",              0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addni",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addnr",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_ADDNR,                            MASK_PALU,      match_opcode,   0},
-{"p.addun",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.adduni",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addunr",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_ADDUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addrn",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrni",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrnr",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_ADDRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addurn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurni",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurnr",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_ADDURNR,                          MASK_PALU,      match_opcode,   0},
-
-{"p.subn",              0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subni",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subnr",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SUBNR,                            MASK_PALU,      match_opcode,   0},
-{"p.subun",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subuni",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subunr",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SUBUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.subrn",             0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrni",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrnr",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SUBRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.suburn",            0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburni",           0, INSN_CLASS_XPULP_V2, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburnr",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_SUBURNR,                          MASK_PALU,      match_opcode,   0},
-
-/* Vector Operations */
-
-{"pv.add.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.add.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sub.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sub.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avg.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.avg.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avgu.h",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.h",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.h",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.avgu.b",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.b",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.b",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.min.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.min.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.minu.h",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.h",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.h",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.minu.b",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.b",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.b",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.max.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.max.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.maxu.h",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.h",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.h",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.maxu.b",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.b",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.b",       0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.srl.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.srl.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sra.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sra.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sll.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sll.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.or.h",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.h",         0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
-{"pv.or.b",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.b",         0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
-
-{"pv.xor.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.xor.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.and.h",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.h",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.and.b",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.b",        0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.abs.h",            0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
-{"pv.abs.b",            0, INSN_CLASS_XPULP_V2, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
-
-{"pv.extract.h",        0, INSN_CLASS_XPULP_V2, "d,s,bf",       MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.extract.b",        0, INSN_CLASS_XPULP_V2, "d,s,bF",       MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.extractu.h",       0, INSN_CLASS_XPULP_V2, "d,s,bf",       MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.extractu.b",       0, INSN_CLASS_XPULP_V2, "d,s,bF",       MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.insert.h",         0, INSN_CLASS_XPULP_V2, "d,s,bf",       MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.insert.b",         0, INSN_CLASS_XPULP_V2, "d,s,bF",       MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotsp.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.dotsp.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotup.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
-{"pv.dotup.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotusp.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.dotusp.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotsp.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotsp.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotup.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotup.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotusp.h",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.h",     0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.h",    0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotusp.b",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.b",     0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.b",    0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle.h",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shuffle.b",        0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shufflei0.sci.b",  0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei1.sci.b",  0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei2.sci.b",  0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei3.sci.b",  0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle2.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle2.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-
-{"pv.pack.h",           0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.packhi.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.packlo.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-
-{"pv.cmpeq.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpeq.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpne.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpne.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgt.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgt.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpge.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpge.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmplt.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmplt.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmple.h",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.h",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.h",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmple.b",          0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.b",       0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.b",      0, INSN_CLASS_XPULP_V2, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgtu.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgtu.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgeu.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgeu.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpltu.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpltu.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpleu.h",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.h",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.h",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpleu.b",         0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_V2, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-{"p.beqimm",            0, INSN_CLASS_XPULP_V2,  "s,bI,p",      MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,   0},
-{"p.bneimm",            0, INSN_CLASS_XPULP_V2,  "s,bI,p",      MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,   0},
-
-/* Load from event unit */
-
-{"p.elw",               0, INSN_CLASS_XPULP_V2, "d,o(s)",       MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
-
-/* __GAP8 Start */
-
-/* Gap8 */
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XGAP8, "d,o(s)",          MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP8, "d,o(s!)",         MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP8, "d,t(s)",          MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP8, "d,t(s!)",         MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XGAP8, "d,o(s)",          MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP8, "d,o(s!)",         MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP8, "d,t(s)",          MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP8, "d,t(s!)",         MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XGAP8, "d,o(s)",          MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP8, "d,o(s!)",         MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP8, "d,t(s)",          MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP8, "d,t(s!)",         MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XGAP8, "d,o(s)",          MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP8, "d,o(s!)",         MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP8, "d,t(s)",          MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP8, "d,t(s!)",         MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XGAP8, "d,o(s)",          MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP8, "d,o(s!)",         MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP8, "d,t(s)",          MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP8, "d,t(s!)",         MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XGAP8, "t,q(s)",          MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP8, "t,q(s!)",         MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP8, "t,d(s)",          MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP8, "t,d(s!)",         MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XGAP8, "t,q(s)",          MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP8, "t,q(s!)",         MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP8, "t,d(s)",          MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP8, "t,d(s!)",         MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XGAP8, "t,q(s)",          MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP8, "t,q(s!)",         MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP8, "t,d(s)",          MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP8, "t,d(s!)",         MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.abs",               0, INSN_CLASS_XGAP8, "d,s",     MATCH_AVG,                              MASK_PALUS,     match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XGAP8, "d,s",     MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XGAP8, "d,s",     MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XGAP8, "d,s",     MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XGAP8, "d,s",     MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XGAP8, "d,s",     MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XGAP8, "d,s",     MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XGAP8, "d,s",     MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XGAP8, "d,s",     MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-
-/* clip and bit manipulation */
-
-{"p.clip",              0, INSN_CLASS_XGAP8, "d,s,bi",  MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipi",             0, INSN_CLASS_XGAP8, "d,s,bi",  MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipr",             0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
-{"p.clipu",             0, INSN_CLASS_XGAP8, "d,s,bi",  MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipui",            0, INSN_CLASS_XGAP8, "d,s,bi",  MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipur",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
-
-{"p.extract",           0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extracti",          0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extractr",          0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
-{"p.extractu",          0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractui",         0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractur",         0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
-{"p.insert",            0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.inserti",           0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.insertr",           0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
-{"p.bset",              0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bseti",             0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bsetr",             0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
-{"p.bclr",              0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclri",             0, INSN_CLASS_XGAP8, "d,s,b5,bi",       MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclrr",             0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XGAP8, "di,b1",           MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XGAP8, "di,b1",           MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XGAP8, "di,s",            MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XGAP8, "di,ji",           MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XGAP8, "di,s,b1",         MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XGAP8, "di,ji,b2",        MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* 32x32 into 32 Mac/Msu */
-
-{"p.mac",               0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,   0},
-{"p.msu",               0, INSN_CLASS_XGAP8,   "d,s,t",         MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,   0},
-
-/*  16x16 into 32 Mult/Mac with optional norm and rounding */
-
-{"p.muls",              0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhs",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.mulu",              0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhu",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.macs",              0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.mulsn",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsn",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulsrn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsrn",          0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.mulun",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhun",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulurn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhurn",          0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macsn",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsn",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macsrn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsrn",          0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macun",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhun",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macurn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhurn",          0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-/*  Add/Sub with norm and rounding */
-
-{"p.addn",              0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addni",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addnr",             0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_ADDNR,                            MASK_PALU,      match_opcode,   0},
-{"p.addun",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.adduni",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addunr",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_ADDUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addrn",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrni",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrnr",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_ADDRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addurn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurni",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurnr",           0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_ADDURNR,                          MASK_PALU,      match_opcode,   0},
-
-{"p.subn",              0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subni",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subnr",             0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_SUBNR,                            MASK_PALU,      match_opcode,   0},
-{"p.subun",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subuni",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subunr",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_SUBUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.subrn",             0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrni",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrnr",            0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_SUBRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.suburn",            0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburni",           0, INSN_CLASS_XGAP8, "d,s,t,b5",        MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburnr",           0, INSN_CLASS_XGAP8, "d,s,t",           MATCH_SUBURNR,                          MASK_PALU,      match_opcode,   0},
-
-/* Vector Operations */
-
-{"pv.add.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.add.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sub.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sub.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avg.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.avg.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avgu.h",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.h",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.h",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.avgu.b",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.b",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.b",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.min.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.min.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.minu.h",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.h",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.h",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.minu.b",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.b",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.b",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.max.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.max.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.maxu.h",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.h",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.h",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.maxu.b",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.b",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.b",       0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.srl.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.srl.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sra.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sra.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sll.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sll.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bU",  MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.or.h",             0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.h",         0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
-{"pv.or.b",             0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.b",         0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
-
-{"pv.xor.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.xor.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.and.h",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.h",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.and.b",            0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.b",        0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.abs.h",            0, INSN_CLASS_XGAP8, "d,s",     MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
-{"pv.abs.b",            0, INSN_CLASS_XGAP8, "d,s",     MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
-
-{"pv.extract.h",        0, INSN_CLASS_XGAP8, "d,s,bf",  MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.extract.b",        0, INSN_CLASS_XGAP8, "d,s,bF",  MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.extractu.h",       0, INSN_CLASS_XGAP8, "d,s,bf",  MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.extractu.b",       0, INSN_CLASS_XGAP8, "d,s,bF",  MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.insert.h",         0, INSN_CLASS_XGAP8, "d,s,bf",  MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.insert.b",         0, INSN_CLASS_XGAP8, "d,s,bF",  MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotsp.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.dotsp.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotup.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
-{"pv.dotup.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotusp.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.dotusp.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotsp.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotsp.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotup.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotup.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotusp.h",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.h",     0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.h",    0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotusp.b",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.b",     0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.b",    0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle.h",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle.sci.h",    0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shuffle.b",        0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shufflei0.sci.b",  0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei1.sci.b",  0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei2.sci.b",  0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei3.sci.b",  0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle2.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle2.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-
-{"pv.pack.h",           0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.packhi.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.packlo.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-
-{"pv.cmpeq.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpeq.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpne.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpne.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgt.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgt.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpge.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpge.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmplt.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmplt.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmple.h",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.h",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.h",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmple.b",          0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.b",       0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.b",      0, INSN_CLASS_XGAP8, "d,s,bs",  MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgtu.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgtu.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgeu.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgeu.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpltu.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpltu.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpleu.h",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.h",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.h",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpleu.b",         0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.b",      0, INSN_CLASS_XGAP8, "d,s,t",   MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.b",     0, INSN_CLASS_XGAP8, "d,s,bu",  MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-{"p.beqimm",            0, INSN_CLASS_XGAP8,  "s,bI,p",         MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,   0},
-{"p.bneimm",            0, INSN_CLASS_XGAP8,  "s,bI,p",         MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,   0},
-
-/* Load from event unit */
-
-{"p.elw",               0, INSN_CLASS_XGAP8,  "d,o(s)", MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
-
-/* Vector, Gap8 only */
-
-{"pv.pack.h.h",         0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_PACK|MATCH_V_OP_H_VI,        MASK_V_OP,      match_opcode,   0},
-{"pv.pack.l.h",         0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_PACK|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.cplxmul.s",        0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.cplxmul.sc.s",     0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.cplxmul.sci.s",    0, INSN_CLASS_XGAP8,   "d,s,bs",        MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.cplxmul.s.div2",   0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV_PS1, MASK_V_OP,      match_opcode,   0},
-{"pv.cplxmul.s.div4",   0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV_PS2, MASK_V_OP,      match_opcode,   0},
-
-{"pv.subrotmj.h",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.subrotmj.h.div2",  0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_PS1,MASK_V_OP,      match_opcode,   0},
-{"pv.subrotmj.h.div4",  0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_PS2,MASK_V_OP,      match_opcode,   0},
-
-{"pv.add.b.div2",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div2",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.add.b.div4",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div4",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-
-{"pv.sub.b.div2",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div2",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.sub.b.div4",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div4",       0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-
-{"pv.vitop.max",        0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.vitop.sel",        0, INSN_CLASS_XGAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-
-{"pv.cplxconj.h",       0, INSN_CLASS_XGAP8,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
-
-/* __GAP8 Stop */
-
-/* Pulp v3 */
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V3, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V3, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_V3, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V3, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V3, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_V3, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V3, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V3, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_V3, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V3, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V3, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_V3, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V3, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V3, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_V3, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XPULP_V3, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V3, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V3, "t,d(s)",       MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_V3, "t,d(s!)",      MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XPULP_V3, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V3, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V3, "t,d(s)",       MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_V3, "t,d(s!)",      MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XPULP_V3, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V3, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V3, "t,d(s)",       MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_V3, "t,d(s!)",      MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.abs",               0, INSN_CLASS_XPULP_V3, "d,s",  MATCH_AVG,                              MASK_PALUS,     match_opcode,   0},
-// {"p.avgu",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-
-/* clip and bit manipulation */
-
-{"p.clip",              0, INSN_CLASS_XPULP_V3, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipi",             0, INSN_CLASS_XPULP_V3, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipr",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
-{"p.clipu",             0, INSN_CLASS_XPULP_V3, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipui",            0, INSN_CLASS_XPULP_V3, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipur",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
-
-{"p.extract",           0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extracti",          0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extractr",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
-{"p.extractu",          0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractui",         0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractur",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
-{"p.insert",            0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.inserti",           0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.insertr",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
-{"p.bset",              0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bseti",             0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bsetr",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
-{"p.bclr",              0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclri",             0, INSN_CLASS_XPULP_V3, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclrr",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XPULP_V3, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XPULP_V3, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XPULP_V3, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XPULP_V3, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XPULP_V3, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XPULP_V3, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XPULP_V3,   "d,s,t",      MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XPULP_V3,   "d,s,t",      MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XPULP_V3,   "d,s,t",      MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XPULP_V3,   "d,s,t",      MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* 32x32 into 32 Mac/Msu */
-
-{"p.mac",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,   0},
-{"p.msu",               0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,   0},
-
-/*  16x16 into 32 Mult/Mac with optional norm and rounding */
-
-{"p.muls",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhs",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.mulu",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhu",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.macs",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.mulsn",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsn",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulsrn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsrn",          0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.mulun",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhun",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulurn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhurn",          0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macsn",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsn",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macsrn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsrn",          0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macun",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhun",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macurn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhurn",          0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-/*  Add/Sub with norm and rounding */
-
-{"p.addn",              0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addni",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addnr",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_ADDNR,                            MASK_PALU,      match_opcode,   0},
-{"p.addun",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.adduni",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addunr",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_ADDUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addrn",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrni",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrnr",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_ADDRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addurn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurni",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurnr",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_ADDURNR,                          MASK_PALU,      match_opcode,   0},
-
-{"p.subn",              0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subni",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subnr",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SUBNR,                            MASK_PALU,      match_opcode,   0},
-{"p.subun",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subuni",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subunr",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SUBUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.subrn",             0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrni",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrnr",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SUBRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.suburn",            0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburni",           0, INSN_CLASS_XPULP_V3, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburnr",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_SUBURNR,                          MASK_PALU,      match_opcode,   0},
-
-/* Vector Operations */
-
-{"pv.add.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.add.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sub.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sub.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avg.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.avg.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avgu.h",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.h",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.h",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.avgu.b",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.b",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.b",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.min.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.min.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.minu.h",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.h",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.h",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.minu.b",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.b",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.b",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.max.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.max.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.maxu.h",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.h",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.h",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.maxu.b",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.b",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.b",       0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.srl.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.srl.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sra.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sra.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sll.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sll.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.or.h",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.h",         0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
-{"pv.or.b",             0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.b",         0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
-
-{"pv.xor.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.xor.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.and.h",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.h",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.and.b",            0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.b",        0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.abs.h",            0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
-{"pv.abs.b",            0, INSN_CLASS_XPULP_V3, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
-
-{"pv.extract.h",        0, INSN_CLASS_XPULP_V3, "d,s,bf",       MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.extract.b",        0, INSN_CLASS_XPULP_V3, "d,s,bF",       MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.extractu.h",       0, INSN_CLASS_XPULP_V3, "d,s,bf",       MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.extractu.b",       0, INSN_CLASS_XPULP_V3, "d,s,bF",       MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.insert.h",         0, INSN_CLASS_XPULP_V3, "d,s,bf",       MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.insert.b",         0, INSN_CLASS_XPULP_V3, "d,s,bF",       MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotsp.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.dotsp.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotup.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
-{"pv.dotup.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotusp.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.dotusp.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotsp.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotsp.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotup.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotup.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotusp.h",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.h",     0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.h",    0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotusp.b",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.b",     0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.b",    0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle.h",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shuffle.b",        0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shufflei0.sci.b",  0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei1.sci.b",  0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei2.sci.b",  0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei3.sci.b",  0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle2.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle2.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-
-{"pv.pack.h",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.packhi.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.packlo.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-
-{"pv.cmpeq.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpeq.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpne.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpne.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgt.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgt.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpge.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpge.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmplt.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmplt.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmple.h",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.h",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.h",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmple.b",          0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.b",       0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.b",      0, INSN_CLASS_XPULP_V3, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgtu.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgtu.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgeu.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgeu.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpltu.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpltu.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpleu.h",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.h",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.h",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpleu.b",         0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_V3, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
 /*
-{"pv.ball",             0, INSN_CLASS_XPULP_V3,  "s,p",         MATCH_BEQM1,                    MASK_BEQM1|MASK_RS2,    match_opcode,   },
-{"pv.bnall",            0, INSN_CLASS_XPULP_V3,  "s,p",         MATCH_BNEM1,                    MASK_BNEM1|MASK_RS2,    match_opcode,   },
+  | extensions/arch       | pulpv0 | pulpv1 | pulpv2 | pulpv3 | gap8 | pulpnn | gap9 | corev |
+  |-----------------------+--------+--------+--------+--------+------+--------+------+-------|
+  | PULP_POSTMOD          | x (c)  | x (C)  | x      | x      | x    | x      | x    | x     |
+  | PULP_INDREGREG        | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_ABS              | x (c)  | x (c)  | x      | x      | x    | x      | x    | x     |
+  | PULP_SLET             | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_MINMAX           | x (c)  | x (c)  | x      | x      | x    | x      | x    | x     |
+  | PULP_BITOP_SMALL      | x      | x      |        |        |      |        |      |       |
+  | PULP_BITOP            |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_CLIP             |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_HWLOOP           | x (d)  | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_MAC_ALT          | x      | x      |        |        |      |        |      |       |
+  | PULP_MAC_SI           |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_MACRN_HI         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_MULRN_HI         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_PARTMAC          |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_ADDSUBRN         |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT             |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT_SHUFFLEPACK |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT_GAP8        |        |        |        |        | x    |        |      |       |
+  | PULP_VECT_GAP9        |        |        |        |        |      |        | x    |       |
+  | PULP_BR               |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_ELW              | x      | x      | x      | x      | x    | x      | x    | x     |
+  | PULP_NN               |        |        |        |        |      | x      |      |       |
+  | PULP_BITREV           |        |        |        |        |      |        | x    |       |
+  | PULP_FINX_GAP9        |        |        |        |        |      |        | x    |       |
+  | PULP_HALFFLOAT_GAP9   |        |        |        |        |      |        | x    |       |
+
+  c = compatibility mode
+  d = disabled in compiler due to bugs
 */
-{"p.beqimm",            0, INSN_CLASS_XPULP_V3,  "s,bI,p",      MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,    0},
-{"p.bneimm",            0, INSN_CLASS_XPULP_V3,  "s,bI,p",      MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,    0},
 
-/* Load from event unit */
+/* for PULP_SLIM just use m-extension plus elw extension */
+/* PULP postmod compatibility for pulpv0 and pulpv1 */
+/* post-increment and register-register loads */
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
 
-{"p.elw",               0, INSN_CLASS_XPULP_V3, "d,o(s)",       MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
 
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
 
-/* Xpulpnn extensions */
-/***********************************************************************************************************************/
-/**************************************             Xpulpnn           ***************************************************/
-/***********************************************************************************************************************/
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
 
-{"p.lb",                0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_NN, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_NN, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XPULP_NN, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_NN, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_NN, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XPULP_NN, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_NN, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_NN, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XPULP_NN, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_NN, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_NN, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XPULP_NN, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_NN, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_NN, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XPULP_NN, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
 
 /* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XPULP_NN, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_NN, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_NN, "t,d(s)",       MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XPULP_NN, "t,d(s!)",      MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XPULP_NN, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_NN, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_NN, "t,d(s)",       MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XPULP_NN, "t,d(s!)",      MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XPULP_NN, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_NN, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_NN, "t,d(s)",       MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XPULP_NN, "t,d(s!)",      MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.abs",               0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_AVG,                              MASK_PALUS,     match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-
-/* clip and bit manipulation */
-
-
-{"p.clip",              0, INSN_CLASS_XPULP_NN, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipi",             0, INSN_CLASS_XPULP_NN, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipr",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
-{"p.clipu",             0, INSN_CLASS_XPULP_NN, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipui",            0, INSN_CLASS_XPULP_NN, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipur",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
-
-{"p.extract",           0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extracti",          0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extractr",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
-{"p.extractu",          0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractui",         0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractur",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
-{"p.insert",            0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.inserti",           0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.insertr",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
-{"p.bset",              0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bseti",             0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bsetr",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
-{"p.bclr",              0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclri",             0, INSN_CLASS_XPULP_NN, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclrr",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XPULP_NN, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,          0},
-{"lp.endi",             0, INSN_CLASS_XPULP_NN, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,          0},
-{"lp.count",            0, INSN_CLASS_XPULP_NN, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,          0},
-{"lp.counti",           0, INSN_CLASS_XPULP_NN, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,          0},
-{"lp.setup",            0, INSN_CLASS_XPULP_NN, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,          0},
-{"lp.setupi",           0, INSN_CLASS_XPULP_NN, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,          0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,           0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XPULP_NN,   "d,s,t",      MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XPULP_NN,   "d,s,t",      MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XPULP_NN,   "d,s,t",      MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XPULP_NN,   "d,s,t",      MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* 32x32 into 32 Mac/Msu */
-
-{"p.mac",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,           0},
-{"p.msu",               0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,           0},
-
-/*  16x16 into 32 Mult/Mac with optional norm and rounding */
-
-{"p.muls",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,           0},
-{"p.mulhhs",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,           0},
-{"p.mulu",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,           0},
-{"p.mulhhu",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,           0},
-
-{"p.macs",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MACS,                             MASK_MACMUL,    match_opcode,           0},
-{"p.machhs",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,           0},
-{"p.macu",              0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MACU,                             MASK_MACMUL,    match_opcode,           0},
-{"p.machhu",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,           0},
-
-{"p.mulsn",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.mulhhsn",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,           0},
-{"p.mulsrn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.mulhhsrn",          0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,           0},
-
-{"p.mulun",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.mulhhun",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,           0},
-{"p.mulurn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.mulhhurn",          0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,           0},
-
-{"p.macsn",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.machhsn",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,           0},
-{"p.macsrn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.machhsrn",          0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,           0},
-
-{"p.macun",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.machhun",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,           0},
-{"p.macurn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.machhurn",          0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,           0},
-
-/*  Add/Sub with norm and rounding */
-
-{"p.addn",              0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,           0},
-{"p.addni",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,           0},
-{"p.addnr",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_ADDNR,                            MASK_PALU,      match_opcode,           0},
-{"p.addun",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.adduni",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.addunr",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_ADDUNR,                           MASK_PALU,      match_opcode,           0},
-{"p.addrn",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.addrni",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.addrnr",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_ADDRNR,                           MASK_PALU,      match_opcode,           0},
-{"p.addurn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.addurni",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.addurnr",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_ADDURNR,                          MASK_PALU,      match_opcode,           0},
-
-{"p.subn",              0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,           0},
-{"p.subni",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,           0},
-{"p.subnr",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SUBNR,                            MASK_PALU,      match_opcode,           0},
-{"p.subun",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.subuni",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.subunr",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SUBUNR,                           MASK_PALU,      match_opcode,           0},
-{"p.subrn",             0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.subrni",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,           0},
-{"p.subrnr",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SUBRNR,                           MASK_PALU,      match_opcode,           0},
-{"p.suburn",            0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.suburni",           0, INSN_CLASS_XPULP_NN, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,           0},
-{"p.suburnr",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_SUBURNR,                          MASK_PALU,      match_opcode,           0},
-
-/* Vector Operations */
-
-{"pv.add.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.add.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sub.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sub.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avg.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.avg.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avgu.h",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.h",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.h",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.avgu.b",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.b",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.b",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.min.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.min.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.minu.h",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.h",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.h",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.minu.b",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.b",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.b",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.max.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.max.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.maxu.h",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.h",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.h",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.maxu.b",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.b",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.b",       0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.srl.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.srl.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sra.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sra.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sll.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sll.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.or.h",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.h",         0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
-{"pv.or.b",             0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.b",         0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
-
-{"pv.xor.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.xor.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.and.h",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.h",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.and.b",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.b",        0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.abs.h",            0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
-{"pv.abs.b",            0, INSN_CLASS_XPULP_NN, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
-
-{"pv.extract.h",        0, INSN_CLASS_XPULP_NN, "d,s,bf",       MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.extract.b",        0, INSN_CLASS_XPULP_NN, "d,s,bF",       MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.extractu.h",       0, INSN_CLASS_XPULP_NN, "d,s,bf",       MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.extractu.b",       0, INSN_CLASS_XPULP_NN, "d,s,bF",       MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.insert.h",         0, INSN_CLASS_XPULP_NN, "d,s,bf",       MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.insert.b",         0, INSN_CLASS_XPULP_NN, "d,s,bF",       MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotsp.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.dotsp.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotup.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
-{"pv.dotup.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotusp.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.dotusp.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotsp.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotsp.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotup.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotup.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotusp.h",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.h",     0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.h",    0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotusp.b",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.b",     0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.b",    0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle.h",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shuffle.b",        0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shufflei0.sci.b",  0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei1.sci.b",  0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei2.sci.b",  0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei3.sci.b",  0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle2.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle2.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-
-{"pv.pack.h",           0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.packhi.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.packlo.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-
-{"pv.cmpeq.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpeq.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpne.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpne.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgt.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgt.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpge.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpge.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmplt.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmplt.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmple.h",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.h",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.h",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmple.b",          0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.b",       0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.b",      0, INSN_CLASS_XPULP_NN, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgtu.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgtu.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgeu.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgeu.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpltu.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpltu.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpleu.h",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.h",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.h",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpleu.b",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_NN, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-{"p.beqimm",            0, INSN_CLASS_XPULP_NN,  "s,bI,p",      MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,   0},
-{"p.bneimm",            0, INSN_CLASS_XPULP_NN,  "s,bI,p",      MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,   0},
-
-/* Load from event unit */
-
-{"p.elw",               0, INSN_CLASS_XPULP_NN, "d,o(s)",       MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
-/* Vector instructions */
-
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s)",       MATCH_SBRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s!)",      MATCH_SBRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s)",       MATCH_SHRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s!)",      MATCH_SHRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s)",       MATCH_SWRR,                             MASK_SRR,       match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD_COMPAT, "t,y(s!)",      MATCH_SWRRPOST,                         MASK_SRRPOST,   match_opcode,   0},
+
+/* PULP minmax compatibility for pulpv0 and pulpv1 */
+{"p.avg",               0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_AVG,                              MASK_PALU,      match_opcode,   0},
+{"p.avgu",              0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
+{"p.min",               0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
+{"p.minu",              0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
+{"p.max",               0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
+{"p.maxu",              0, INSN_CLASS_XPULP_MINMAX_COMPAT, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
+
+/* PULP mac alt for pulpv0 and pulpv1. Some guesswork was involved which needs to be verified */
+/* 32x32 into 32 MAC operation */
+{"p.mac",               0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MAC,                              MASK_MAC,       match_opcode,   0},
+
+/* 16x16 into 32 MAC operations */
+{"p.mac.zl.zl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.macu",              0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.zh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZLZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.zl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.machlu",            0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.zh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
+{"p.machhu",            0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHZH,                          MASK_MAC,       match_opcode,   0},
+
+{"p.mac.zl.sl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zl.sh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZLSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.sl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.zh.sh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACZHSH,                          MASK_MAC,       match_opcode,   0},
+
+{"p.mac.sl.zl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSLZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.zh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSLZH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.zl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.machlsu",           0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHZL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.zh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHZH,                          MASK_MAC,       match_opcode,   0},
+
+{"p.mac.sl.sl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.macs",              0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSLSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sl.sh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSLSH,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.sl",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.machls",            0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHSL,                          MASK_MAC,       match_opcode,   0},
+{"p.mac.sh.sh",         0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
+{"p.machhs",            0, INSN_CLASS_XPULP_MAC_ALT, "d,s,t,y",      MATCH_MACSHSH,                          MASK_MAC,       match_opcode,   0},
+
+/* PULP abs compatibility for pulpv0 and pulpv1 */
+{"p.abs",               0, INSN_CLASS_XPULP_ABS_COMPAT, "d,s",          MATCH_ABS,                              MASK_PALUS,     match_opcode,   0},
+
+/* PULP postmod */
+/* post-increment and register-register loads */
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s)",       MATCH_LB,                               MASK_LB,        match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s!)",      MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s)",       MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lb",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s!)",      MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
+
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD, "d,o(s)",       MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD, "d,o(s!)",      MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD, "d,t(s)",       MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
+{"p.lbu",               0, INSN_CLASS_XPULP_POSTMOD, "d,t(s!)",      MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
+
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s)",       MATCH_LH,                               MASK_LH,        match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s!)",      MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s)",       MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lh",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s!)",      MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
+
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD, "d,o(s)",       MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD, "d,o(s!)",      MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD, "d,t(s)",       MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
+{"p.lhu",               0, INSN_CLASS_XPULP_POSTMOD, "d,t(s!)",      MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
+
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s)",       MATCH_LW,                               MASK_LW,        match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD, "d,o(s!)",      MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s)",       MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
+{"p.lw",                0, INSN_CLASS_XPULP_POSTMOD, "d,t(s!)",      MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
+
+/* post-increment and reg-reg stores */
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s)",       MATCH_SB,                               MASK_SB,        match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s!)",      MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s)",       MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
+{"p.sb",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s!)",      MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
+
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s)",       MATCH_SH,                               MASK_SH,        match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s!)",      MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s)",       MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
+{"p.sh",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s!)",      MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
+
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s)",       MATCH_SW,                               MASK_SW,        match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD, "t,q(s!)",      MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s)",       MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
+{"p.sw",                0, INSN_CLASS_XPULP_POSTMOD, "t,d(s!)",      MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
+
+/* PULP abs */
+{"p.abs",               0, INSN_CLASS_XPULP_ABS, "d,s",          MATCH_AVG,/* remapped (!)*/                 MASK_PALUS,     match_opcode,   0},
+
+/* PULP slet */
+{"p.slet",              0, INSN_CLASS_XPULP_SLET, "d,s,t",        MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
+{"p.sletu",             0, INSN_CLASS_XPULP_SLET, "d,s,t",        MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
+
+/* PULP min/max */
+{"p.min",               0, INSN_CLASS_XPULP_MINMAX, "d,s,t",        MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
+{"p.minu",              0, INSN_CLASS_XPULP_MINMAX, "d,s,t",        MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
+{"p.max",               0, INSN_CLASS_XPULP_MINMAX, "d,s,t",        MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
+{"p.maxu",              0, INSN_CLASS_XPULP_MINMAX, "d,s,t",        MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
+
+/* PULP bitop small */
+/* bit fiddling */
+{"p.ff1",               0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
+{"p.fl1",               0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
+{"p.clb",               0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
+{"p.cnt",               0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
+{"p.ror",               0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
+/* sign extensions */
+{"p.exths",             0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
+{"p.exthz",             0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
+{"p.extbs",             0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
+{"p.extbz",             0, INSN_CLASS_XPULP_BITOP_SMALL, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
+
+/* PULP bitop */
+/* bit fiddling */
+{"p.ff1",               0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
+{"p.fl1",               0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
+{"p.clb",               0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
+{"p.cnt",               0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
+{"p.ror",               0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
+/* sign extensions */
+{"p.exths",             0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
+{"p.exthz",             0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
+{"p.extbs",             0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
+{"p.extbz",             0, INSN_CLASS_XPULP_BITOP, "d,s",          MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
+/* set/clear etc. */
+{"p.extract",           0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
+{"p.extracti",          0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
+{"p.extractr",          0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
+{"p.extractu",          0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
+{"p.extractui",         0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
+{"p.extractur",         0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
+{"p.insert",            0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
+{"p.inserti",           0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
+{"p.insertr",           0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
+{"p.bset",              0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
+{"p.bseti",             0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
+{"p.bsetr",             0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
+{"p.bclr",              0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
+{"p.bclri",             0, INSN_CLASS_XPULP_BITOP, "d,s,b5,bi",    MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
+{"p.bclrr",             0, INSN_CLASS_XPULP_BITOP, "d,s,t",        MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
+
+/* PULP clip */
+{"p.clip",              0, INSN_CLASS_XPULP_CLIP, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
+{"p.clipi",             0, INSN_CLASS_XPULP_CLIP, "d,s,bi",       MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
+{"p.clipr",             0, INSN_CLASS_XPULP_CLIP, "d,s,t",        MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
+{"p.clipu",             0, INSN_CLASS_XPULP_CLIP, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
+{"p.clipui",            0, INSN_CLASS_XPULP_CLIP, "d,s,bi",       MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
+{"p.clipur",            0, INSN_CLASS_XPULP_CLIP, "d,s,t",        MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
+
+/* PULP hwloop */
+{"lp.starti",           0, INSN_CLASS_XPULP_HWLOOP, "di,b1",        MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
+{"lp.endi",             0, INSN_CLASS_XPULP_HWLOOP, "di,b1",        MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
+{"lp.count",            0, INSN_CLASS_XPULP_HWLOOP, "di,s",         MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
+{"lp.counti",           0, INSN_CLASS_XPULP_HWLOOP, "di,ji",        MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
+{"lp.setup",            0, INSN_CLASS_XPULP_HWLOOP, "di,s,b1",      MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
+{"lp.setupi",           0, INSN_CLASS_XPULP_HWLOOP, "di,ji,b2",     MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
+
+
+/* PULP addsubrn */
+/* add/sub with norm and rounding */
+{"p.addn",              0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
+{"p.addni",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
+{"p.addnr",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_ADDNR,                            MASK_PALU,      match_opcode,   0},
+{"p.addun",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.adduni",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.addunr",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_ADDUNR,                           MASK_PALU,      match_opcode,   0},
+{"p.addrn",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.addrni",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.addrnr",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_ADDRNR,                           MASK_PALU,      match_opcode,   0},
+{"p.addurn",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.addurni",           0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.addurnr",           0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_ADDURNR,                          MASK_PALU,      match_opcode,   0},
+
+{"p.subn",              0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
+{"p.subni",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
+{"p.subnr",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_SUBNR,                            MASK_PALU,      match_opcode,   0},
+{"p.subun",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.subuni",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.subunr",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_SUBUNR,                           MASK_PALU,      match_opcode,   0},
+{"p.subrn",             0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.subrni",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.subrnr",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_SUBRNR,                           MASK_PALU,      match_opcode,   0},
+{"p.suburn",            0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.suburni",           0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t,b5",     MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.suburnr",           0, INSN_CLASS_XPULP_ADDSUBRN, "d,s,t",        MATCH_SUBURNR,                          MASK_PALU,      match_opcode,   0},
+
+/* PULP mac */
+
+/* partmac 6x16 into 32 */
+{"p.macs",              0, INSN_CLASS_XPULP_PARTMAC, "d,s,t",        MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
+{"p.machhs",            0, INSN_CLASS_XPULP_PARTMAC, "d,s,t",        MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
+{"p.macu",              0, INSN_CLASS_XPULP_PARTMAC, "d,s,t",        MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
+{"p.machhu",            0, INSN_CLASS_XPULP_PARTMAC, "d,s,t",        MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
+
+/* Mac/Msu 32x32 into 32 */
+{"p.mac",               0, INSN_CLASS_XPULP_MAC_SI, "d,s,t",        MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,   0},
+{"p.msu",               0, INSN_CLASS_XPULP_MAC_SI, "d,s,t",        MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,   0},
+
+/* Mac with norm/round 16x16 into 32 */
+{"p.macsn",             0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.machhsn",           0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,   0},
+{"p.macsrn",            0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.machhsrn",          0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
+
+{"p.macun",             0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.machhun",           0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,   0},
+{"p.macurn",            0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.machhurn",          0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
+
+/* Mul with norm/round 16x16 into 32 */
+/* these need to get before the one with the postfix 'n' */
+{"p.muls",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
+{"p.mulhhs",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
+{"p.mulu",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
+{"p.mulhhu",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
+
+{"p.mulsn",             0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.mulhhsn",           0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
+{"p.mulsrn",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.mulhhsrn",          0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
+
+{"p.mulun",             0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,   0},
+{"p.mulhhun",           0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,   0},
+{"p.mulurn",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
+{"p.mulhhurn",          0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
+
+
+/* just use standard RISC-V mul extension */
+// /* 32x32 into 32 multiplication */
+// {"p.mul",               0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
+// /* 32x32 into 64 support */
+// {"p.mulh",              0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
+// {"p.mulhu",             0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
+// {"p.mulhsu",            0, INSN_CLASS_XPULP_V2, "d,s,t",        MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
+// /* 32 bit div and rem */
+// {"p.div",               0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
+// {"p.divu",              0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
+// {"p.rem",               0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_REM,                              MASK_REM,       match_opcode,  0},
+// {"p.remu",              0, INSN_CLASS_XPULP_V2,   "d,s,t",      MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
+
+
+/* PULP vect */
+/* Vector/SIMD Operations */
+{"pv.add.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.add.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.add.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.add.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.add.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.add.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sub.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sub.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sub.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.sub.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sub.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sub.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.avg.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.avg.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.avg.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.avg.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.avg.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.avg.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.avgu.h",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.avgu.sc.h",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.avgu.sci.h",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
+{"pv.avgu.b",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.avgu.sc.b",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.avgu.sci.b",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
+
+{"pv.min.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.min.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.min.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.min.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.min.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.min.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.minu.h",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.minu.sc.h",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.minu.sci.h",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
+{"pv.minu.b",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.minu.sc.b",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.minu.sci.b",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
+
+{"pv.max.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.max.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.max.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.max.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.max.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.max.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.maxu.h",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.maxu.sc.h",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.maxu.sci.h",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
+{"pv.maxu.b",           0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.maxu.sc.b",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
+{"pv.maxu.sci.b",       0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
+
+{"pv.srl.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.srl.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.srl.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.srl.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.srl.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.srl.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sra.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sra.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sra.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.sra.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sra.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sra.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sll.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sll.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sll.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.sll.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.sll.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.sll.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bU",       MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.or.h",             0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
+{"pv.or.sc.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
+{"pv.or.sci.h",         0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
+{"pv.or.b",             0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
+{"pv.or.sc.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
+{"pv.or.sci.b",         0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
+
+{"pv.xor.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.xor.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.xor.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.xor.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.xor.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.xor.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.and.h",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.and.sc.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.and.sci.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
+{"pv.and.b",            0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
+{"pv.and.sc.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
+{"pv.and.sci.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
+
+{"pv.abs.h",            0, INSN_CLASS_XPULP_VECT, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
+{"pv.abs.b",            0, INSN_CLASS_XPULP_VECT, "d,s",          MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
+
+{"pv.extract.h",        0, INSN_CLASS_XPULP_VECT, "d,s,bf",       MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
+{"pv.extract.b",        0, INSN_CLASS_XPULP_VECT, "d,s,bF",       MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
+
+{"pv.extractu.h",       0, INSN_CLASS_XPULP_VECT, "d,s,bf",       MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.extractu.b",       0, INSN_CLASS_XPULP_VECT, "d,s,bF",       MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.insert.h",         0, INSN_CLASS_XPULP_VECT, "d,s,bf",       MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.insert.b",         0, INSN_CLASS_XPULP_VECT, "d,s,bF",       MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.dotsp.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.dotsp.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.dotsp.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.dotsp.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.dotsp.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.dotsp.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.dotup.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
+{"pv.dotup.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
+{"pv.dotup.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
+{"pv.dotup.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
+{"pv.dotup.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
+{"pv.dotup.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
+
+{"pv.dotusp.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.dotusp.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.dotusp.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.dotusp.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.dotusp.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.dotusp.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sdotsp.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
+{"pv.sdotsp.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
+{"pv.sdotsp.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
+{"pv.sdotsp.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
+{"pv.sdotsp.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
+{"pv.sdotsp.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sdotup.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotup.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotup.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.sdotup.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotup.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotup.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.sdotusp.h",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotusp.sc.h",     0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotusp.sci.h",    0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.sdotusp.b",        0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotusp.sc.b",     0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.sdotusp.sci.b",    0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+/* vector/SIMD compares */
+{"pv.cmpeq.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpeq.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpeq.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpeq.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpeq.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpeq.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpne.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpne.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpne.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpne.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpne.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpne.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpgt.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgt.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgt.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpgt.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgt.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgt.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpge.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpge.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpge.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpge.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpge.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmpge.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmplt.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmplt.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmplt.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmplt.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmplt.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmplt.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmple.h",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmple.sc.h",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmple.sci.h",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
+{"pv.cmple.b",          0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmple.sc.b",       0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
+{"pv.cmple.sci.b",      0, INSN_CLASS_XPULP_VECT, "d,s,bs",       MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpgtu.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpgtu.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpgeu.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpgeu.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpltu.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpltu.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpltu.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpltu.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpltu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpltu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+{"pv.cmpleu.h",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpleu.sc.h",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpleu.sci.h",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
+{"pv.cmpleu.b",         0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
+{"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
+
+/* shuffle pack */
+{"pv.shuffle.h",        0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
+{"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
+{"pv.shuffle.b",        0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
+{"pv.shufflei0.sci.b",  0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
+{"pv.shufflei1.sci.b",  0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
+{"pv.shufflei2.sci.b",  0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
+{"pv.shufflei3.sci.b",  0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
+
+{"pv.shuffle2.h",       0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
+{"pv.shuffle2.b",       0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
+
+{"pv.pack.h",           0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+
+{"pv.packhi.b",         0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+{"pv.packlo.b",         0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
+
+/* PULP branch */
+{"p.beqimm",            0, INSN_CLASS_XPULP_BR,  "s,bI,p",      MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,   0},
+{"p.bneimm",            0, INSN_CLASS_XPULP_BR,  "s,bI,p",      MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,   0},
+
+
+/* PULP elw */
+/* clust synchronization instruction */
+{"p.elw",               0, INSN_CLASS_XPULP_ELW, "d,o(s)",       MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
+
+/* PULP bitrev */
+{"p.bitrev",            0, INSN_CLASS_XPULP_BITREV,   "d,s,bi,b5",     MATCH_BITREV,                           MASK_BITREV,    match_opcode,   0},
+
+/* PULP vectgap8 */
+/* Vector, Gap8 only */
+{"pv.pack.h.h",         0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_PACK|MATCH_V_OP_H_VI,        MASK_V_OP,      match_opcode,   0},
+{"pv.pack.l.h",         0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_PACK|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
+
+{"pv.cplxmul.s",        0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
+{"pv.cplxmul.sc.s",     0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
+{"pv.cplxmul.sci.s",    0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,bs",        MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
+{"pv.cplxmul.s.div2",   0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV_PS1, MASK_V_OP,      match_opcode,   0},
+{"pv.cplxmul.s.div4",   0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_CPLXMUL|MATCH_V_OP_H_VV_PS2, MASK_V_OP,      match_opcode,   0},
+
+{"pv.subrotmj.h",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div2",  0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_PS1,MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div4",  0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_PS2,MASK_V_OP,      match_opcode,   0},
+
+{"pv.add.b.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
+{"pv.add.b.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
+
+{"pv.sub.b.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
+{"pv.sub.b.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
+
+{"pv.vitop.max",        0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.vitop.sel",        0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+
+{"pv.cplxconj.h",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
+
+/* PULP NN */
 /* Xpulpnn vectorial add: nibble, crumb */
 {"pv.add.n",            0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_N_VV,         MASK_V_OP,      match_opcode,   0},
 {"pv.add.sc.n",         0, INSN_CLASS_XPULP_NN, "d,s,t",        MATCH_V_OP_ADD|MATCH_V_OP_N_VR,         MASK_V_OP,      match_opcode,   0},
@@ -2906,9 +1516,6 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.packlo.b",                 "Xpulpv3", "d,s,t",     MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0}, */
 
 /* Xpulpnn extensions v2 */
-/***********************************************************************************************************************/
-/**************************************             Xpulpnn           ***************************************************/
-
 {"pv.mlsdotup.h.0",   0, INSN_CLASS_XPULP_NN, "d,s,t", MATCH_V_OP_DOTUSP|MATCH_V_OP_ML_H_VV,   MASK_V_OP,  match_opcode,   0},
 {"pv.mlsdotup.h.1",   0, INSN_CLASS_XPULP_NN, "d,s,t", MATCH_V_OP_DOTUSP_1|MATCH_V_OP_ML_H_VV, MASK_V_OP,  match_opcode,   0},
 {"pv.mlsdotup.h.2",   0, INSN_CLASS_XPULP_NN, "d,s,t", MATCH_V_OP_DOTUSP_2|MATCH_V_OP_ML_H_VV, MASK_V_OP,  match_opcode, 0},
@@ -2977,491 +1584,578 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.mlsdotsp.c.2",   0, INSN_CLASS_XPULP_NN, "d,s,t", MATCH_V_OP_SDOTUSP_2|MATCH_V_OP_ML_C_VV,  MASK_V_OP,  match_opcode, 0},
 {"pv.mlsdotsp.c.3",   0, INSN_CLASS_XPULP_NN, "d,s,t", MATCH_V_OP_SDOTUSP_3|MATCH_V_OP_ML_C_VV,  MASK_V_OP,  match_opcode, 0},
 
-/***********************************************************************************************************************/
-/**************************************             Gap9             ***************************************************/
-/***********************************************************************************************************************/
-/* post-increment and register-register loads */
-
-{"p.lb",                0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LB,                               MASK_LB,        match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP9, "d,o(s!)",  MATCH_LBPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP9, "d,t(s)",   MATCH_LBRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lb",                0, INSN_CLASS_XGAP9, "d,t(s!)",  MATCH_LBRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lbu",               0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LBU,                              MASK_LBU,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP9, "d,o(s!)",  MATCH_LBUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP9, "d,t(s)",   MATCH_LBURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lbu",               0, INSN_CLASS_XGAP9, "d,t(s!)",  MATCH_LBURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lh",                0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LH,                               MASK_LH,        match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP9, "d,o(s!)",  MATCH_LHPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP9, "d,t(s)",   MATCH_LHRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lh",                0, INSN_CLASS_XGAP9, "d,t(s!)",  MATCH_LHRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lhu",               0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LHU,                              MASK_LHU,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP9, "d,o(s!)",  MATCH_LHUPOST,                          MASK_LPOST,     match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP9, "d,t(s)",   MATCH_LHURR,                            MASK_LRR,       match_opcode,   0},
-{"p.lhu",               0, INSN_CLASS_XGAP9, "d,t(s!)",  MATCH_LHURRPOST,                        MASK_LRRPOST,   match_opcode,   0},
-
-{"p.lw",                0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LW,                               MASK_LW,        match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP9, "d,o(s!)",  MATCH_LWPOST,                           MASK_LPOST,     match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP9, "d,t(s)",   MATCH_LWRR,                             MASK_LRR,       match_opcode,   0},
-{"p.lw",                0, INSN_CLASS_XGAP9, "d,t(s!)",  MATCH_LWRRPOST,                         MASK_LRRPOST,   match_opcode,   0},
-
-/* post-increment and reg-reg stores */
-
-{"p.sb",                0, INSN_CLASS_XGAP9, "t,q(s)",   MATCH_SB,                               MASK_SB,        match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP9, "t,q(s!)",  MATCH_SBPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP9, "t,d(s)",   MATCH_SBRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sb",                0, INSN_CLASS_XGAP9, "t,d(s!)",  MATCH_SBRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sh",                0, INSN_CLASS_XGAP9, "t,q(s)",   MATCH_SH,                               MASK_SH,        match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP9, "t,q(s!)",  MATCH_SHPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP9, "t,d(s)",   MATCH_SHRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sh",                0, INSN_CLASS_XGAP9, "t,d(s!)",  MATCH_SHRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-{"p.sw",                0, INSN_CLASS_XGAP9, "t,q(s)",   MATCH_SW,                               MASK_SW,        match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP9, "t,q(s!)",  MATCH_SWPOST,                           MASK_SPOST,     match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP9, "t,d(s)",   MATCH_SWRR,                             MASK_PALU,      match_opcode,   0},
-{"p.sw",                0, INSN_CLASS_XGAP9, "t,d(s!)",  MATCH_SWRRPOST,                         MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations */
-
-{"p.abs",               0, INSN_CLASS_XGAP9, "d,s",      MATCH_AVG,                              MASK_PALUS,     match_opcode,   0},
-// {"p.avgu",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
-{"p.slet",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SLET,                             MASK_PALU,      match_opcode,   0},
-{"p.sletu",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SLETU,                            MASK_PALU,      match_opcode,   0},
-{"p.min",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MIN,                              MASK_PALU,      match_opcode,   0},
-{"p.minu",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MINU,                             MASK_PALU,      match_opcode,   0},
-{"p.max",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MAX,                              MASK_PALU,      match_opcode,   0},
-{"p.maxu",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MAXU,                             MASK_PALU,      match_opcode,   0},
-{"p.ror",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_ROR,                              MASK_PALU,      match_opcode,   0},
-
-/* additional ALU operations with only a single source operand */
-
-{"p.ff1",               0, INSN_CLASS_XGAP9, "d,s",      MATCH_FF1,                              MASK_PALUS,     match_opcode,   0},
-{"p.fl1",               0, INSN_CLASS_XGAP9, "d,s",      MATCH_FL1,                              MASK_PALUS,     match_opcode,   0},
-{"p.clb",               0, INSN_CLASS_XGAP9, "d,s",      MATCH_CLB,                              MASK_PALUS,     match_opcode,   0},
-{"p.cnt",               0, INSN_CLASS_XGAP9, "d,s",      MATCH_CNT,                              MASK_PALUS,     match_opcode,   0},
-{"p.exths",             0, INSN_CLASS_XGAP9, "d,s",      MATCH_EXTHS,                            MASK_PALUS,     match_opcode,   0},
-{"p.exthz",             0, INSN_CLASS_XGAP9, "d,s",      MATCH_EXTHZ,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbs",             0, INSN_CLASS_XGAP9, "d,s",      MATCH_EXTBS,                            MASK_PALUS,     match_opcode,   0},
-{"p.extbz",             0, INSN_CLASS_XGAP9, "d,s",      MATCH_EXTBZ,                            MASK_PALUS,     match_opcode,   0},
-
-/* clip and bit manipulation */
-
-{"p.clip",              0, INSN_CLASS_XGAP9, "d,s,bi",   MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipi",             0, INSN_CLASS_XGAP9, "d,s,bi",   MATCH_CLIP,                             MASK_PALU1,     match_opcode,   0},
-{"p.clipr",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_CLIPR,                            MASK_PALU,      match_opcode,   0},
-{"p.clipu",             0, INSN_CLASS_XGAP9, "d,s,bi",   MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipui",            0, INSN_CLASS_XGAP9, "d,s,bi",   MATCH_CLIPU,                            MASK_PALU1,     match_opcode,   0},
-{"p.clipur",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_CLIPUR,                           MASK_PALU,      match_opcode,   0},
-
-{"p.extract",           0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extracti",          0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_EXTRACT,                          MASK_PALU2,     match_opcode,   0},
-{"p.extractr",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_EXTRACTR,                         MASK_PALU,      match_opcode,   0},
-{"p.extractu",          0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractui",         0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_EXTRACTU,                         MASK_PALU2,     match_opcode,   0},
-{"p.extractur",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_EXTRACTUR,                        MASK_PALU,      match_opcode,   0},
-{"p.insert",            0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.inserti",           0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_INSERT,                           MASK_PALU2,     match_opcode,   0},
-{"p.insertr",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_INSERTR,                          MASK_PALU,      match_opcode,   0},
-{"p.bset",              0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bseti",             0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_BSET,                             MASK_PALU2,     match_opcode,   0},
-{"p.bsetr",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_BSETR,                            MASK_PALU,      match_opcode,   0},
-{"p.bclr",              0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclri",             0, INSN_CLASS_XGAP9, "d,s,b5,bi",MATCH_BCLR,                             MASK_PALU2,     match_opcode,   0},
-{"p.bclrr",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_BCLRR,                            MASK_PALU,      match_opcode,   0},
-
-/* hardware loops */
-
-{"lp.starti",           0, INSN_CLASS_XGAP9, "di,b1",    MATCH_HWLP_STARTI,                      MASK_HWLP_STARTI,match_opcode,  0},
-{"lp.endi",             0, INSN_CLASS_XGAP9, "di,b1",    MATCH_HWLP_ENDI,                        MASK_HWLP_ENDI,  match_opcode,  0},
-{"lp.count",            0, INSN_CLASS_XGAP9, "di,s",     MATCH_HWLP_COUNT,                       MASK_HWLP_COUNT, match_opcode,  0},
-{"lp.counti",           0, INSN_CLASS_XGAP9, "di,ji",    MATCH_HWLP_COUNTI,                      MASK_HWLP_COUNTI,match_opcode,  0},
-{"lp.setup",            0, INSN_CLASS_XGAP9, "di,s,b1",  MATCH_HWLP_SETUP,                       MASK_HWLP_SETUP, match_opcode,  0},
-{"lp.setupi",           0, INSN_CLASS_XGAP9, "di,ji,b2", MATCH_HWLP_SETUPI,                      MASK_HWLP_SETUPI,match_opcode,  0},
-
-/* 32x32 into 32 multiplication */
-
-{"p.mul",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MUL,                              MASK_MUL,       match_opcode,   0},
-
-/* 32x32 into 64 support */
-
-{"p.mulh",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULH,                             MASK_MULH,      match_opcode,  0},
-{"p.mulhu",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULHU,                            MASK_MULHU,     match_opcode,  0},
-{"p.mulhsu",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULHSU,                           MASK_MULHSU,    match_opcode,  0},
-
-/* 32 bit div and rem */
-
-{"p.div",               0, INSN_CLASS_XGAP9,   "d,s,t",  MATCH_DIV,                              MASK_DIV,       match_opcode,  0},
-{"p.divu",              0, INSN_CLASS_XGAP9,   "d,s,t",  MATCH_DIVU,                             MASK_DIVU,      match_opcode,  0},
-{"p.rem",               0, INSN_CLASS_XGAP9,   "d,s,t",  MATCH_REM,                              MASK_REM,       match_opcode,  0},
-{"p.remu",              0, INSN_CLASS_XGAP9,   "d,s,t",  MATCH_REMU,                             MASK_REMU,      match_opcode,  0},
-
-/* 32x32 into 32 Mac/Msu */
-
-{"p.mac",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MAC32,                            MASK_MACMSU32,  match_opcode,   0},
-{"p.msu",               0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MSU32,                            MASK_MACMSU32,  match_opcode,   0},
-
-/*  16x16 into 32 Mult/Mac with optional norm and rounding */
-
-{"p.muls",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhs",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.mulu",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhu",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.macs",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MACS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhs",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MACHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.macu",              0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MACU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.machhu",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_MACHHU,                           MASK_MACMUL,    match_opcode,   0},
-
-{"p.mulsn",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsn",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulsrn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhsrn",          0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.mulun",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhun",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.mulurn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.mulhhurn",          0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macsn",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACSN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsn",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACHHSN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macsrn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACSRN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhsrn",          0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACHHSRN,                         MASK_MACMULNR,  match_opcode,   0},
-
-{"p.macun",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.machhun",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACHHUN,                          MASK_MACMULNR,  match_opcode,   0},
-{"p.macurn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.machhurn",          0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
-
-/*  Add/Sub with norm and rounding */
-
-{"p.addn",              0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addni",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.addnr",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_ADDNR,                            MASK_PALU,      match_opcode,   0},
-{"p.addun",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.adduni",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addunr",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_ADDUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addrn",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrni",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.addrnr",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_ADDRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.addurn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurni",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_ADDURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.addurnr",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_ADDURNR,                          MASK_PALU,      match_opcode,   0},
-
-{"p.subn",              0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subni",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBN,                             MASK_MACMULNR,  match_opcode,   0},
-{"p.subnr",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SUBNR,                            MASK_PALU,      match_opcode,   0},
-{"p.subun",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subuni",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBUN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subunr",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SUBUNR,                           MASK_PALU,      match_opcode,   0},
-{"p.subrn",             0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrni",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBRN,                            MASK_MACMULNR,  match_opcode,   0},
-{"p.subrnr",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SUBRNR,                           MASK_PALU,      match_opcode,   0},
-{"p.suburn",            0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburni",           0, INSN_CLASS_XGAP9, "d,s,t,b5", MATCH_SUBURN,                           MASK_MACMULNR,  match_opcode,   0},
-{"p.suburnr",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_SUBURNR,                          MASK_PALU,      match_opcode,   0},
-
-/* Vector Operations */
-
-{"pv.add.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_ADD|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_ADD|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_ADD|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.add.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_ADD|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_ADD|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.add.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_ADD|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sub.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SUB|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SUB|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SUB|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sub.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SUB|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SUB|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sub.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SUB|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avg.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVG|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVG|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_AVG|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.avg.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVG|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVG|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.avg.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_AVG|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.avgu.h",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVGU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.h",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVGU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.h",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_AVGU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.avgu.b",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVGU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sc.b",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AVGU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.avgu.sci.b",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_AVGU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.min.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MIN|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MIN|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_MIN|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.min.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MIN|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MIN|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.min.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_MIN|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.minu.h",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MINU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.h",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MINU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.h",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_MINU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.minu.b",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MINU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sc.b",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MINU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.minu.sci.b",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_MINU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.max.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAX|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAX|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_MAX|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.max.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAX|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAX|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.max.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_MAX|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.maxu.h",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAXU|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.h",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAXU|MATCH_V_OP_H_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.h",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_MAXU|MATCH_V_OP_H_VI,        MASK_V_OP1,     match_opcode,   0},
-{"pv.maxu.b",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAXU|MATCH_V_OP_B_VV,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sc.b",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_MAXU|MATCH_V_OP_B_VR,        MASK_V_OP,      match_opcode,   0},
-{"pv.maxu.sci.b",       0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_MAXU|MATCH_V_OP_B_VI,        MASK_V_OP1,     match_opcode,   0},
-
-{"pv.srl.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SRL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.srl.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.srl.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SRL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sra.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRA|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRA|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SRA|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sra.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRA|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SRA|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sra.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SRA|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sll.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SLL|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SLL|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SLL|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.sll.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SLL|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SLL|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.sll.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bU",   MATCH_V_OP_SLL|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.or.h",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_OR|MATCH_V_OP_H_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_OR|MATCH_V_OP_H_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.h",         0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_OR|MATCH_V_OP_H_VI,          MASK_V_OP1,     match_opcode,   0},
-{"pv.or.b",             0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_OR|MATCH_V_OP_B_VV,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sc.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_OR|MATCH_V_OP_B_VR,          MASK_V_OP,      match_opcode,   0},
-{"pv.or.sci.b",         0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_OR|MATCH_V_OP_B_VI,          MASK_V_OP1,     match_opcode,   0},
-
-{"pv.xor.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_XOR|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_XOR|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_XOR|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.xor.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_XOR|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_XOR|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.xor.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_XOR|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.and.h",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AND|MATCH_V_OP_H_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AND|MATCH_V_OP_H_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.h",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_AND|MATCH_V_OP_H_VI,         MASK_V_OP1,     match_opcode,   0},
-{"pv.and.b",            0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AND|MATCH_V_OP_B_VV,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sc.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_AND|MATCH_V_OP_B_VR,         MASK_V_OP,      match_opcode,   0},
-{"pv.and.sci.b",        0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_AND|MATCH_V_OP_B_VI,         MASK_V_OP1,     match_opcode,   0},
-
-{"pv.abs.h",            0, INSN_CLASS_XGAP9, "d,s",      MATCH_V_OP_ABS|MATCH_V_OP_H_VV,         MASK_V_OP2,     match_opcode,   0},
-{"pv.abs.b",            0, INSN_CLASS_XGAP9, "d,s",      MATCH_V_OP_ABS|MATCH_V_OP_B_VV,         MASK_V_OP2,     match_opcode,   0},
-
-{"pv.extract.h",        0, INSN_CLASS_XGAP9, "d,s,bf",   MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.extract.b",        0, INSN_CLASS_XGAP9, "d,s,bF",   MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.extractu.h",       0, INSN_CLASS_XGAP9, "d,s,bf",   MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.extractu.b",       0, INSN_CLASS_XGAP9, "d,s,bF",   MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.insert.h",         0, INSN_CLASS_XGAP9, "d,s,bf",   MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.insert.b",         0, INSN_CLASS_XGAP9, "d,s,bF",   MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotsp.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.dotsp.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.dotsp.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotup.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI,    MASK_V_OP1,     match_opcode,   0},
-{"pv.dotup.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR,    MASK_V_OP,      match_opcode,   0},
-{"pv.dotup.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI,    MASK_V_OP1,     match_opcode,   0},
-
-{"pv.dotusp.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_INSERT|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_INSERT|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_INSERT|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.dotusp.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_INSERT|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_INSERT|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.dotusp.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_INSERT|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotsp.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotsp.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR,     MASK_V_OP,      match_opcode,   0},
-{"pv.sdotsp.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotup.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotup.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotup.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.sdotusp.h",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.h",     0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.h",    0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.sdotusp.b",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sc.b",     0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.sdotusp.sci.b",    0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle.h",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle.sci.h",    0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shuffle.b",        0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV,     MASK_V_OP,      match_opcode,   0},
-{"pv.shufflei0.sci.b",  0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI,     MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei1.sci.b",  0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_SHUFFLEI1|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei2.sci.b",  0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_SHUFFLEI2|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-{"pv.shufflei3.sci.b",  0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_SHUFFLEI3|MATCH_V_OP_B_VI,   MASK_V_OP1,     match_opcode,   0},
-
-{"pv.shuffle2.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
-{"pv.shuffle2.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
-
-{"pv.pack.h",           0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
-
-{"pv.packhi.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.packlo.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-
-{"pv.cmpeq.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpeq.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpeq.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpne.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpne.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpne.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgt.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgt.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgt.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpge.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpge.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmpge.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmplt.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmplt.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmplt.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmple.h",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.h",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.h",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI,       MASK_V_OP1,     match_opcode,   0},
-{"pv.cmple.b",          0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sc.b",       0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR,       MASK_V_OP,      match_opcode,   0},
-{"pv.cmple.sci.b",      0, INSN_CLASS_XGAP9, "d,s,bs",   MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI,       MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgtu.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgtu.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgtu.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpgeu.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpgeu.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpgeu.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpltu.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpltu.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpltu.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
-
-{"pv.cmpleu.h",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.h",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.h",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI,      MASK_V_OP1,     match_opcode,   0},
-{"pv.cmpleu.b",         0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sc.b",      0, INSN_CLASS_XGAP9, "d,s,t",    MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
-{"pv.cmpleu.sci.b",     0, INSN_CLASS_XGAP9, "d,s,bu",   MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
 /*
-{"pv.ball",             0, INSN_CLASS_XGAP9,  "s,p",     MATCH_BEQM1,                    MASK_BEQM1|MASK_RS2,    match_opcode,   },
-{"pv.bnall",            0, INSN_CLASS_XGAP9,  "s,p",     MATCH_BNEM1,                    MASK_BNEM1|MASK_RS2,    match_opcode,   },
+{"p.avgu",           0, INSN_CLASS_XPULP_V3, "d,s,t",        MATCH_AVGU,                             MASK_PALU,      match_opcode,   0},
+{"pv.ball",             0, INSN_CLASS_XPULP_V3,  "s,p",         MATCH_BEQM1,                    MASK_BEQM1|MASK_RS2,    match_opcode,   },
+{"pv.bnall",            0, INSN_CLASS_XPULP_V3,  "s,p",         MATCH_BNEM1,                    MASK_BNEM1|MASK_RS2,    match_opcode,   },
 */
-{"p.beqimm",            0, INSN_CLASS_XGAP9,  "s,bI,p",  MATCH_BEQM1,                            MASK_BEQM1,     match_opcode,    0},
-{"p.bneimm",            0, INSN_CLASS_XGAP9,  "s,bI,p",  MATCH_BNEM1,                            MASK_BNEM1,     match_opcode,    0},
+/* TODO: hack, remove */
+#define WR_xd 0
+#define WR_fd 0
+#define RD_xs1 0
+#define RD_xs2 0
+#define RD_xs3 0
+#define RD_fs1 0
+#define RD_fs2 0
+#define RD_fs3 0
 
+/* Floating point extensions: half/quarter floats and vector instructions */
+/* RV32Xfhalf - half-precision floats */
+
+{"flh",       0, INSN_CLASS_XPULP_FHALF, "D,o(s)",  MATCH_FLH, MASK_FLH, match_opcode,   WR_xd|RD_xs1 },
+{"flh",       0, INSN_CLASS_XPULP_FHALF, "D,A,s",  0, (int) M_FLH, match_never,  INSN_MACRO },
+{"fsh",       0, INSN_CLASS_XPULP_FHALF, "T,q(s)",  MATCH_FSH, MASK_FSH, match_opcode,   RD_xs1|RD_xs2 },
+{"fsh",       0, INSN_CLASS_XPULP_FHALF, "T,A,s",  0, (int) M_FSH, match_never,  INSN_MACRO },
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,T,R",  MATCH_FMADD_H | MASK_RM, MASK_FMADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,T,R,m",  MATCH_FMADD_H, MASK_FMADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,T,R",  MATCH_FMSUB_H | MASK_RM, MASK_FMSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,T,R,m",  MATCH_FMSUB_H, MASK_FMSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T,R",  MATCH_FNMSUB_H | MASK_RM, MASK_FNMSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T,R,m",  MATCH_FNMSUB_H, MASK_FNMSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T,R",  MATCH_FNMADD_H | MASK_RM, MASK_FNMADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T,R,m",  MATCH_FNMADD_H, MASK_FNMADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FADD_H | MASK_RM, MASK_FADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T,m",  MATCH_FADD_H, MASK_FADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FSUB_H | MASK_RM, MASK_FSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T,m",  MATCH_FSUB_H, MASK_FSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FMUL_H | MASK_RM, MASK_FMUL_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T,m",  MATCH_FMUL_H, MASK_FMUL_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FDIV_H | MASK_RM, MASK_FDIV_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T,m",  MATCH_FDIV_H, MASK_FDIV_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALF, "D,S",  MATCH_FSQRT_H | MASK_RM, MASK_FSQRT_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,m",  MATCH_FSQRT_H, MASK_FSQRT_H, match_opcode,  WR_xd|RD_xs1 },
+{"fsgnj.h",   0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FSGNJ_H, MASK_FSGNJ_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjn.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FSGNJN_H, MASK_FSGNJN_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjx.h",  0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FSGNJX_H, MASK_FSGNJX_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmin.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FMIN_H, MASK_FMIN_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmax.h",    0, INSN_CLASS_XPULP_FHALF, "D,S,T",  MATCH_FMAX_H, MASK_FMAX_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"feq.h",     0, INSN_CLASS_XPULP_FHALF, "d,S,T",    MATCH_FEQ_H, MASK_FEQ_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"flt.h",     0, INSN_CLASS_XPULP_FHALF, "d,S,T",    MATCH_FLT_H, MASK_FLT_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fle.h",     0, INSN_CLASS_XPULP_FHALF, "d,S,T",    MATCH_FLE_H, MASK_FLE_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_W_H | MASK_RM, MASK_FCVT_W_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALF, "d,S,m",  MATCH_FCVT_W_H, MASK_FCVT_W_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_WU_H | MASK_RM, MASK_FCVT_WU_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALF, "d,S,m",  MATCH_FCVT_WU_H, MASK_FCVT_WU_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FCVT_H_W | MASK_RM, MASK_FCVT_H_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALF, "D,s,m",  MATCH_FCVT_H_W, MASK_FCVT_H_W, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FCVT_H_WU | MASK_RM, MASK_FCVT_H_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALF, "D,s,m",  MATCH_FCVT_H_WU, MASK_FCVT_H_WU, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.x.h",   0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FMV_X_H, MASK_FMV_X_H, match_opcode,  WR_xd|RD_xs1 },
+{"fclass.h",  0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCLASS_H, MASK_FCLASS_H, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.h.x",   0, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FMV_H_X, MASK_FMV_H_X, match_opcode,  WR_xd|RD_xs1 },
+//pseudos
+{"fgt.h",     0, INSN_CLASS_XPULP_FHALF, "d,T,S",    MATCH_FLT_H, MASK_FLT_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fge.h",     0, INSN_CLASS_XPULP_FHALF, "d,T,S",    MATCH_FLE_H, MASK_FLE_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fmv.h",     0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJ_H, MASK_FSGNJ_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fabs.h",    0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJX_H, MASK_FSGNJX_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fneg.h",    0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJN_H, MASK_FSGNJN_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+
+/* RV64Xfhalf Half-Precision Floating-Point Extension (in addition to RV32Xf16)*/
+{"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_L_H | MASK_RM, MASK_FCVT_L_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALF, "d,S,m",  MATCH_FCVT_L_H, MASK_FCVT_L_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.h", 64, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_LU_H | MASK_RM, MASK_FCVT_LU_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.h", 64, INSN_CLASS_XPULP_FHALF, "d,S,m",  MATCH_FCVT_LU_H, MASK_FCVT_LU_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.h.l",  64, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FCVT_H_L | MASK_RM, MASK_FCVT_H_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.l",  64, INSN_CLASS_XPULP_FHALF, "D,s,m",  MATCH_FCVT_H_L, MASK_FCVT_H_L, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FCVT_H_LU | MASK_RM, MASK_FCVT_H_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALF, "D,s,m",  MATCH_FCVT_H_LU, MASK_FCVT_H_LU, match_opcode,   WR_xd|RD_xs1 },
+
+/* XfhalfwithF - half-precision conversions with F extension */
+{"fcvt.s.h",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S",  MATCH_FCVT_S_H, MASK_FCVT_S_H, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S",  MATCH_FCVT_H_S | MASK_RM, MASK_FCVT_H_S | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S,m",  MATCH_FCVT_H_S, MASK_FCVT_H_S, match_opcode,   WR_xd|RD_fs1 },
+
+/* XfhalfwithD - half-precision conversions with D extension (in addition to XfhalfwithF) */
+{"fcvt.d.h",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S",  MATCH_FCVT_D_H, MASK_FCVT_D_H, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S",  MATCH_FCVT_H_D | MASK_RM, MASK_FCVT_H_D | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S,m",  MATCH_FCVT_H_D, MASK_FCVT_H_D, match_opcode,   WR_xd|RD_fs1 },
+
+/* RV32Xfalthalf - alternate half-precision floats */
+{"flah",       0, INSN_CLASS_XPULP_FALTHALF, "D,o(s)",  MATCH_FLH, MASK_FLH, match_opcode,   INSN_ALIAS|WR_xd|RD_xs1 },
+{"flah",       0, INSN_CLASS_XPULP_FALTHALF, "D,A,s",  0, (int) M_FLH, match_never,  INSN_MACRO },
+{"fsah",       0, INSN_CLASS_XPULP_FALTHALF, "T,q(s)",  MATCH_FSH, MASK_FSH, match_opcode,   INSN_ALIAS|RD_xs1|RD_xs2 },
+{"fsah",       0, INSN_CLASS_XPULP_FALTHALF, "T,A,s",  0, (int) M_FSH, match_never,  INSN_MACRO },
+{"fmadd.ah",   0, INSN_CLASS_XPULP_FALTHALF, "D,S,T,R",  MATCH_FMADD_AH, MASK_FMADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.ah",   0, INSN_CLASS_XPULP_FALTHALF, "D,S,T,R",  MATCH_FMSUB_AH, MASK_FMSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S,T,R",  MATCH_FNMSUB_AH, MASK_FNMSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S,T,R",  MATCH_FNMADD_AH, MASK_FNMADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fadd.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FADD_AH, MASK_FADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FSUB_AH, MASK_FSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FMUL_AH, MASK_FMUL_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FDIV_AH, MASK_FDIV_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsqrt.ah",   0, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FSQRT_AH, MASK_FSQRT_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fsgnj.ah",   0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FSGNJ_AH, MASK_FSGNJ_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjn.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FSGNJN_AH, MASK_FSGNJN_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjx.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FSGNJX_AH, MASK_FSGNJX_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmin.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FMIN_AH, MASK_FMIN_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmax.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,S,T",  MATCH_FMAX_AH, MASK_FMAX_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"feq.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,S,T",    MATCH_FEQ_AH, MASK_FEQ_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"flt.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,S,T",    MATCH_FLT_AH, MASK_FLT_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fle.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,S,T",    MATCH_FLE_AH, MASK_FLE_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fcvt.w.ah",  0, INSN_CLASS_XPULP_FALTHALF, "d,S",  MATCH_FCVT_W_AH, MASK_FCVT_W_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.ah", 0, INSN_CLASS_XPULP_FALTHALF, "d,S",  MATCH_FCVT_WU_AH, MASK_FCVT_WU_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.ah.w",  0, INSN_CLASS_XPULP_FALTHALF, "D,s",  MATCH_FCVT_AH_W, MASK_FCVT_AH_W, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.wu", 0, INSN_CLASS_XPULP_FALTHALF, "D,s",  MATCH_FCVT_AH_WU, MASK_FCVT_AH_W, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.x.ah",   0, INSN_CLASS_XPULP_FALTHALF, "d,S",  MATCH_FMV_X_AH, MASK_FMV_X_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fclass.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCLASS_AH, MASK_FCLASS_AH, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.ah.x",   0, INSN_CLASS_XPULP_FALTHALF, "D,s",  MATCH_FMV_AH_X, MASK_FMV_AH_X, match_opcode,  WR_xd|RD_xs1 },
+//pseudos
+{"fgt.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,T,S",    MATCH_FLT_AH, MASK_FLT_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fge.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,T,S",    MATCH_FLE_AH, MASK_FLE_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fmv.ah",     0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJ_AH, MASK_FSGNJ_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fabs.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJX_AH, MASK_FSGNJX_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fneg.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJN_AH, MASK_FSGNJN_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+
+/* RV64Xfalthalf Alternative Half-Precision Floating-Point Extension (in addition to RV32Xf16)*/
+{"fcvt.l.ah",  64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_L_AH, MASK_FCVT_L_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.ah", 64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_LU_AH, MASK_FCVT_LU_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.ah.l",  64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_AH_L, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.lu", 64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_AH_LU, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
+
+/* XfalthalfwithF - alternate half-precision conversions with F extension */
+{"fcvt.s.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHF, "D,S",  MATCH_FCVT_S_AH, MASK_FCVT_S_AH, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.ah.s",  0, INSN_CLASS_XPULP_FALTHALFWITHF, "D,S",  MATCH_FCVT_AH_S, MASK_FCVT_AH_S, match_opcode,   WR_xd|RD_fs1 },
+
+/* XfalthalfwithD - alternate half-precision conversions with D extension (in addition to XfalthalfwithF) */
+{"fcvt.d.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHD, "D,S",  MATCH_FCVT_D_AH, MASK_FCVT_D_AH, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.ah.d",  0, INSN_CLASS_XPULP_FALTHALFWITHD, "D,S",  MATCH_FCVT_AH_D, MASK_FCVT_AH_D, match_opcode,   WR_xd|RD_fs1 },
+
+/* Xfalthalfwithhalf - alternate half-precision conversions with Xfhalf extension */
+{"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S"  ,  MATCH_FCVT_H_AH | MASK_RM, MASK_FCVT_H_AH | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S,m",  MATCH_FCVT_H_AH, MASK_FCVT_H_AH, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.h",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S",    MATCH_FCVT_AH_H, MASK_FCVT_AH_H, match_opcode,   WR_xd|RD_xs1 },
+
+/* RV32Xfquarter - quarter-precision floats */
+/* collides with quad precision floats (q) */
+{"flb",       0, INSN_CLASS_XPULP_FQUARTER, "D,o(s)",  MATCH_FLB, MASK_FLB, match_opcode,   WR_xd|RD_xs1 },
+{"flb",       0, INSN_CLASS_XPULP_FQUARTER, "D,A,s",  0, (int) M_FLB, match_never,  INSN_MACRO },
+{"fsb",       0, INSN_CLASS_XPULP_FQUARTER, "T,q(s)",  MATCH_FSB, MASK_FSB, match_opcode,   RD_xs1|RD_xs2 },
+{"fsb",       0, INSN_CLASS_XPULP_FQUARTER, "T,A,s",  0, (int) M_FSB, match_never,  INSN_MACRO },
+{"fmadd.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R",  MATCH_FMADD_B | MASK_RM, MASK_FMADD_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmadd.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R,m",  MATCH_FMADD_B, MASK_FMADD_B, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R",  MATCH_FMSUB_B | MASK_RM, MASK_FMSUB_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R,m",  MATCH_FMSUB_B, MASK_FMSUB_B, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R",  MATCH_FNMSUB_B | MASK_RM, MASK_FNMSUB_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R,m",  MATCH_FNMSUB_B, MASK_FNMSUB_B, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R",  MATCH_FNMADD_B | MASK_RM, MASK_FNMADD_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,R,m",  MATCH_FNMADD_B, MASK_FNMADD_B, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fadd.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FADD_B | MASK_RM, MASK_FADD_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fadd.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,m",  MATCH_FADD_B, MASK_FADD_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FSUB_B | MASK_RM, MASK_FSUB_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,m",  MATCH_FSUB_B, MASK_FSUB_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FMUL_B | MASK_RM, MASK_FMUL_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,m",  MATCH_FMUL_B, MASK_FMUL_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FDIV_B | MASK_RM, MASK_FDIV_B | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T,m",  MATCH_FDIV_B, MASK_FDIV_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsqrt.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FSQRT_B | MASK_RM, MASK_FSQRT_B | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fsqrt.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,m",  MATCH_FSQRT_B, MASK_FSQRT_B, match_opcode,  WR_xd|RD_xs1 },
+{"fsgnj.b",   0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FSGNJ_B, MASK_FSGNJ_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjn.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FSGNJN_B, MASK_FSGNJN_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjx.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FSGNJX_B, MASK_FSGNJX_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmin.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FMIN_B, MASK_FMIN_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmax.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,S,T",  MATCH_FMAX_B, MASK_FMAX_B, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"feq.b",     0, INSN_CLASS_XPULP_FQUARTER, "d,S,T",    MATCH_FEQ_B, MASK_FEQ_B, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"flt.b",     0, INSN_CLASS_XPULP_FQUARTER, "d,S,T",    MATCH_FLT_B, MASK_FLT_B, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fle.b",     0, INSN_CLASS_XPULP_FQUARTER, "d,S,T",    MATCH_FLE_B, MASK_FLE_B, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fcvt.w.b",  0, INSN_CLASS_XPULP_FQUARTER, "d,S",  MATCH_FCVT_W_B | MASK_RM, MASK_FCVT_W_B | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.w.b",  0, INSN_CLASS_XPULP_FQUARTER, "d,S,m",  MATCH_FCVT_W_B, MASK_FCVT_W_B, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.b", 0, INSN_CLASS_XPULP_FQUARTER, "d,S",  MATCH_FCVT_WU_B | MASK_RM, MASK_FCVT_WU_B | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.b", 0, INSN_CLASS_XPULP_FQUARTER, "d,S,m",  MATCH_FCVT_WU_B, MASK_FCVT_WU_B, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.b.w",  0, INSN_CLASS_XPULP_FQUARTER, "D,s",  MATCH_FCVT_B_W | MASK_RM, MASK_FCVT_B_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.w",  0, INSN_CLASS_XPULP_FQUARTER, "D,s,m",  MATCH_FCVT_B_W, MASK_FCVT_B_W, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.wu", 0, INSN_CLASS_XPULP_FQUARTER, "D,s",  MATCH_FCVT_B_WU | MASK_RM, MASK_FCVT_B_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.wu", 0, INSN_CLASS_XPULP_FQUARTER, "D,s,m",  MATCH_FCVT_B_WU, MASK_FCVT_B_WU, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.x.b",   0, INSN_CLASS_XPULP_FQUARTER, "d,S",  MATCH_FMV_X_B, MASK_FMV_X_B, match_opcode,  WR_xd|RD_xs1 },
+{"fclass.b",  0, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FCLASS_B, MASK_FCLASS_B, match_opcode,   WR_xd|RD_xs1 },
+{"fmv.b.x",   0, INSN_CLASS_XPULP_FQUARTER, "D,s",  MATCH_FMV_B_X, MASK_FMV_B_X, match_opcode,  WR_xd|RD_xs1 },
+//pseudos
+{"fgt.b",     0, INSN_CLASS_XPULP_FQUARTER, "d,T,S",    MATCH_FLT_B, MASK_FLT_B, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fge.b",     0, INSN_CLASS_XPULP_FQUARTER, "d,T,S",    MATCH_FLE_B, MASK_FLE_B, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fmv.b",     0, INSN_CLASS_XPULP_FQUARTER, "D,U",  MATCH_FSGNJ_B, MASK_FSGNJ_B, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fabs.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,U",  MATCH_FSGNJX_B, MASK_FSGNJX_B, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fneg.b",    0, INSN_CLASS_XPULP_FQUARTER, "D,U",  MATCH_FSGNJN_B, MASK_FSGNJN_B, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+
+/* RV64Xfquarter Quarter-Precision Floating-Point Extension (in addition to RV32Xfquarter) */
+{"fcvt.l.b",  64, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FCVT_L_B | MASK_RM, MASK_FCVT_L_B | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.l.b",  64, INSN_CLASS_XPULP_FQUARTER, "D,S,m",  MATCH_FCVT_L_B, MASK_FCVT_L_B, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.b", 64, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FCVT_LU_B | MASK_RM, MASK_FCVT_LU_B | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.b", 64, INSN_CLASS_XPULP_FQUARTER, "D,S,m",  MATCH_FCVT_LU_B, MASK_FCVT_LU_B, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.b.l",  64, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FCVT_B_L | MASK_RM, MASK_FCVT_B_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.l",  64, INSN_CLASS_XPULP_FQUARTER, "D,S,m",  MATCH_FCVT_B_L, MASK_FCVT_B_L, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.lu", 64, INSN_CLASS_XPULP_FQUARTER, "D,S",  MATCH_FCVT_B_LU | MASK_RM, MASK_FCVT_B_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.lu", 64, INSN_CLASS_XPULP_FQUARTER, "D,S,m",  MATCH_FCVT_B_LU, MASK_FCVT_B_LU, match_opcode,   WR_xd|RD_xs1 },
+
+/* XfquarterwithF - quarter-precision conversions with F extension */
+{"fcvt.s.b",  0,  INSN_CLASS_XPULP_FQUARTERWITHF, "D,S",  MATCH_FCVT_S_B, MASK_FCVT_S_B, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.b.s",  0,  INSN_CLASS_XPULP_FQUARTERWITHF, "D,S",  MATCH_FCVT_B_S | MASK_RM, MASK_FCVT_B_S | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.b.s",  0,  INSN_CLASS_XPULP_FQUARTERWITHF, "D,S,m",  MATCH_FCVT_B_S, MASK_FCVT_B_S, match_opcode,   WR_xd|RD_fs1 },
+
+/* XfquarterwithD - quarter-precision conversions with D extension (in addition to XfquarterwithF) */
+{"fcvt.d.b",  0,  INSN_CLASS_XPULP_FQUARTERWITHD, "D,S",  MATCH_FCVT_D_B, MASK_FCVT_D_B, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.b.d",  0,  INSN_CLASS_XPULP_FQUARTERWITHD, "D,S",  MATCH_FCVT_B_D | MASK_RM, MASK_FCVT_B_D | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.b.d",  0,  INSN_CLASS_XPULP_FQUARTERWITHD, "D,S,m",  MATCH_FCVT_B_D, MASK_FCVT_B_D, match_opcode,   WR_xd|RD_fs1 },
+
+/* Xfquarterwithhalf - quarter-precision conversions with Xfhalf extension */
+{"fcvt.h.b",  0,  INSN_CLASS_XPULP_FQUARTERWITHHALF, "D,S",  MATCH_FCVT_H_B, MASK_FCVT_H_B, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.h",  0,  INSN_CLASS_XPULP_FQUARTERWITHHALF, "D,S",  MATCH_FCVT_B_H | MASK_RM, MASK_FCVT_B_H | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.h",  0,  INSN_CLASS_XPULP_FQUARTERWITHHALF, "D,S,m",  MATCH_FCVT_B_H, MASK_FCVT_B_H, match_opcode,   WR_xd|RD_xs1 },
+
+/* Xfquarterwithalthalf - quarter-precision conversions with Xfalthalf extension */
+{"fcvt.ah.b", 0,  INSN_CLASS_XPULP_FQUARTERWITHALTHALF, "D,S",  MATCH_FCVT_AH_B, MASK_FCVT_AH_B, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.ah", 0,  INSN_CLASS_XPULP_FQUARTERWITHALTHALF,  "D,S",  MATCH_FCVT_B_AH | MASK_RM, MASK_FCVT_B_AH | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.b.ah", 0,  INSN_CLASS_XPULP_FQUARTERWITHALTHALF,  "D,S,m",  MATCH_FCVT_B_AH, MASK_FCVT_B_AH, match_opcode,   WR_xd|RD_xs1 },
+
+/* Xfvecsingle - vectorial single-precision floats - requires FLEN >= 64 */
+{"vfadd.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFADD_S, MASK_VFADD_S, match_opcode, 0},
+{"vfadd.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFADD_R_S, MASK_VFADD_R_S, match_opcode, 0},
+{"vfsub.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSUB_S, MASK_VFSUB_S, match_opcode, 0},
+{"vfsub.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSUB_R_S, MASK_VFSUB_R_S, match_opcode, 0},
+{"vfmul.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMUL_S, MASK_VFMUL_S, match_opcode, 0},
+{"vfmul.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMUL_R_S, MASK_VFMUL_R_S, match_opcode, 0},
+{"vfdiv.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFDIV_S, MASK_VFDIV_S, match_opcode, 0},
+{"vfdiv.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFDIV_R_S, MASK_VFDIV_R_S, match_opcode, 0},
+{"vfmin.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMIN_S, MASK_VFMIN_S, match_opcode, 0},
+{"vfmin.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMIN_R_S, MASK_VFMIN_R_S, match_opcode, 0},
+{"vfmax.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMAX_S, MASK_VFMAX_S, match_opcode, 0},
+{"vfmax.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMAX_R_S, MASK_VFMAX_R_S, match_opcode, 0},
+{"vfsqrt.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "D,S",    MATCH_VFSQRT_S, MASK_VFSQRT_S, match_opcode, 0},
+{"vfmac.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMAC_S, MASK_VFMAC_S, match_opcode, 0},
+{"vfmac.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMAC_R_S, MASK_VFMAC_R_S, match_opcode, 0},
+{"vfmre.s",     0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMRE_S, MASK_VFMRE_S, match_opcode, 0},
+{"vfmre.r.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFMRE_R_S, MASK_VFMRE_R_S, match_opcode, 0},
+{"vfclass.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S",  MATCH_VFCLASS_S, MASK_VFCLASS_S, match_opcode, 0},
+{"vfsgnj.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJ_S, MASK_VFSGNJ_S, match_opcode, 0},
+{"vfsgnj.r.s",  0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJ_R_S, MASK_VFSGNJ_R_S, match_opcode, 0},
+{"vfsgnjn.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJN_S, MASK_VFSGNJN_S, match_opcode, 0},
+{"vfsgnjn.r.s", 0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJN_R_S, MASK_VFSGNJN_R_S, match_opcode, 0},
+{"vfsgnjx.s",   0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJX_S, MASK_VFSGNJX_S, match_opcode, 0},
+{"vfsgnjx.r.s", 0, INSN_CLASS_XPULP_FVECSINGLE, "D,S,T",        MATCH_VFSGNJX_R_S, MASK_VFSGNJX_R_S, match_opcode, 0},
+{"vfeq.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFEQ_S, MASK_VFEQ_S, match_opcode, 0},
+{"vfeq.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFEQ_R_S, MASK_VFEQ_R_S, match_opcode, 0},
+{"vfne.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFNE_S, MASK_VFNE_S, match_opcode, 0},
+{"vfne.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFNE_R_S, MASK_VFNE_R_S, match_opcode, 0},
+{"vflt.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFLT_S, MASK_VFLT_S, match_opcode, 0},
+{"vflt.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFLT_R_S, MASK_VFLT_R_S, match_opcode, 0},
+{"vfge.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFGE_S, MASK_VFGE_S, match_opcode, 0},
+{"vfge.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFGE_R_S, MASK_VFGE_R_S, match_opcode, 0},
+{"vfle.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFLE_S, MASK_VFLE_S, match_opcode, 0},
+{"vfle.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFLE_R_S, MASK_VFLE_R_S, match_opcode, 0},
+{"vfgt.s",      0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFGT_S, MASK_VFGT_S, match_opcode, 0},
+{"vfgt.r.s",    0, INSN_CLASS_XPULP_FVECSINGLE, "d,S,T",        MATCH_VFGT_R_S, MASK_VFGT_R_S, match_opcode, 0},
+// pseudos
+{"vfabs.s",    0,  INSN_CLASS_XPULP_FVECSINGLE, "D,U",  MATCH_VFSGNJX_S, MASK_VFSGNJX_S, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"vfneg.s",    0,  INSN_CLASS_XPULP_FVECSINGLE, "D,U",  MATCH_VFSGNJN_S, MASK_VFSGNJN_S, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+/* XfvecsinglenothirtytwoD: only unless RV32D */
+{"vfmv.x.s",    0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "d,S",     MATCH_VFMV_X_S, MASK_VFMV_X_S, match_opcode, 0},
+{"vfmv.s.x",    0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "S,d",     MATCH_VFMV_S_X, MASK_VFMV_S_X, match_opcode, 0},
+{"vfcvt.x.s",   0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "d,S",     MATCH_VFCVT_X_S, MASK_VFCVT_X_S, match_opcode, 0},
+{"vfcvt.xu.s",  0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "d,S",     MATCH_VFCVT_XU_S, MASK_VFCVT_XU_S, match_opcode, 0},
+{"vfcvt.s.x",   0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "S,d",     MATCH_VFCVT_S_X, MASK_VFCVT_S_X, match_opcode, 0},
+{"vfcvt.s.xu",  0, INSN_CLASS_XPULP_FVECSINGLENOTTHIRTYTWOD, "S,d",     MATCH_VFCVT_S_XU, MASK_VFCVT_S_XU, match_opcode, 0},
+/* XfvecsinglewithF - vectorial single-precision conversions with F extension, a-d legality depends on FLEN */
+{"vfcpka.s.s",    0, INSN_CLASS_XPULP_FVECSINGLEWITHF, "D,S,T",         MATCH_VFCPKA_S_S, MASK_VFCPKA_S_S, match_opcode, 0},
+{"vfcpkb.s.s",    0, INSN_CLASS_XPULP_FVECSINGLEWITHF, "D,S,T", MATCH_VFCPKB_S_S, MASK_VFCPKB_S_S, match_opcode, 0},
+{"vfcpkc.s.s",    0, INSN_CLASS_XPULP_FVECSINGLEWITHF, "D,S,T", MATCH_VFCPKC_S_S, MASK_VFCPKC_S_S, match_opcode, 0},
+{"vfcpkd.s.s",    0, INSN_CLASS_XPULP_FVECSINGLEWITHF, "D,S,T", MATCH_VFCPKD_S_S, MASK_VFCPKD_S_S, match_opcode, 0},
+/* XfvecsinglewithD - vectorial single-precision conversions with D extension, a-d legality depends on FLEN (in addition to the above) */
+{"vfcpka.s.d",    0, INSN_CLASS_XPULP_FVECSINGLEWITHD, "D,S,T",         MATCH_VFCPKA_S_D, MASK_VFCPKA_S_D, match_opcode, 0},
+{"vfcpkb.s.d",    0, INSN_CLASS_XPULP_FVECSINGLEWITHD, "D,S,T", MATCH_VFCPKB_S_D, MASK_VFCPKB_S_D, match_opcode, 0},
+{"vfcpkc.s.d",    0, INSN_CLASS_XPULP_FVECSINGLEWITHD, "D,S,T", MATCH_VFCPKC_S_D, MASK_VFCPKC_S_D, match_opcode, 0},
+{"vfcpkd.s.d",    0, INSN_CLASS_XPULP_FVECSINGLEWITHD, "D,S,T", MATCH_VFCPKD_S_D, MASK_VFCPKD_S_D, match_opcode, 0},
+
+/* Xfvechalf - vectorial half-precision floats - requires FLEN >= 32 */
+{"vfadd.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFADD_H, MASK_VFADD_H, match_opcode, 0},
+{"vfadd.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFADD_R_H, MASK_VFADD_R_H, match_opcode, 0},
+{"vfsub.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSUB_H, MASK_VFSUB_H, match_opcode, 0},
+{"vfsub.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSUB_R_H, MASK_VFSUB_R_H, match_opcode, 0},
+{"vfmul.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMUL_H, MASK_VFMUL_H, match_opcode, 0},
+{"vfmul.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMUL_R_H, MASK_VFMUL_R_H, match_opcode, 0},
+{"vfdiv.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFDIV_H, MASK_VFDIV_H, match_opcode, 0},
+{"vfdiv.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFDIV_R_H, MASK_VFDIV_R_H, match_opcode, 0},
+{"vfmin.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMIN_H, MASK_VFMIN_H, match_opcode, 0},
+{"vfmin.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMIN_R_H, MASK_VFMIN_R_H, match_opcode, 0},
+{"vfmax.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMAX_H, MASK_VFMAX_H, match_opcode, 0},
+{"vfmax.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMAX_R_H, MASK_VFMAX_R_H, match_opcode, 0},
+{"vfsqrt.h",    0, INSN_CLASS_XPULP_FVECHALF, "D,S",    MATCH_VFSQRT_H, MASK_VFSQRT_H, match_opcode, 0},
+{"vfmac.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMAC_H, MASK_VFMAC_H, match_opcode, 0},
+{"vfmac.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMAC_R_H, MASK_VFMAC_R_H, match_opcode, 0},
+{"vfmre.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMRE_H, MASK_VFMRE_H, match_opcode, 0},
+{"vfmre.r.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFMRE_R_H, MASK_VFMRE_R_H, match_opcode, 0},
+{"vfclass.h",   0, INSN_CLASS_XPULP_FVECHALF, "d,S",    MATCH_VFCLASS_H, MASK_VFCLASS_H, match_opcode, 0},
+{"vfsgnj.h",    0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJ_H, MASK_VFSGNJ_H, match_opcode, 0},
+{"vfsgnj.r.h",  0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJ_R_H, MASK_VFSGNJ_R_H, match_opcode, 0},
+{"vfsgnjn.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJN_H, MASK_VFSGNJN_H, match_opcode, 0},
+{"vfsgnjn.r.h", 0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJN_R_H, MASK_VFSGNJN_R_H, match_opcode, 0},
+{"vfsgnjx.h",   0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJX_H, MASK_VFSGNJX_H, match_opcode, 0},
+{"vfsgnjx.r.h", 0, INSN_CLASS_XPULP_FVECHALF, "D,S,T",  MATCH_VFSGNJX_R_H, MASK_VFSGNJX_R_H, match_opcode, 0},
+{"vfeq.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFEQ_H, MASK_VFEQ_H, match_opcode, 0},
+{"vfeq.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFEQ_R_H, MASK_VFEQ_R_H, match_opcode, 0},
+{"vfne.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFNE_H, MASK_VFNE_H, match_opcode, 0},
+{"vfne.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFNE_R_H, MASK_VFNE_R_H, match_opcode, 0},
+{"vflt.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFLT_H, MASK_VFLT_H, match_opcode, 0},
+{"vflt.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFLT_R_H, MASK_VFLT_R_H, match_opcode, 0},
+{"vfge.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFGE_H, MASK_VFGE_H, match_opcode, 0},
+{"vfge.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFGE_R_H, MASK_VFGE_R_H, match_opcode, 0},
+{"vfle.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFLE_H, MASK_VFLE_H, match_opcode, 0},
+{"vfle.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFLE_R_H, MASK_VFLE_R_H, match_opcode, 0},
+{"vfgt.h",      0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFGT_H, MASK_VFGT_H, match_opcode, 0},
+{"vfgt.r.h",    0, INSN_CLASS_XPULP_FVECHALF, "d,S,T",  MATCH_VFGT_R_H, MASK_VFGT_R_H, match_opcode, 0},
+// pseudos
+{"vfabs.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,U",  MATCH_VFSGNJX_H, MASK_VFSGNJX_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"vfneg.h",     0, INSN_CLASS_XPULP_FVECHALF, "D,U",  MATCH_VFSGNJN_H, MASK_VFSGNJN_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+/* XfvechalfnothirtytwoD: only unless RV32D */
+{"vfmv.x.h",    0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "d,S",       MATCH_VFMV_X_H, MASK_VFMV_X_H, match_opcode, 0},
+{"vfmv.h.x",    0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "D,s",       MATCH_VFMV_H_X, MASK_VFMV_H_X, match_opcode, 0},
+{"vfcvt.x.h",   0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "d,S",       MATCH_VFCVT_X_H, MASK_VFCVT_X_H, match_opcode, 0},
+{"vfcvt.xu.h",  0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "d,S",       MATCH_VFCVT_XU_H, MASK_VFCVT_XU_H, match_opcode, 0},
+{"vfcvt.h.x",   0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "D,s",       MATCH_VFCVT_H_X, MASK_VFCVT_H_X, match_opcode, 0},
+{"vfcvt.h.xu",  0, INSN_CLASS_XPULP_FVECHALFNOTTHIRTYTWOD, "D,s",       MATCH_VFCVT_H_XU, MASK_VFCVT_H_XU, match_opcode, 0},
+/* XfvechalfwithF - vectorial half-precision conversions with F extension, a-d legality depends on FLEN */
+{"vfcpka.h.s",  0, INSN_CLASS_XPULP_FVECHALFWITHF, "D,S,T",     MATCH_VFCPKA_H_S, MASK_VFCPKA_H_S, match_opcode, 0},
+{"vfcpkb.h.s",  0, INSN_CLASS_XPULP_FVECHALFWITHF, "D,S,T",     MATCH_VFCPKB_H_S, MASK_VFCPKB_H_S, match_opcode, 0},
+{"vfcpkc.h.s",  0, INSN_CLASS_XPULP_FVECHALFWITHF, "D,S,T",  MATCH_VFCPKC_H_S, MASK_VFCPKC_H_S, match_opcode, 0},
+{"vfcpkd.h.s",  0, INSN_CLASS_XPULP_FVECHALFWITHF, "D,S,T",  MATCH_VFCPKD_H_S, MASK_VFCPKD_H_S, match_opcode, 0},
+/* XfvechalfwithD - vectorial half-precision conversions with D extension, a-d legality depends on FLEN (in addition to the above) */
+{"vfcpka.h.d",  0, INSN_CLASS_XPULP_FVECHALFWITHD, "D,S,T",     MATCH_VFCPKA_H_D, MASK_VFCPKA_H_D, match_opcode, 0},
+{"vfcpkb.h.d",  0, INSN_CLASS_XPULP_FVECHALFWITHD, "D,S,T",     MATCH_VFCPKB_H_D, MASK_VFCPKB_H_D, match_opcode, 0},
+{"vfcpkc.h.d",  0, INSN_CLASS_XPULP_FVECHALFWITHD, "D,S,T",  MATCH_VFCPKC_H_D, MASK_VFCPKC_H_D, match_opcode, 0},
+{"vfcpkd.h.d",  0, INSN_CLASS_XPULP_FVECHALFWITHD, "D,S,T",  MATCH_VFCPKD_H_D, MASK_VFCPKD_H_D, match_opcode, 0},
+/* Xfvecalthalfwithsingle - vectorial half-precision conversions with Xfvecsingle extension */
+{"vfcvt.s.h",   0, INSN_CLASS_XPULP_FVECHALFWITHSINGLE, "D,S",  MATCH_VFCVT_S_H, MASK_VFCVT_S_H, match_opcode, 0},
+{"vfcvtu.s.h",  0, INSN_CLASS_XPULP_FVECHALFWITHSINGLE, "D,S",    MATCH_VFCVTU_S_H, MASK_VFCVTU_S_H, match_opcode, 0},
+{"vfcvt.h.s",   0, INSN_CLASS_XPULP_FVECHALFWITHSINGLE, "D,S",  MATCH_VFCVT_H_S, MASK_VFCVT_H_S, match_opcode, 0},
+{"vfcvtu.h.s",  0, INSN_CLASS_XPULP_FVECHALFWITHSINGLE, "D,S",    MATCH_VFCVTU_H_S, MASK_VFCVTU_H_S, match_opcode, 0},
+
+/* Xfvecalthalf - vectorial alternate half-precision floats - requires FLEN >= 32 */
+{"vfadd.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFADD_AH, MASK_VFADD_AH, match_opcode, 0},
+{"vfadd.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFADD_R_AH, MASK_VFADD_R_AH, match_opcode, 0},
+{"vfsub.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSUB_AH, MASK_VFSUB_AH, match_opcode, 0},
+{"vfsub.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSUB_R_AH, MASK_VFSUB_R_AH, match_opcode, 0},
+{"vfmul.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMUL_AH, MASK_VFMUL_AH, match_opcode, 0},
+{"vfmul.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMUL_R_AH, MASK_VFMUL_R_AH, match_opcode, 0},
+{"vfdiv.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFDIV_AH, MASK_VFDIV_AH, match_opcode, 0},
+{"vfdiv.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFDIV_R_AH, MASK_VFDIV_R_AH, match_opcode, 0},
+{"vfmin.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMIN_AH, MASK_VFMIN_AH, match_opcode, 0},
+{"vfmin.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMIN_R_AH, MASK_VFMIN_R_AH, match_opcode, 0},
+{"vfmax.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMAX_AH, MASK_VFMAX_AH, match_opcode, 0},
+{"vfmax.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMAX_R_AH, MASK_VFMAX_R_AH, match_opcode, 0},
+{"vfsqrt.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "D,S",         MATCH_VFSQRT_AH, MASK_VFSQRT_AH, match_opcode, 0},
+{"vfmac.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMAC_AH, MASK_VFMAC_AH, match_opcode, 0},
+{"vfmac.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMAC_R_AH, MASK_VFMAC_R_AH, match_opcode, 0},
+{"vfmre.ah",    0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMRE_AH, MASK_VFMRE_AH, match_opcode, 0},
+{"vfmre.r.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFMRE_R_AH, MASK_VFMRE_R_AH, match_opcode, 0},
+{"vfclass.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S",         MATCH_VFCLASS_AH, MASK_VFCLASS_AH, match_opcode, 0},
+{"vfsgnj.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJ_AH, MASK_VFSGNJ_AH, match_opcode, 0},
+{"vfsgnj.r.ah", 0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJ_R_AH, MASK_VFSGNJ_R_AH, match_opcode, 0},
+{"vfsgnjn.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJN_AH, MASK_VFSGNJN_AH, match_opcode, 0},
+{"vfsgnjn.r.ah",0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJN_R_AH, MASK_VFSGNJN_R_AH, match_opcode, 0},
+{"vfsgnjx.ah",  0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJX_AH, MASK_VFSGNJX_AH, match_opcode, 0},
+{"vfsgnjx.r.ah",0, INSN_CLASS_XPULP_FVECALTHALF, "D,S,T",       MATCH_VFSGNJX_R_AH, MASK_VFSGNJX_R_AH, match_opcode, 0},
+{"vfeq.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFEQ_AH, MASK_VFEQ_AH, match_opcode, 0},
+{"vfeq.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFEQ_R_AH, MASK_VFEQ_R_AH, match_opcode, 0},
+{"vfne.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFNE_AH, MASK_VFNE_AH, match_opcode, 0},
+{"vfne.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFNE_R_AH, MASK_VFNE_R_AH, match_opcode, 0},
+{"vflt.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFLT_AH, MASK_VFLT_AH, match_opcode, 0},
+{"vflt.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFLT_R_AH, MASK_VFLT_R_AH, match_opcode, 0},
+{"vfge.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFGE_AH, MASK_VFGE_AH, match_opcode, 0},
+{"vfge.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFGE_R_AH, MASK_VFGE_R_AH, match_opcode, 0},
+{"vfle.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFLE_AH, MASK_VFLE_AH, match_opcode, 0},
+{"vfle.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFLE_R_AH, MASK_VFLE_R_AH, match_opcode, 0},
+{"vfgt.ah",     0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFGT_AH, MASK_VFGT_AH, match_opcode, 0},
+{"vfgt.r.ah",   0, INSN_CLASS_XPULP_FVECALTHALF, "d,S,T",       MATCH_VFGT_R_AH, MASK_VFGT_R_AH, match_opcode, 0},
+// pseudos
+{"vfabs.ah",    0, INSN_CLASS_XPULP_FVECALTHALF,  "D,U",  MATCH_VFSGNJX_AH, MASK_VFSGNJX_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"vfneg.ah",    0, INSN_CLASS_XPULP_FVECALTHALF,  "D,U",  MATCH_VFSGNJN_AH, MASK_VFSGNJN_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+/* XfvecalthalfnothirtytwoD: only unless RV32D */
+{"vfmv.x.ah",   0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "d,S",    MATCH_VFMV_X_AH, MASK_VFMV_X_AH, match_opcode, 0},
+{"vfmv.ah.x",   0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "D,s",    MATCH_VFMV_AH_X, MASK_VFMV_AH_X, match_opcode, 0},
+{"vfcvt.x.ah",  0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "d,S",    MATCH_VFCVT_X_AH, MASK_VFCVT_X_AH, match_opcode, 0},
+{"vfcvt.xu.ah", 0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "d,S",    MATCH_VFCVT_XU_AH, MASK_VFCVT_XU_AH, match_opcode, 0},
+{"vfcvt.ah.x",  0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "D,s",    MATCH_VFCVT_AH_X, MASK_VFCVT_AH_X, match_opcode, 0},
+{"vfcvt.ah.xu", 0, INSN_CLASS_XPULP_FVECALTHALFNOTTHIRTYTWOD, "D,s",    MATCH_VFCVT_AH_XU, MASK_VFCVT_AH_XU, match_opcode, 0},
+/* XfvecalthalfwithF - vectorial alternate half-precision conversions with F extension, a-d legality depends on FLEN */
+{"vfcpka.ah.s", 0, INSN_CLASS_XPULP_FVECALTHALFWITHF, "D,S,T",  MATCH_VFCPKA_AH_S, MASK_VFCPKA_AH_S, match_opcode, 0},
+{"vfcpkb.ah.s", 0, INSN_CLASS_XPULP_FVECALTHALFWITHF, "D,S,T",  MATCH_VFCPKB_AH_S, MASK_VFCPKB_AH_S, match_opcode, 0},
+{"vfcpkc.ah.s", 0, INSN_CLASS_XPULP_FVECALTHALFWITHF, "D,S,T", MATCH_VFCPKC_AH_S, MASK_VFCPKC_AH_S, match_opcode, 0},
+{"vfcpkd.ah.s", 0, INSN_CLASS_XPULP_FVECALTHALFWITHF, "D,S,T", MATCH_VFCPKD_AH_S, MASK_VFCPKD_AH_S, match_opcode, 0},
+/* XfvecalthalfwithD - vectorial alternate half-precision conversions with D extension, a-d legality depends on FLEN (in addition to the above) */
+{"vfcpka.ah.d", 0, INSN_CLASS_XPULP_FVECALTHALFWITHD, "D,S,T",  MATCH_VFCPKA_AH_D, MASK_VFCPKA_AH_D, match_opcode, 0},
+{"vfcpkb.ah.d", 0, INSN_CLASS_XPULP_FVECALTHALFWITHD, "D,S,T",  MATCH_VFCPKB_AH_D, MASK_VFCPKB_AH_D, match_opcode, 0},
+{"vfcpkc.ah.d", 0, INSN_CLASS_XPULP_FVECALTHALFWITHD, "D,S,T", MATCH_VFCPKC_AH_D, MASK_VFCPKC_AH_D, match_opcode, 0},
+{"vfcpkd.ah.d", 0, INSN_CLASS_XPULP_FVECALTHALFWITHD, "D,S,T", MATCH_VFCPKD_AH_D, MASK_VFCPKD_AH_D, match_opcode, 0},
+/* Xfvecalthalfwithsingle - vectorial alternate half-precision conversions with Xfvecsingle extension */
+{"vfcvt.s.ah",  0, INSN_CLASS_XPULP_FVECALTHALFWITHSINGLE, "D,S",       MATCH_VFCVT_S_AH, MASK_VFCVT_S_AH, match_opcode, 0},
+{"vfcvtu.s.ah", 0, INSN_CLASS_XPULP_FVECALTHALFWITHSINGLE, "D,S", MATCH_VFCVTU_S_AH, MASK_VFCVTU_S_AH, match_opcode, 0},
+{"vfcvt.ah.s",  0, INSN_CLASS_XPULP_FVECALTHALFWITHSINGLE, "D,S",       MATCH_VFCVT_AH_S, MASK_VFCVT_AH_S, match_opcode, 0},
+{"vfcvtu.ah.s", 0, INSN_CLASS_XPULP_FVECALTHALFWITHSINGLE, "D,S", MATCH_VFCVTU_AH_S, MASK_VFCVTU_AH_S, match_opcode, 0},
+/* Xfvecalthalfwithhalf - vectorial alternate half-precision conversions with Xfvechalf extension */
+{"vfcvt.h.ah",  0, INSN_CLASS_XPULP_FVECALTHALFWITHHALF, "D,S",         MATCH_VFCVT_H_AH, MASK_VFCVT_H_AH, match_opcode, 0},
+{"vfcvtu.h.ah", 0, INSN_CLASS_XPULP_FVECALTHALFWITHHALF, "D,S", MATCH_VFCVTU_H_AH, MASK_VFCVTU_H_AH, match_opcode, 0},
+{"vfcvt.ah.h",  0, INSN_CLASS_XPULP_FVECALTHALFWITHHALF, "D,S",         MATCH_VFCVT_AH_H, MASK_VFCVT_AH_H, match_opcode, 0},
+{"vfcvtu.ah.h", 0, INSN_CLASS_XPULP_FVECALTHALFWITHHALF, "D,S", MATCH_VFCVTU_AH_H, MASK_VFCVTU_AH_H, match_opcode, 0},
+
+/* Xfvecquarter - vectorial quarter-precision floats - requires FLEN >= 16 */
+{"vfadd.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFADD_B, MASK_VFADD_B, match_opcode, 0},
+{"vfadd.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFADD_R_B, MASK_VFADD_R_B, match_opcode, 0},
+{"vfsub.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSUB_B, MASK_VFSUB_B, match_opcode, 0},
+{"vfsub.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSUB_R_B, MASK_VFSUB_R_B, match_opcode, 0},
+{"vfmul.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMUL_B, MASK_VFMUL_B, match_opcode, 0},
+{"vfmul.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMUL_R_B, MASK_VFMUL_R_B, match_opcode, 0},
+{"vfdiv.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFDIV_B, MASK_VFDIV_B, match_opcode, 0},
+{"vfdiv.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFDIV_R_B, MASK_VFDIV_R_B, match_opcode, 0},
+{"vfmin.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMIN_B, MASK_VFMIN_B, match_opcode, 0},
+{"vfmin.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMIN_R_B, MASK_VFMIN_R_B, match_opcode, 0},
+{"vfmax.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMAX_B, MASK_VFMAX_B, match_opcode, 0},
+{"vfmax.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMAX_R_B, MASK_VFMAX_R_B, match_opcode, 0},
+{"vfsqrt.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "D,S",         MATCH_VFSQRT_B, MASK_VFSQRT_B, match_opcode, 0},
+{"vfmac.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMAC_B, MASK_VFMAC_B, match_opcode, 0},
+{"vfmac.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMAC_R_B, MASK_VFMAC_R_B, match_opcode, 0},
+{"vfmre.b",     0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMRE_B, MASK_VFMRE_B, match_opcode, 0},
+{"vfmre.r.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFMRE_R_B, MASK_VFMRE_R_B, match_opcode, 0},
+{"vfclass.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S",         MATCH_VFCLASS_B, MASK_VFCLASS_B, match_opcode, 0},
+{"vfsgnj.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJ_B, MASK_VFSGNJ_B, match_opcode, 0},
+{"vfsgnj.r.b",  0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJ_R_B, MASK_VFSGNJ_R_B, match_opcode, 0},
+{"vfsgnjn.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJN_B, MASK_VFSGNJN_B, match_opcode, 0},
+{"vfsgnjn.r.b", 0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJN_R_B, MASK_VFSGNJN_R_B, match_opcode, 0},
+{"vfsgnjx.b",   0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJX_B, MASK_VFSGNJX_B, match_opcode, 0},
+{"vfsgnjx.r.b", 0, INSN_CLASS_XPULP_FVECQUARTER, "D,S,T",       MATCH_VFSGNJX_R_B, MASK_VFSGNJX_R_B, match_opcode, 0},
+{"vfeq.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFEQ_B, MASK_VFEQ_B, match_opcode, 0},
+{"vfeq.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFEQ_R_B, MASK_VFEQ_R_B, match_opcode, 0},
+{"vfne.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFNE_B, MASK_VFNE_B, match_opcode, 0},
+{"vfne.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFNE_R_B, MASK_VFNE_R_B, match_opcode, 0},
+{"vflt.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFLT_B, MASK_VFLT_B, match_opcode, 0},
+{"vflt.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFLT_R_B, MASK_VFLT_R_B, match_opcode, 0},
+{"vfge.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFGE_B, MASK_VFGE_B, match_opcode, 0},
+{"vfge.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFGE_R_B, MASK_VFGE_R_B, match_opcode, 0},
+{"vfle.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFLE_B, MASK_VFLE_B, match_opcode, 0},
+{"vfle.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFLE_R_B, MASK_VFLE_R_B, match_opcode, 0},
+{"vfgt.b",      0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFGT_B, MASK_VFGT_B, match_opcode, 0},
+{"vfgt.r.b",    0, INSN_CLASS_XPULP_FVECQUARTER, "d,S,T",       MATCH_VFGT_R_B, MASK_VFGT_R_B, match_opcode, 0},
+// pseudos
+{"vfabs.b",    0, INSN_CLASS_XPULP_FVECQUARTER,  "D,U",  MATCH_VFSGNJX_B, MASK_VFSGNJX_B, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"vfneg.b",    0, INSN_CLASS_XPULP_FVECQUARTER,  "D,U",  MATCH_VFSGNJN_B, MASK_VFSGNJN_B, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+/* XfvecquarternothirtytwoD: only unless RV32D */
+{"vfmv.x.b",    0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "d,S",    MATCH_VFMV_X_B, MASK_VFMV_X_B, match_opcode, 0},
+{"vfmv.b.x",    0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "D,s",    MATCH_VFMV_B_X, MASK_VFMV_B_X, match_opcode, 0},
+{"vfcvt.x.b",   0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "d,S",    MATCH_VFCVT_X_B, MASK_VFCVT_X_B, match_opcode, 0},
+{"vfcvt.xu.b",  0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "d,S",    MATCH_VFCVT_XU_B, MASK_VFCVT_XU_B, match_opcode, 0},
+{"vfcvt.b.x",   0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "D,s",    MATCH_VFCVT_B_X, MASK_VFCVT_B_X, match_opcode, 0},
+{"vfcvt.b.xu",  0, INSN_CLASS_XPULP_FVECQUARTERNOTTHIRTYTWOD, "D,s",    MATCH_VFCVT_B_XU, MASK_VFCVT_B_XU, match_opcode, 0},
+/* XfvecquarterwithF - vectorial quarter-precision conversions with F extension, a-d legality depends on FLEN */
+{"vfcpka.b.s",  0, INSN_CLASS_XPULP_FVECQUARTERWITHF, "D,S,T",  MATCH_VFCPKA_B_S, MASK_VFCPKA_B_S, match_opcode, 0},
+{"vfcpkb.b.s",  0, INSN_CLASS_XPULP_FVECQUARTERWITHF, "D,S,T",  MATCH_VFCPKB_B_S, MASK_VFCPKB_B_S, match_opcode, 0},
+{"vfcpkc.b.s",  0, INSN_CLASS_XPULP_FVECQUARTERWITHF, "D,S,T",  MATCH_VFCPKC_B_S, MASK_VFCPKC_B_S, match_opcode, 0},
+{"vfcpkd.b.s",  0, INSN_CLASS_XPULP_FVECQUARTERWITHF, "D,S,T",  MATCH_VFCPKD_B_S, MASK_VFCPKD_B_S, match_opcode, 0},
+/* XfvecquarterwithD - vectorial quarter-precision conversions with D extension, a-d legality depends on FLEN (in addition to above) */
+{"vfcpka.b.d",  0, INSN_CLASS_XPULP_FVECQUARTERWITHD, "D,S,T",  MATCH_VFCPKA_B_D, MASK_VFCPKA_B_D, match_opcode, 0},
+{"vfcpkb.b.d",  0, INSN_CLASS_XPULP_FVECQUARTERWITHD, "D,S,T",  MATCH_VFCPKB_B_D, MASK_VFCPKB_B_D, match_opcode, 0},
+{"vfcpkc.b.d",  0, INSN_CLASS_XPULP_FVECQUARTERWITHD, "D,S,T",  MATCH_VFCPKC_B_D, MASK_VFCPKC_B_D, match_opcode, 0},
+{"vfcpkd.b.d",  0, INSN_CLASS_XPULP_FVECQUARTERWITHD, "D,S,T",  MATCH_VFCPKD_B_D, MASK_VFCPKD_B_D, match_opcode, 0},
+/* Xfvecquarterwithsingle - vectorial quarter-precision conversions with Xfvecsingle extension */
+{"vfcvt.s.b",   0, INSN_CLASS_XPULP_FVECQUARTERWITHSINGLE, "D,S",       MATCH_VFCVT_S_B, MASK_VFCVT_S_B, match_opcode, 0},
+{"vfcvtu.s.b",  0, INSN_CLASS_XPULP_FVECQUARTERWITHSINGLE, "D,S", MATCH_VFCVTU_S_B, MASK_VFCVTU_S_B, match_opcode, 0},
+{"vfcvt.b.s",   0, INSN_CLASS_XPULP_FVECQUARTERWITHSINGLE, "D,S",       MATCH_VFCVT_B_S, MASK_VFCVT_B_S, match_opcode, 0},
+{"vfcvtu.b.s",  0, INSN_CLASS_XPULP_FVECQUARTERWITHSINGLE, "D,S", MATCH_VFCVTU_B_S, MASK_VFCVTU_B_S, match_opcode, 0},
+/* Xfvecquarterwithhalf - vectorial quarter-precision conversions with Xfvechalf extension */
+{"vfcvt.h.b",   0, INSN_CLASS_XPULP_FVECQUARTERWITHHALF, "D,S",         MATCH_VFCVT_H_B, MASK_VFCVT_H_B, match_opcode, 0},
+{"vfcvtu.h.b",  0, INSN_CLASS_XPULP_FVECQUARTERWITHHALF, "D,S", MATCH_VFCVTU_H_B, MASK_VFCVTU_H_B, match_opcode, 0},
+{"vfcvt.b.h",   0, INSN_CLASS_XPULP_FVECQUARTERWITHHALF, "D,S",         MATCH_VFCVT_B_H, MASK_VFCVT_B_H, match_opcode, 0},
+{"vfcvtu.b.h",  0, INSN_CLASS_XPULP_FVECQUARTERWITHHALF, "D,S", MATCH_VFCVTU_B_H, MASK_VFCVTU_B_H, match_opcode, 0},
+/* Xfvecquarterwithalthalf - vectorial quarter-precision conversions with Xfvecalthalf extension */
+{"vfcvt.ah.b",  0, INSN_CLASS_XPULP_FVECQUARTERWITHALTHALF, "D,S",      MATCH_VFCVT_AH_B, MASK_VFCVT_AH_B, match_opcode, 0},
+{"vfcvtu.ah.b", 0, INSN_CLASS_XPULP_FVECQUARTERWITHALTHALF, "D,S", MATCH_VFCVTU_AH_B, MASK_VFCVTU_AH_B, match_opcode, 0},
+{"vfcvt.b.ah",  0, INSN_CLASS_XPULP_FVECQUARTERWITHALTHALF, "D,S",      MATCH_VFCVT_B_AH, MASK_VFCVT_B_AH, match_opcode, 0},
+{"vfcvtu.b.ah", 0, INSN_CLASS_XPULP_FVECQUARTERWITHALTHALF, "D,S", MATCH_VFCVTU_B_AH, MASK_VFCVTU_B_AH, match_opcode, 0},
+
+/* Xfauxsingle - single-precision auxiliary operations - requires F extension */
+/* NONE */
+/* Xfauxvecsingle - vectorial single-precision auxiliary operations - requires Xfvecsingle extension */
+{"vfdotp.s",     0, INSN_CLASS_XPULP_FAUXVECSINGLE, "D,S,T",    MATCH_VFDOTP_S, MASK_VFDOTP_S, match_opcode, 0},
+{"vfdotp.r.s",   0, INSN_CLASS_XPULP_FAUXVECSINGLE, "D,S,T",    MATCH_VFDOTP_R_S, MASK_VFDOTP_R_S, match_opcode, 0},
+{"vfavg.s",      0, INSN_CLASS_XPULP_FAUXVECSINGLE, "D,S,T",    MATCH_VFAVG_S, MASK_VFAVG_S, match_opcode, 0},
+{"vfavg.r.s",    0, INSN_CLASS_XPULP_FAUXVECSINGLE, "D,S,T",    MATCH_VFAVG_R_S, MASK_VFAVG_R_S, match_opcode, 0},
+/* Xfauxhalf - half-precision auxiliary operations - requires Xfhalf extension */
+{"fmulex.s.h",   0, INSN_CLASS_XPULP_FAUXHALF, "D,S,T",         MATCH_FMULEX_S_H | MASK_RM, MASK_FMULEX_S_H | MASK_RM, match_opcode, 0},
+{"fmulex.s.h",   0, INSN_CLASS_XPULP_FAUXHALF, "D,S,T,m",       MATCH_FMULEX_S_H, MASK_FMULEX_S_H, match_opcode, 0},
+{"fmacex.s.h",   0, INSN_CLASS_XPULP_FAUXHALF, "D,S,T",         MATCH_FMACEX_S_H | MASK_RM, MASK_FMACEX_S_H | MASK_RM, match_opcode, 0},
+{"fmacex.s.h",   0, INSN_CLASS_XPULP_FAUXHALF, "D,S,T,m",       MATCH_FMACEX_S_H, MASK_FMACEX_S_H, match_opcode, 0},
+/* Xfauxvechalf - vectorial half-precision auxiliary operations - requires Xfvechalf extension */
+{"vfdotp.h",       0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T",      MATCH_VFDOTP_H, MASK_VFDOTP_H, match_opcode, 0},
+{"vfdotp.r.h",     0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T",      MATCH_VFDOTP_R_H, MASK_VFDOTP_R_H, match_opcode, 0},
+{"vfdotpex.s.h",   0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T", MATCH_VFDOTPEX_S_H, MASK_VFDOTPEX_S_H, match_opcode, 0},
+{"vfdotpex.s.r.h", 0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T", MATCH_VFDOTPEX_S_R_H, MASK_VFDOTPEX_S_R_H, match_opcode, 0},
+{"vfavg.h",        0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T",      MATCH_VFAVG_H, MASK_VFAVG_H, match_opcode, 0},
+{"vfavg.r.h",      0, INSN_CLASS_XPULP_FAUXVECHALF, "D,S,T",      MATCH_VFAVG_R_H, MASK_VFAVG_R_H, match_opcode, 0},
+/* Xfauxalthalf - alternate half-precision auxiliary operations - requires Xfalthalf extension */
+{"fmulex.s.ah",  0, INSN_CLASS_XPULP_FAUXALTHALF, "D,S,T",      MATCH_FMULEX_S_AH, MASK_FMULEX_S_AH, match_opcode, 0},
+{"fmacex.s.ah",  0, INSN_CLASS_XPULP_FAUXALTHALF, "D,S,T",      MATCH_FMACEX_S_AH, MASK_FMACEX_S_AH, match_opcode, 0},
+/* Xfauxvecalthalf - vectorial alternate half-precision auxiliary operations - requires Xfvecalthalf extension */
+{"vfdotp.ah",       0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T",  MATCH_VFDOTP_AH, MASK_VFDOTP_AH, match_opcode, 0},
+{"vfdotp.r.ah",     0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T",  MATCH_VFDOTP_R_AH, MASK_VFDOTP_R_AH, match_opcode, 0},
+{"vfdotpex.s.ah",   0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T", MATCH_VFDOTPEX_S_AH, MASK_VFDOTPEX_S_AH, match_opcode, 0},
+{"vfdotpex.s.r.ah", 0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T", MATCH_VFDOTPEX_S_R_AH, MASK_VFDOTPEX_S_R_AH, match_opcode, 0},
+{"vfavg.ah",        0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T",  MATCH_VFAVG_AH, MASK_VFAVG_AH, match_opcode, 0},
+{"vfavg.r.ah",      0, INSN_CLASS_XPULP_FAUXVECALTHALF, "D,S,T",  MATCH_VFAVG_R_AH, MASK_VFAVG_R_AH, match_opcode, 0},
+/* Xfauxquarter - quarter-precision auxiliary operations - requires Xfquarter extension */
+{"fmulex.s.b",     0, INSN_CLASS_XPULP_FAUXQUARTER, "D,S,T",      MATCH_FMULEX_S_B | MASK_RM, MASK_FMULEX_S_B | MASK_RM, match_opcode, 0},
+{"fmulex.s.b",     0, INSN_CLASS_XPULP_FAUXQUARTER, "D,S,T,m",    MATCH_FMULEX_S_B, MASK_FMULEX_S_B, match_opcode, 0},
+{"fmacex.s.b",     0, INSN_CLASS_XPULP_FAUXQUARTER, "D,S,T",      MATCH_FMACEX_S_B | MASK_RM, MASK_FMACEX_S_B | MASK_RM, match_opcode, 0},
+{"fmacex.s.b",     0, INSN_CLASS_XPULP_FAUXQUARTER, "D,S,T,m",    MATCH_FMACEX_S_B, MASK_FMACEX_S_B, match_opcode, 0},
+/* Xfauxvecquarter - vectorial quarter-precision auxiliary operations - requires Xfvecquarter extension */
+{"vfdotp.b",       0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T",   MATCH_VFDOTP_B, MASK_VFDOTP_B, match_opcode, 0},
+{"vfdotp.r.b",     0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T",   MATCH_VFDOTP_R_B, MASK_VFDOTP_R_B, match_opcode, 0},
+{"vfdotpex.s.b",   0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T", MATCH_VFDOTPEX_S_B, MASK_VFDOTPEX_S_B, match_opcode, 0},
+{"vfdotpex.s.r.b", 0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T", MATCH_VFDOTPEX_S_R_B, MASK_VFDOTPEX_S_R_B, match_opcode, 0},
+{"vfavg.b",        0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T",   MATCH_VFAVG_B, MASK_VFAVG_B, match_opcode, 0},
+{"vfavg.r.b",      0, INSN_CLASS_XPULP_FAUXVECQUARTER, "D,S,T",   MATCH_VFAVG_R_B, MASK_VFAVG_R_B, match_opcode, 0},
+
+
+
+
+/* Gap 9 specific extensions. */
 /* Complex numbers */
-{"pv.cplxmul.h.r",      0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.r.div2", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.r.div4", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.r.div8", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r",      0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div2", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div4", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div8", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
 
-{"pv.cplxmul.h.i",      0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.i.div2", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.i.div4", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
-{"pv.cplxmul.h.i.div8", 0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i",      0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div2", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div4", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div8", 0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
 
-{"pv.subrotmj.h",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S0, MASK_V_OP,      match_opcode,   0},
-{"pv.subrotmj.h.div2",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S1, MASK_V_OP,      match_opcode,   0},
-{"pv.subrotmj.h.div4",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S2, MASK_V_OP,      match_opcode,   0},
-{"pv.subrotmj.h.div8",  0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S3, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S0, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div2",  0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S1, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div4",  0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S2, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div8",  0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S3, MASK_V_OP,      match_opcode,   0},
 
-{"pv.cplxconj.h",       0, INSN_CLASS_XGAP9,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
+{"pv.cplxconj.h",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
 
-{"pv.add.h.div2",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div4",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div8",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div8",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
 
-{"pv.sub.h.div2",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div4",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div8",       0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div8",       0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
 
-{"pv.pack.h.h",         0, INSN_CLASS_XGAP9,   "d,s,t", MATCH_V_OP_PACKH|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
+{"pv.pack.h.h",         0, INSN_CLASS_XPULP_VECT_GAP9,   "d,s,t", MATCH_V_OP_PACKH|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
 
-/* Bit reverse */
-
-{"p.bitrev",            0, INSN_CLASS_XGAP9,   "d,s,bi,b5",     MATCH_BITREV,                           MASK_BITREV,    match_opcode,   0},
-
-/* Load from event unit */
-
-{"p.elw",               0, INSN_CLASS_XGAP9, "d,o(s)",   MATCH_LWU,                              MASK_LWU,       match_opcode,   0},
-
-
-
-/* Single-precision floating-point instruction subset  when float registers are mapped on the int reg file */
-
+/* Single-precision floating-point instruction subset when float registers are
+ * mapped on the int reg file */
 /* Riscv F with floats mapped on to integer register file */
-{"frsr",      0, INSN_CLASS_XGAP9,   "d",                MATCH_FRCSR,                    MASK_FRCSR,             match_opcode, 0 },
-{"fssr",      0, INSN_CLASS_XGAP9,   "s",                MATCH_FSCSR,                    MASK_FSCSR | MASK_RD,   match_opcode, 0 },
-{"fssr",      0, INSN_CLASS_XGAP9,   "d,s",              MATCH_FSCSR,                    MASK_FSCSR,             match_opcode, 0 },
-{"frcsr",     0, INSN_CLASS_XGAP9,   "d",                MATCH_FRCSR,                    MASK_FRCSR,             match_opcode, 0 },
-{"fscsr",     0, INSN_CLASS_XGAP9,   "s",                MATCH_FSCSR,                    MASK_FSCSR | MASK_RD,   match_opcode, 0 },
-{"fscsr",     0, INSN_CLASS_XGAP9,   "d,s",              MATCH_FSCSR,                    MASK_FSCSR,             match_opcode, 0 },
-{"frrm",      0, INSN_CLASS_XGAP9,   "d",                MATCH_FRRM,                     MASK_FRRM,              match_opcode, 0 },
-{"fsrm",      0, INSN_CLASS_XGAP9,   "s",                MATCH_FSRM,                     MASK_FSRM | MASK_RD,    match_opcode, 0 },
-{"fsrm",      0, INSN_CLASS_XGAP9,   "d,s",              MATCH_FSRM,                     MASK_FSRM,              match_opcode, 0 },
-{"frflags",   0, INSN_CLASS_XGAP9,   "d",                MATCH_FRFLAGS,                  MASK_FRFLAGS,           match_opcode, 0 },
-{"fsflags",   0, INSN_CLASS_XGAP9,   "s",                MATCH_FSFLAGS,                  MASK_FSFLAGS | MASK_RD, match_opcode, 0 },
-{"fsflags",   0, INSN_CLASS_XGAP9,   "d,s",              MATCH_FSFLAGS,                  MASK_FSFLAGS,           match_opcode, 0 },
+{"frsr",      0, INSN_CLASS_XPULP_FINX_GAP9,   "d",                MATCH_FRCSR,                    MASK_FRCSR,             match_opcode, 0 },
+{"fssr",      0, INSN_CLASS_XPULP_FINX_GAP9,   "s",                MATCH_FSCSR,                    MASK_FSCSR | MASK_RD,   match_opcode, 0 },
+{"fssr",      0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",              MATCH_FSCSR,                    MASK_FSCSR,             match_opcode, 0 },
+{"frcsr",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d",                MATCH_FRCSR,                    MASK_FRCSR,             match_opcode, 0 },
+{"fscsr",     0, INSN_CLASS_XPULP_FINX_GAP9,   "s",                MATCH_FSCSR,                    MASK_FSCSR | MASK_RD,   match_opcode, 0 },
+{"fscsr",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",              MATCH_FSCSR,                    MASK_FSCSR,             match_opcode, 0 },
+{"frrm",      0, INSN_CLASS_XPULP_FINX_GAP9,   "d",                MATCH_FRRM,                     MASK_FRRM,              match_opcode, 0 },
+{"fsrm",      0, INSN_CLASS_XPULP_FINX_GAP9,   "s",                MATCH_FSRM,                     MASK_FSRM | MASK_RD,    match_opcode, 0 },
+{"fsrm",      0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",              MATCH_FSRM,                     MASK_FSRM,              match_opcode, 0 },
+{"frflags",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d",                MATCH_FRFLAGS,                  MASK_FRFLAGS,           match_opcode, 0 },
+{"fsflags",   0, INSN_CLASS_XPULP_FINX_GAP9,   "s",                MATCH_FSFLAGS,                  MASK_FSFLAGS | MASK_RD, match_opcode, 0 },
+{"fsflags",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",              MATCH_FSFLAGS,                  MASK_FSFLAGS,           match_opcode, 0 },
 
 /* Unused since we map float to int register file
 {"flw",       "32C", "D,Cm(Cc)",  MATCH_C_FLWSP, MASK_C_FLWSP, match_opcode, INSN_ALIAS },
@@ -3477,238 +2171,238 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fmv.s",     "F",   "D,U",  MATCH_FSGNJ_S, MASK_FSGNJ_S, match_rs1_eq_rs2, INSN_ALIAS },
 */
 
-{"fneg.s",    0, INSN_CLASS_XGAP9,   "d,w",      MATCH_FSGNJN_S,                 MASK_FSGNJN_S,          match_rs1_eq_rs2, INSN_ALIAS },
-{"fabs.s",    0, INSN_CLASS_XGAP9,   "d,w",      MATCH_FSGNJX_S,                 MASK_FSGNJX_S,          match_rs1_eq_rs2, INSN_ALIAS },
-{"fsgnj.s",   0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FSGNJ_S,                  MASK_FSGNJ_S,           match_opcode, 0 },
-{"fsgnjn.s",  0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FSGNJN_S,                 MASK_FSGNJN_S,          match_opcode, 0 },
-{"fsgnjx.s",  0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FSGNJX_S,                 MASK_FSGNJX_S,          match_opcode, 0 },
-{"fadd.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FADD_S | MASK_RM,         MASK_FADD_S | MASK_RM,  match_opcode, 0 },
-{"fadd.s",    0, INSN_CLASS_XGAP9,   "d,s,t,m",  MATCH_FADD_S,                   MASK_FADD_S,            match_opcode, 0 },
-{"fsub.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FSUB_S | MASK_RM,         MASK_FSUB_S | MASK_RM,  match_opcode, 0 },
-{"fsub.s",    0, INSN_CLASS_XGAP9,   "d,s,t,m",  MATCH_FSUB_S,                   MASK_FSUB_S,            match_opcode, 0 },
-{"fmul.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FMUL_S | MASK_RM,         MASK_FMUL_S | MASK_RM,  match_opcode, 0 },
-{"fmul.s",    0, INSN_CLASS_XGAP9,   "d,s,t,m",  MATCH_FMUL_S,                   MASK_FMUL_S,            match_opcode, 0 },
-{"fdiv.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FDIV_S | MASK_RM,         MASK_FDIV_S | MASK_RM,  match_opcode, 0 },
-{"fdiv.s",    0, INSN_CLASS_XGAP9,   "d,s,t,m",  MATCH_FDIV_S,                   MASK_FDIV_S,            match_opcode, 0 },
-{"fsqrt.s",   0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FSQRT_S | MASK_RM,        MASK_FSQRT_S | MASK_RM, match_opcode, 0 },
-{"fsqrt.s",   0, INSN_CLASS_XGAP9,   "d,s,m",    MATCH_FSQRT_S,                  MASK_FSQRT_S,           match_opcode, 0 },
-{"fmin.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FMIN_S,                   MASK_FMIN_S,            match_opcode, 0 },
-{"fmax.s",    0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FMAX_S,                   MASK_FMAX_S,            match_opcode, 0 },
-{"fmadd.s",   0, INSN_CLASS_XGAP9,   "d,s,t,e",  MATCH_FMADD_S | MASK_RM,        MASK_FMADD_S | MASK_RM, match_opcode, 0 },
-{"fmadd.s",   0, INSN_CLASS_XGAP9,   "d,s,t,e,m",MATCH_FMADD_S,                  MASK_FMADD_S,           match_opcode, 0 },
-{"fnmadd.s",  0, INSN_CLASS_XGAP9,   "d,s,t,e",  MATCH_FNMADD_S | MASK_RM,       MASK_FNMADD_S| MASK_RM, match_opcode, 0 },
-{"fnmadd.s",  0, INSN_CLASS_XGAP9,   "d,s,t,e,m",MATCH_FNMADD_S,                 MASK_FNMADD_S,          match_opcode, 0 },
-{"fmsub.s",   0, INSN_CLASS_XGAP9,   "d,s,t,e",  MATCH_FMSUB_S | MASK_RM,        MASK_FMSUB_S | MASK_RM, match_opcode, 0 },
-{"fmsub.s",   0, INSN_CLASS_XGAP9,   "d,s,t,e,m",MATCH_FMSUB_S,                  MASK_FMSUB_S,           match_opcode, 0 },
-{"fnmsub.s",  0, INSN_CLASS_XGAP9,   "d,s,t,e",  MATCH_FNMSUB_S | MASK_RM,       MASK_FNMSUB_S| MASK_RM, match_opcode, 0 },
-{"fnmsub.s",  0, INSN_CLASS_XGAP9,   "d,s,t,e,m",MATCH_FNMSUB_S,                 MASK_FNMSUB_S,          match_opcode, 0 },
-{"fcvt.w.s",  0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FCVT_W_S | MASK_RM,       MASK_FCVT_W_S| MASK_RM, match_opcode, 0 },
-{"fcvt.w.s",  0, INSN_CLASS_XGAP9,   "d,s,m",    MATCH_FCVT_W_S,                 MASK_FCVT_W_S,          match_opcode, 0 },
-{"fcvt.wu.s", 0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FCVT_WU_S | MASK_RM,      MASK_FCVT_WU_S|MASK_RM, match_opcode, 0 },
-{"fcvt.wu.s", 0, INSN_CLASS_XGAP9,   "d,s,m",    MATCH_FCVT_WU_S,                MASK_FCVT_WU_S,         match_opcode, 0 },
-{"fcvt.s.w",  0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FCVT_S_W | MASK_RM,       MASK_FCVT_S_W| MASK_RM, match_opcode, 0 },
-{"fcvt.s.w",  0, INSN_CLASS_XGAP9,   "d,s,m",    MATCH_FCVT_S_W,                 MASK_FCVT_S_W,          match_opcode, 0 },
-{"fcvt.s.wu", 0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FCVT_S_WU | MASK_RM,      MASK_FCVT_S_W| MASK_RM, match_opcode, 0 },
-{"fcvt.s.wu", 0, INSN_CLASS_XGAP9,   "d,s,m",    MATCH_FCVT_S_WU,                MASK_FCVT_S_WU,         match_opcode, 0 },
-{"fclass.s",  0, INSN_CLASS_XGAP9,   "d,s",      MATCH_FCLASS_S,                 MASK_FCLASS_S,          match_opcode, 0 },
-{"feq.s",     0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FEQ_S,                    MASK_FEQ_S,             match_opcode, 0 },
-{"flt.s",     0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FLT_S,                    MASK_FLT_S,             match_opcode, 0 },
-{"fle.s",     0, INSN_CLASS_XGAP9,   "d,s,t",    MATCH_FLE_S,                    MASK_FLE_S,             match_opcode, 0 },
-{"fgt.s",     0, INSN_CLASS_XGAP9,   "d,t,s",    MATCH_FLT_S,                    MASK_FLT_S,             match_opcode, 0 },
-{"fge.s",     0, INSN_CLASS_XGAP9,   "d,t,s",            MATCH_FLE_S,                    MASK_FLE_S,             match_opcode, 0 },
+{"fneg.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,w",      MATCH_FSGNJN_S,                 MASK_FSGNJN_S,          match_rs1_eq_rs2, INSN_ALIAS },
+{"fabs.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,w",      MATCH_FSGNJX_S,                 MASK_FSGNJX_S,          match_rs1_eq_rs2, INSN_ALIAS },
+{"fsgnj.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FSGNJ_S,                  MASK_FSGNJ_S,           match_opcode, 0 },
+{"fsgnjn.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FSGNJN_S,                 MASK_FSGNJN_S,          match_opcode, 0 },
+{"fsgnjx.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FSGNJX_S,                 MASK_FSGNJX_S,          match_opcode, 0 },
+{"fadd.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FADD_S | MASK_RM,         MASK_FADD_S | MASK_RM,  match_opcode, 0 },
+{"fadd.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,m",  MATCH_FADD_S,                   MASK_FADD_S,            match_opcode, 0 },
+{"fsub.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FSUB_S | MASK_RM,         MASK_FSUB_S | MASK_RM,  match_opcode, 0 },
+{"fsub.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,m",  MATCH_FSUB_S,                   MASK_FSUB_S,            match_opcode, 0 },
+{"fmul.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FMUL_S | MASK_RM,         MASK_FMUL_S | MASK_RM,  match_opcode, 0 },
+{"fmul.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,m",  MATCH_FMUL_S,                   MASK_FMUL_S,            match_opcode, 0 },
+{"fdiv.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FDIV_S | MASK_RM,         MASK_FDIV_S | MASK_RM,  match_opcode, 0 },
+{"fdiv.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,m",  MATCH_FDIV_S,                   MASK_FDIV_S,            match_opcode, 0 },
+{"fsqrt.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FSQRT_S | MASK_RM,        MASK_FSQRT_S | MASK_RM, match_opcode, 0 },
+{"fsqrt.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,m",    MATCH_FSQRT_S,                  MASK_FSQRT_S,           match_opcode, 0 },
+{"fmin.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FMIN_S,                   MASK_FMIN_S,            match_opcode, 0 },
+{"fmax.s",    0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FMAX_S,                   MASK_FMAX_S,            match_opcode, 0 },
+{"fmadd.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e",  MATCH_FMADD_S | MASK_RM,        MASK_FMADD_S | MASK_RM, match_opcode, 0 },
+{"fmadd.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e,m",MATCH_FMADD_S,                  MASK_FMADD_S,           match_opcode, 0 },
+{"fnmadd.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e",  MATCH_FNMADD_S | MASK_RM,       MASK_FNMADD_S| MASK_RM, match_opcode, 0 },
+{"fnmadd.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e,m",MATCH_FNMADD_S,                 MASK_FNMADD_S,          match_opcode, 0 },
+{"fmsub.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e",  MATCH_FMSUB_S | MASK_RM,        MASK_FMSUB_S | MASK_RM, match_opcode, 0 },
+{"fmsub.s",   0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e,m",MATCH_FMSUB_S,                  MASK_FMSUB_S,           match_opcode, 0 },
+{"fnmsub.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e",  MATCH_FNMSUB_S | MASK_RM,       MASK_FNMSUB_S| MASK_RM, match_opcode, 0 },
+{"fnmsub.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t,e,m",MATCH_FNMSUB_S,                 MASK_FNMSUB_S,          match_opcode, 0 },
+{"fcvt.w.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FCVT_W_S | MASK_RM,       MASK_FCVT_W_S| MASK_RM, match_opcode, 0 },
+{"fcvt.w.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,m",    MATCH_FCVT_W_S,                 MASK_FCVT_W_S,          match_opcode, 0 },
+{"fcvt.wu.s", 0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FCVT_WU_S | MASK_RM,      MASK_FCVT_WU_S|MASK_RM, match_opcode, 0 },
+{"fcvt.wu.s", 0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,m",    MATCH_FCVT_WU_S,                MASK_FCVT_WU_S,         match_opcode, 0 },
+{"fcvt.s.w",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FCVT_S_W | MASK_RM,       MASK_FCVT_S_W| MASK_RM, match_opcode, 0 },
+{"fcvt.s.w",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,m",    MATCH_FCVT_S_W,                 MASK_FCVT_S_W,          match_opcode, 0 },
+{"fcvt.s.wu", 0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FCVT_S_WU | MASK_RM,      MASK_FCVT_S_W| MASK_RM, match_opcode, 0 },
+{"fcvt.s.wu", 0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,m",    MATCH_FCVT_S_WU,                MASK_FCVT_S_WU,         match_opcode, 0 },
+{"fclass.s",  0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s",      MATCH_FCLASS_S,                 MASK_FCLASS_S,          match_opcode, 0 },
+{"feq.s",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FEQ_S,                    MASK_FEQ_S,             match_opcode, 0 },
+{"flt.s",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FLT_S,                    MASK_FLT_S,             match_opcode, 0 },
+{"fle.s",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,s,t",    MATCH_FLE_S,                    MASK_FLE_S,             match_opcode, 0 },
+{"fgt.s",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,t,s",    MATCH_FLT_S,                    MASK_FLT_S,             match_opcode, 0 },
+{"fge.s",     0, INSN_CLASS_XPULP_FINX_GAP9,   "d,t,s",            MATCH_FLE_S,                    MASK_FLE_S,             match_opcode, 0 },
 
 /* Gap9 FP16 ALT,  Riscv F based but on fp16alt */
 
-{"fmadd.ah",   0, INSN_CLASS_XGAP9,  "d,s,t,e",  MATCH_FMADD_AH,                 MASK_FMADD_AH,          match_opcode, 0 },
-{"fmsub.ah",   0, INSN_CLASS_XGAP9,  "d,s,t,e",  MATCH_FMSUB_AH,                 MASK_FMSUB_AH,          match_opcode, 0 },
-{"fnmsub.ah",  0, INSN_CLASS_XGAP9,  "d,s,t,e",  MATCH_FNMSUB_AH,                MASK_FNMSUB_AH,         match_opcode, 0 },
-{"fnmadd.ah",  0, INSN_CLASS_XGAP9,  "d,s,t,e",  MATCH_FNMADD_AH,                MASK_FNMADD_AH,         match_opcode, 0 },
-{"fadd.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FADD_AH,                  MASK_FADD_AH,           match_opcode, 0 },
-{"fsub.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FSUB_AH,                  MASK_FSUB_AH,           match_opcode, 0 },
-{"fmul.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FMUL_AH,                  MASK_FMUL_AH,           match_opcode, 0 },
-{"fdiv.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FDIV_AH,                  MASK_FDIV_AH,           match_opcode, 0 },
-{"fsqrt.ah",   0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FSQRT_AH,                 MASK_FSQRT_AH,          match_opcode, 0 },
-{"fsgnj.ah",   0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FSGNJ_AH,                 MASK_FSGNJ_AH,          match_opcode, 0 },
-{"fsgnjn.ah",  0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FSGNJN_AH,                MASK_FSGNJN_AH,         match_opcode, 0 },
-{"fsgnjx.ah",  0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FSGNJX_AH,                MASK_FSGNJX_AH,         match_opcode, 0 },
-{"fmin.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FMIN_AH,                  MASK_FMIN_AH,           match_opcode, 0 },
-{"fmax.ah",    0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FMAX_AH,                  MASK_FMAX_AH,           match_opcode, 0 },
-{"feq.ah",     0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FEQ_AH,                   MASK_FEQ_AH,            match_opcode, 0 },
-{"flt.ah",     0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FLT_AH,                   MASK_FLT_AH,            match_opcode, 0 },
-{"fle.ah",     0, INSN_CLASS_XGAP9,  "d,s,t",    MATCH_FLE_AH,                   MASK_FLE_AH,            match_opcode, 0 },
-{"fcvt.w.ah",  0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_W_AH,                MASK_FCVT_W_AH,         match_opcode, 0 },
-{"fcvt.wu.ah", 0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_WU_AH,               MASK_FCVT_WU_AH,        match_opcode, 0 },
-{"fcvt.ah.w",  0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_AH_W,                MASK_FCVT_AH_W,         match_opcode, 0 },
-{"fcvt.ah.wu", 0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_AH_WU,               MASK_FCVT_AH_W,         match_opcode, 0 },
-{"fcvt.s.ah",  0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_S_AH,                MASK_FCVT_S_AH,         match_opcode, 0 },
-{"fcvt.ah.s",  0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCVT_AH_S,                MASK_FCVT_AH_S,         match_opcode, 0 },
+{"fmadd.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t,e",  MATCH_FMADD_AH,                 MASK_FMADD_AH,          match_opcode, 0 },
+{"fmsub.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t,e",  MATCH_FMSUB_AH,                 MASK_FMSUB_AH,          match_opcode, 0 },
+{"fnmsub.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t,e",  MATCH_FNMSUB_AH,                MASK_FNMSUB_AH,         match_opcode, 0 },
+{"fnmadd.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t,e",  MATCH_FNMADD_AH,                MASK_FNMADD_AH,         match_opcode, 0 },
+{"fadd.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FADD_AH,                  MASK_FADD_AH,           match_opcode, 0 },
+{"fsub.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FSUB_AH,                  MASK_FSUB_AH,           match_opcode, 0 },
+{"fmul.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FMUL_AH,                  MASK_FMUL_AH,           match_opcode, 0 },
+{"fdiv.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FDIV_AH,                  MASK_FDIV_AH,           match_opcode, 0 },
+{"fsqrt.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FSQRT_AH,                 MASK_FSQRT_AH,          match_opcode, 0 },
+{"fsgnj.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FSGNJ_AH,                 MASK_FSGNJ_AH,          match_opcode, 0 },
+{"fsgnjn.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FSGNJN_AH,                MASK_FSGNJN_AH,         match_opcode, 0 },
+{"fsgnjx.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FSGNJX_AH,                MASK_FSGNJX_AH,         match_opcode, 0 },
+{"fmin.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FMIN_AH,                  MASK_FMIN_AH,           match_opcode, 0 },
+{"fmax.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FMAX_AH,                  MASK_FMAX_AH,           match_opcode, 0 },
+{"feq.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FEQ_AH,                   MASK_FEQ_AH,            match_opcode, 0 },
+{"flt.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FLT_AH,                   MASK_FLT_AH,            match_opcode, 0 },
+{"fle.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,t",    MATCH_FLE_AH,                   MASK_FLE_AH,            match_opcode, 0 },
+{"fcvt.w.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_W_AH,                MASK_FCVT_W_AH,         match_opcode, 0 },
+{"fcvt.wu.ah", 0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_WU_AH,               MASK_FCVT_WU_AH,        match_opcode, 0 },
+{"fcvt.ah.w",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_AH_W,                MASK_FCVT_AH_W,         match_opcode, 0 },
+{"fcvt.ah.wu", 0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_AH_WU,               MASK_FCVT_AH_W,         match_opcode, 0 },
+{"fcvt.s.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_S_AH,                MASK_FCVT_S_AH,         match_opcode, 0 },
+{"fcvt.ah.s",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCVT_AH_S,                MASK_FCVT_AH_S,         match_opcode, 0 },
 
-{"fclass.ah",  0, INSN_CLASS_XGAP9,  "d,s",      MATCH_FCLASS_AH,                MASK_FCLASS_AH,         match_opcode, 0 },
+{"fclass.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",      MATCH_FCLASS_AH,                MASK_FCLASS_AH,         match_opcode, 0 },
 // pseudos
-{"fgt.ah",     0, INSN_CLASS_XGAP9,  "d,t,s",    MATCH_FLT_AH,                   MASK_FLT_AH,            match_opcode, 0 },
-{"fge.ah",     0, INSN_CLASS_XGAP9,  "d,t,s",    MATCH_FLE_AH,                   MASK_FLE_AH,            match_opcode, 0 },
-{"fabs.ah",    0, INSN_CLASS_XGAP9,  "d,w",      MATCH_FSGNJX_AH,                MASK_FSGNJX_AH,         match_rs1_eq_rs2, INSN_ALIAS },
-{"fneg.ah",    0, INSN_CLASS_XGAP9,  "d,w",      MATCH_FSGNJN_AH,                MASK_FSGNJN_AH,         match_rs1_eq_rs2, INSN_ALIAS },
+{"fgt.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,t,s",    MATCH_FLT_AH,                   MASK_FLT_AH,            match_opcode, 0 },
+{"fge.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,t,s",    MATCH_FLE_AH,                   MASK_FLE_AH,            match_opcode, 0 },
+{"fabs.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,w",      MATCH_FSGNJX_AH,                MASK_FSGNJX_AH,         match_rs1_eq_rs2, INSN_ALIAS },
+{"fneg.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,w",      MATCH_FSGNJN_AH,                MASK_FSGNJN_AH,         match_rs1_eq_rs2, INSN_ALIAS },
 
 /* Gap9 FP16,  Riscv F based but on fp16 */
-{"fmadd.h",   0, INSN_CLASS_XGAP9,   "d,s,t,e",         MATCH_FMADD_H | MASK_RM,        MASK_FMADD_H | MASK_RM, match_opcode,   0},
-{"fmadd.h",   0, INSN_CLASS_XGAP9,   "d,s,t,e,m",       MATCH_FMADD_H,                  MASK_FMADD_H,           match_opcode,   0},
-{"fmsub.h",   0, INSN_CLASS_XGAP9,   "d,s,t,e",         MATCH_FMSUB_H | MASK_RM,        MASK_FMSUB_H | MASK_RM, match_opcode,   0},
-{"fmsub.h",   0, INSN_CLASS_XGAP9,   "d,s,t,e,m",       MATCH_FMSUB_H,                  MASK_FMSUB_H,           match_opcode,   0},
-{"fnmsub.h",  0, INSN_CLASS_XGAP9,   "d,s,t,e",         MATCH_FNMSUB_H | MASK_RM,       MASK_FNMSUB_H|MASK_RM,  match_opcode,   0},
-{"fnmsub.h",  0, INSN_CLASS_XGAP9,   "d,s,t,e,m",       MATCH_FNMSUB_H,                 MASK_FNMSUB_H,          match_opcode,   0},
-{"fnmadd.h",  0, INSN_CLASS_XGAP9,   "d,s,t,e",         MATCH_FNMADD_H | MASK_RM,       MASK_FNMADD_H|MASK_RM,  match_opcode,   0},
-{"fnmadd.h",  0, INSN_CLASS_XGAP9,   "d,s,t,e,m",       MATCH_FNMADD_H,                 MASK_FNMADD_H,          match_opcode,   0},
-{"fadd.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FADD_H | MASK_RM,         MASK_FADD_H | MASK_RM,  match_opcode,   0},
-{"fadd.h",    0, INSN_CLASS_XGAP9,   "d,s,t,m",         MATCH_FADD_H,                   MASK_FADD_H,            match_opcode,   0},
-{"fsub.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FSUB_H | MASK_RM,         MASK_FSUB_H | MASK_RM,  match_opcode,   0},
-{"fsub.h",    0, INSN_CLASS_XGAP9,   "d,s,t,m",         MATCH_FSUB_H,                   MASK_FSUB_H,            match_opcode,   0},
-{"fmul.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FMUL_H | MASK_RM,         MASK_FMUL_H | MASK_RM,  match_opcode,   0},
-{"fmul.h",    0, INSN_CLASS_XGAP9,   "d,s,t,m",         MATCH_FMUL_H,                   MASK_FMUL_H,            match_opcode,   0},
-{"fdiv.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FDIV_H | MASK_RM,         MASK_FDIV_H | MASK_RM,  match_opcode,   0},
-{"fdiv.h",    0, INSN_CLASS_XGAP9,   "d,s,t,m",         MATCH_FDIV_H,                   MASK_FDIV_H,            match_opcode,   0},
-{"fsqrt.h",   0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FSQRT_H | MASK_RM,        MASK_FSQRT_H | MASK_RM, match_opcode,   0},
-{"fsqrt.h",   0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FSQRT_H,                  MASK_FSQRT_H,           match_opcode,   0},
-{"fsgnj.h",   0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FSGNJ_H,                  MASK_FSGNJ_H,           match_opcode,   0},
-{"fsgnjn.h",  0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FSGNJN_H,                 MASK_FSGNJN_H,          match_opcode,   0},
-{"fsgnjx.h",  0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FSGNJX_H,                 MASK_FSGNJX_H,          match_opcode,   0},
-{"fmin.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FMIN_H,                   MASK_FMIN_H,            match_opcode,   0},
-{"fmax.h",    0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FMAX_H,                   MASK_FMAX_H,            match_opcode,   0},
-{"feq.h",     0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FEQ_H,                    MASK_FEQ_H,             match_opcode,   0},
-{"flt.h",     0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FLT_H,                    MASK_FLT_H,             match_opcode,   0},
-{"fle.h",     0, INSN_CLASS_XGAP9,   "d,s,t",           MATCH_FLE_H,                    MASK_FLE_H,             match_opcode,   0},
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e",         MATCH_FMADD_H | MASK_RM,        MASK_FMADD_H | MASK_RM, match_opcode,   0},
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e,m",       MATCH_FMADD_H,                  MASK_FMADD_H,           match_opcode,   0},
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e",         MATCH_FMSUB_H | MASK_RM,        MASK_FMSUB_H | MASK_RM, match_opcode,   0},
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e,m",       MATCH_FMSUB_H,                  MASK_FMSUB_H,           match_opcode,   0},
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e",         MATCH_FNMSUB_H | MASK_RM,       MASK_FNMSUB_H|MASK_RM,  match_opcode,   0},
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e,m",       MATCH_FNMSUB_H,                 MASK_FNMSUB_H,          match_opcode,   0},
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e",         MATCH_FNMADD_H | MASK_RM,       MASK_FNMADD_H|MASK_RM,  match_opcode,   0},
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,e,m",       MATCH_FNMADD_H,                 MASK_FNMADD_H,          match_opcode,   0},
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FADD_H | MASK_RM,         MASK_FADD_H | MASK_RM,  match_opcode,   0},
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,m",         MATCH_FADD_H,                   MASK_FADD_H,            match_opcode,   0},
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FSUB_H | MASK_RM,         MASK_FSUB_H | MASK_RM,  match_opcode,   0},
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,m",         MATCH_FSUB_H,                   MASK_FSUB_H,            match_opcode,   0},
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FMUL_H | MASK_RM,         MASK_FMUL_H | MASK_RM,  match_opcode,   0},
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,m",         MATCH_FMUL_H,                   MASK_FMUL_H,            match_opcode,   0},
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FDIV_H | MASK_RM,         MASK_FDIV_H | MASK_RM,  match_opcode,   0},
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t,m",         MATCH_FDIV_H,                   MASK_FDIV_H,            match_opcode,   0},
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FSQRT_H | MASK_RM,        MASK_FSQRT_H | MASK_RM, match_opcode,   0},
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FSQRT_H,                  MASK_FSQRT_H,           match_opcode,   0},
+{"fsgnj.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FSGNJ_H,                  MASK_FSGNJ_H,           match_opcode,   0},
+{"fsgnjn.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FSGNJN_H,                 MASK_FSGNJN_H,          match_opcode,   0},
+{"fsgnjx.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FSGNJX_H,                 MASK_FSGNJX_H,          match_opcode,   0},
+{"fmin.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FMIN_H,                   MASK_FMIN_H,            match_opcode,   0},
+{"fmax.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FMAX_H,                   MASK_FMAX_H,            match_opcode,   0},
+{"feq.h",     0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FEQ_H,                    MASK_FEQ_H,             match_opcode,   0},
+{"flt.h",     0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FLT_H,                    MASK_FLT_H,             match_opcode,   0},
+{"fle.h",     0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,t",           MATCH_FLE_H,                    MASK_FLE_H,             match_opcode,   0},
 
-{"fcvt.w.h",  0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_W_H | MASK_RM,       MASK_FCVT_W_H|MASK_RM,  match_opcode,   0},
-{"fcvt.w.h",  0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FCVT_W_H,                 MASK_FCVT_W_H,          match_opcode,   0},
-{"fcvt.wu.h", 0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_WU_H | MASK_RM,      MASK_FCVT_WU_H|MASK_RM, match_opcode,   0},
-{"fcvt.wu.h", 0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FCVT_WU_H,                MASK_FCVT_WU_H,         match_opcode,   0},
-{"fcvt.h.w",  0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_H_W | MASK_RM,       MASK_FCVT_H_W|MASK_RM,  match_opcode,   0},
-{"fcvt.h.w",  0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FCVT_H_W,                 MASK_FCVT_H_W,          match_opcode,   0},
-{"fcvt.h.wu", 0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_H_WU | MASK_RM,      MASK_FCVT_H_W|MASK_RM,  match_opcode,   0},
-{"fcvt.h.wu", 0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FCVT_H_WU,                MASK_FCVT_H_WU,         match_opcode,   0},
-{"fcvt.s.h",  0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_S_H,                 MASK_FCVT_S_H,          match_opcode,   0},
-{"fcvt.h.s",  0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCVT_H_S | MASK_RM,       MASK_FCVT_H_S|MASK_RM,  match_opcode,   0},
-{"fcvt.h.s",  0, INSN_CLASS_XGAP9,   "d,s,m",           MATCH_FCVT_H_S,                 MASK_FCVT_H_S,          match_opcode,   0},
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_W_H | MASK_RM,       MASK_FCVT_W_H|MASK_RM,  match_opcode,   0},
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FCVT_W_H,                 MASK_FCVT_W_H,          match_opcode,   0},
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_WU_H | MASK_RM,      MASK_FCVT_WU_H|MASK_RM, match_opcode,   0},
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FCVT_WU_H,                MASK_FCVT_WU_H,         match_opcode,   0},
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_H_W | MASK_RM,       MASK_FCVT_H_W|MASK_RM,  match_opcode,   0},
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FCVT_H_W,                 MASK_FCVT_H_W,          match_opcode,   0},
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_H_WU | MASK_RM,      MASK_FCVT_H_W|MASK_RM,  match_opcode,   0},
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FCVT_H_WU,                MASK_FCVT_H_WU,         match_opcode,   0},
+{"fcvt.s.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_S_H,                 MASK_FCVT_S_H,          match_opcode,   0},
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCVT_H_S | MASK_RM,       MASK_FCVT_H_S|MASK_RM,  match_opcode,   0},
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s,m",           MATCH_FCVT_H_S,                 MASK_FCVT_H_S,          match_opcode,   0},
 
-{"fclass.h",  0, INSN_CLASS_XGAP9,   "d,s",             MATCH_FCLASS_H,                 MASK_FCLASS_H,          match_opcode,   0},
+{"fclass.h",  0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,s",             MATCH_FCLASS_H,                 MASK_FCLASS_H,          match_opcode,   0},
 
 // pseudos
-{"fgt.h",     0, INSN_CLASS_XGAP9,   "d,t,s",           MATCH_FLT_H,                    MASK_FLT_H,             match_opcode,  INSN_ALIAS },
-{"fge.h",     0, INSN_CLASS_XGAP9,   "d,t,s",           MATCH_FLE_H,                    MASK_FLE_H,             match_opcode,  INSN_ALIAS },
-{"fabs.h",    0, INSN_CLASS_XGAP9,   "d,w",             MATCH_FSGNJX_H,                 MASK_FSGNJX_H,          match_rs1_eq_rs2,   INSN_ALIAS },
-{"fneg.h",    0, INSN_CLASS_XGAP9,   "d,w",             MATCH_FSGNJN_H,                 MASK_FSGNJN_H,          match_rs1_eq_rs2,   INSN_ALIAS },
+{"fgt.h",     0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,t,s",           MATCH_FLT_H,                    MASK_FLT_H,             match_opcode,  INSN_ALIAS },
+{"fge.h",     0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,t,s",           MATCH_FLE_H,                    MASK_FLE_H,             match_opcode,  INSN_ALIAS },
+{"fabs.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,w",             MATCH_FSGNJX_H,                 MASK_FSGNJX_H,          match_rs1_eq_rs2,   INSN_ALIAS },
+{"fneg.h",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,w",             MATCH_FSGNJN_H,                 MASK_FSGNJN_H,          match_rs1_eq_rs2,   INSN_ALIAS },
 
 
 /* Gap9 FP16 ALT <-> Fp16 */
-{"fcvt.h.ah",   0, INSN_CLASS_XGAP9,  "d,s"  ,          MATCH_FCVT_H_AH | MASK_RM,      MASK_FCVT_H_AH|MASK_RM, match_opcode, 0 },
-{"fcvt.h.ah",   0, INSN_CLASS_XGAP9,  "d,s,m",          MATCH_FCVT_H_AH,                MASK_FCVT_H_AH,         match_opcode, 0 },
-{"fcvt.ah.h",   0, INSN_CLASS_XGAP9,  "d,s",            MATCH_FCVT_AH_H,                MASK_FCVT_AH_H,         match_opcode, 0 },
+{"fcvt.h.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s"  ,          MATCH_FCVT_H_AH | MASK_RM,      MASK_FCVT_H_AH|MASK_RM, match_opcode, 0 },
+{"fcvt.h.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s,m",          MATCH_FCVT_H_AH,                MASK_FCVT_H_AH,         match_opcode, 0 },
+{"fcvt.ah.h",   0, INSN_CLASS_XPULP_FHALF_GAP9,  "d,s",            MATCH_FCVT_AH_H,                MASK_FCVT_AH_H,         match_opcode, 0 },
 
 /* Gap9 FP16 ALT,  Fp16Alt, Fp16Alt => Fp32 */
-{"fmulex.s.ah", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_FMULEX_S_AH,              MASK_FMULEX_S_AH,       match_opcode, 0},
-{"fmacex.s.ah", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_FMACEX_S_AH,              MASK_FMACEX_S_AH,       match_opcode, 0},
+{"fmulex.s.ah", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_FMULEX_S_AH,              MASK_FMULEX_S_AH,       match_opcode, 0},
+{"fmacex.s.ah", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_FMACEX_S_AH,              MASK_FMACEX_S_AH,       match_opcode, 0},
 
 /* Gap9 SIMD2 FP16ALT */
-{"vfadd.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFADD_AH,                 MASK_VFADD_AH,          match_opcode, 0},
-{"vfadd.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFADD_R_AH,               MASK_VFADD_R_AH,        match_opcode, 0},
-{"vfsub.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSUB_AH,                 MASK_VFSUB_AH,          match_opcode, 0},
-{"vfsub.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSUB_R_AH,               MASK_VFSUB_R_AH,        match_opcode, 0},
-{"vfmul.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMUL_AH,                 MASK_VFMUL_AH,          match_opcode, 0},
-{"vfmul.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMUL_R_AH,               MASK_VFMUL_R_AH,        match_opcode, 0},
-// {"vfdiv.ah",    0, INSN_CLASS_XGAP9, "d,s,t",        MATCH_VFDIV_AH,                 MASK_VFDIV_AH,          match_opcode, 0},
-// {"vfdiv.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",        MATCH_VFDIV_R_AH,               MASK_VFDIV_R_AH,        match_opcode, 0},
-{"vfmin.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMIN_AH,                 MASK_VFMIN_AH,          match_opcode, 0},
-{"vfmin.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMIN_R_AH,               MASK_VFMIN_R_AH,        match_opcode, 0},
-{"vfmax.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAX_AH,                 MASK_VFMAX_AH,          match_opcode, 0},
-{"vfmax.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAX_R_AH,               MASK_VFMAX_R_AH,        match_opcode, 0},
-// {"vfsqrt.ah",   0, INSN_CLASS_XGAP9, "d,s",          MATCH_VFSQRT_AH,                MASK_VFSQRT_AH,         match_opcode, 0},
-{"vfmac.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAC_AH,                 MASK_VFMAC_AH,          match_opcode, 0},
-{"vfmac.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAC_R_AH,               MASK_VFMAC_R_AH,        match_opcode, 0},
-{"vfmre.ah",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMRE_AH,                 MASK_VFMRE_AH,          match_opcode, 0},
-{"vfmre.r.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMRE_R_AH,               MASK_VFMRE_R_AH,        match_opcode, 0},
-{"vfclass.ah",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCLASS_AH,               MASK_VFCLASS_AH,        match_opcode, 0},
-{"vfsgnj.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJ_AH,                MASK_VFSGNJ_AH,         match_opcode, 0},
-{"vfsgnj.r.ah", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJ_R_AH,              MASK_VFSGNJ_R_AH,       match_opcode, 0},
-{"vfsgnjn.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJN_AH,               MASK_VFSGNJN_AH,        match_opcode, 0},
-{"vfsgnjn.r.ah",0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJN_R_AH,             MASK_VFSGNJN_R_AH,      match_opcode, 0},
-{"vfsgnjx.ah",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJX_AH,               MASK_VFSGNJX_AH,        match_opcode, 0},
-{"vfsgnjx.r.ah",0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJX_R_AH,             MASK_VFSGNJX_R_AH,      match_opcode, 0},
-{"vfeq.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFEQ_AH,                  MASK_VFEQ_AH,           match_opcode, 0},
-{"vfeq.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFEQ_R_AH,                MASK_VFEQ_R_AH,         match_opcode, 0},
-{"vfne.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFNE_AH,                  MASK_VFNE_AH,           match_opcode, 0},
-{"vfne.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFNE_R_AH,                MASK_VFNE_R_AH,         match_opcode, 0},
-{"vflt.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLT_AH,                  MASK_VFLT_AH,           match_opcode, 0},
-{"vflt.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLT_R_AH,                MASK_VFLT_R_AH,         match_opcode, 0},
-{"vfge.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGE_AH,                  MASK_VFGE_AH,           match_opcode, 0},
-{"vfge.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGE_R_AH,                MASK_VFGE_R_AH,         match_opcode, 0},
-{"vfle.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLE_AH,                  MASK_VFLE_AH,           match_opcode, 0},
-{"vfle.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLE_R_AH,                MASK_VFLE_R_AH,         match_opcode, 0},
-{"vfgt.ah",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGT_AH,                  MASK_VFGT_AH,           match_opcode, 0},
-{"vfgt.r.ah",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGT_R_AH,                MASK_VFGT_R_AH,         match_opcode, 0},
-{"vfcpka.ah.s", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFCPKA_AH_S,              MASK_VFCPKA_AH_S,       match_opcode, 0},
+{"vfadd.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFADD_AH,                 MASK_VFADD_AH,          match_opcode, 0},
+{"vfadd.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFADD_R_AH,               MASK_VFADD_R_AH,        match_opcode, 0},
+{"vfsub.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSUB_AH,                 MASK_VFSUB_AH,          match_opcode, 0},
+{"vfsub.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSUB_R_AH,               MASK_VFSUB_R_AH,        match_opcode, 0},
+{"vfmul.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMUL_AH,                 MASK_VFMUL_AH,          match_opcode, 0},
+{"vfmul.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMUL_R_AH,               MASK_VFMUL_R_AH,        match_opcode, 0},
+// {"vfdiv.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",        MATCH_VFDIV_AH,                 MASK_VFDIV_AH,          match_opcode, 0},
+// {"vfdiv.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",        MATCH_VFDIV_R_AH,               MASK_VFDIV_R_AH,        match_opcode, 0},
+{"vfmin.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMIN_AH,                 MASK_VFMIN_AH,          match_opcode, 0},
+{"vfmin.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMIN_R_AH,               MASK_VFMIN_R_AH,        match_opcode, 0},
+{"vfmax.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAX_AH,                 MASK_VFMAX_AH,          match_opcode, 0},
+{"vfmax.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAX_R_AH,               MASK_VFMAX_R_AH,        match_opcode, 0},
+// {"vfsqrt.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",          MATCH_VFSQRT_AH,                MASK_VFSQRT_AH,         match_opcode, 0},
+{"vfmac.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAC_AH,                 MASK_VFMAC_AH,          match_opcode, 0},
+{"vfmac.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAC_R_AH,               MASK_VFMAC_R_AH,        match_opcode, 0},
+{"vfmre.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMRE_AH,                 MASK_VFMRE_AH,          match_opcode, 0},
+{"vfmre.r.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMRE_R_AH,               MASK_VFMRE_R_AH,        match_opcode, 0},
+{"vfclass.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCLASS_AH_GAP9,          MASK_VFCLASS_AH_GAP9,   match_opcode, 0},
+{"vfsgnj.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJ_AH,                MASK_VFSGNJ_AH,         match_opcode, 0},
+{"vfsgnj.r.ah", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJ_R_AH,              MASK_VFSGNJ_R_AH,       match_opcode, 0},
+{"vfsgnjn.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJN_AH,               MASK_VFSGNJN_AH,        match_opcode, 0},
+{"vfsgnjn.r.ah",0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJN_R_AH,             MASK_VFSGNJN_R_AH,      match_opcode, 0},
+{"vfsgnjx.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJX_AH,               MASK_VFSGNJX_AH,        match_opcode, 0},
+{"vfsgnjx.r.ah",0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJX_R_AH,             MASK_VFSGNJX_R_AH,      match_opcode, 0},
+{"vfeq.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFEQ_AH,                  MASK_VFEQ_AH,           match_opcode, 0},
+{"vfeq.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFEQ_R_AH,                MASK_VFEQ_R_AH,         match_opcode, 0},
+{"vfne.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFNE_AH,                  MASK_VFNE_AH,           match_opcode, 0},
+{"vfne.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFNE_R_AH,                MASK_VFNE_R_AH,         match_opcode, 0},
+{"vflt.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLT_AH,                  MASK_VFLT_AH,           match_opcode, 0},
+{"vflt.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLT_R_AH,                MASK_VFLT_R_AH,         match_opcode, 0},
+{"vfge.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGE_AH,                  MASK_VFGE_AH,           match_opcode, 0},
+{"vfge.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGE_R_AH,                MASK_VFGE_R_AH,         match_opcode, 0},
+{"vfle.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLE_AH,                  MASK_VFLE_AH,           match_opcode, 0},
+{"vfle.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLE_R_AH,                MASK_VFLE_R_AH,         match_opcode, 0},
+{"vfgt.ah",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGT_AH,                  MASK_VFGT_AH,           match_opcode, 0},
+{"vfgt.r.ah",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGT_R_AH,                MASK_VFGT_R_AH,         match_opcode, 0},
+{"vfcpka.ah.s", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFCPKA_AH_S,              MASK_VFCPKA_AH_S,       match_opcode, 0},
 
-{"vfcvt.x.ah",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_X_AH,               MASK_VFCVT_X_AH,        match_opcode, 0},
-{"vfcvt.xu.ah", 0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_XU_AH,              MASK_VFCVT_XU_AH,       match_opcode, 0},
-{"vfcvt.ah.x",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_AH_X,               MASK_VFCVT_AH_X,        match_opcode, 0},
-{"vfcvt.ah.xu", 0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_AH_XU,              MASK_VFCVT_AH_XU,       match_opcode, 0},
+{"vfcvt.x.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_X_AH,               MASK_VFCVT_X_AH,        match_opcode, 0},
+{"vfcvt.xu.ah", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_XU_AH,              MASK_VFCVT_XU_AH,       match_opcode, 0},
+{"vfcvt.ah.x",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_AH_X,               MASK_VFCVT_AH_X,        match_opcode, 0},
+{"vfcvt.ah.xu", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_AH_XU,              MASK_VFCVT_AH_XU,       match_opcode, 0},
 
 /* Pseudos */
-{"vfabs.ah",    0, INSN_CLASS_XGAP9,   "d,w",           MATCH_VFSGNJX_AH,               MASK_VFSGNJX_AH,        match_rs1_eq_rs2,   INSN_ALIAS },
-{"vfneg.ah",    0, INSN_CLASS_XGAP9,   "d,w",           MATCH_VFSGNJN_AH,               MASK_VFSGNJN_AH,        match_rs1_eq_rs2,   INSN_ALIAS },
+{"vfabs.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,w",           MATCH_VFSGNJX_AH,               MASK_VFSGNJX_AH,        match_rs1_eq_rs2,   INSN_ALIAS },
+{"vfneg.ah",    0, INSN_CLASS_XPULP_FHALF_GAP9,   "d,w",           MATCH_VFSGNJN_AH,               MASK_VFSGNJN_AH,        match_rs1_eq_rs2,   INSN_ALIAS },
 
 
 /* Gap9 SIMD2 FP16 */
-{"vfadd.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFADD_H,                  MASK_VFADD_H,           match_opcode, 0},
-{"vfadd.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFADD_R_H,                MASK_VFADD_R_H,         match_opcode, 0},
-{"vfsub.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSUB_H,                  MASK_VFSUB_H,           match_opcode, 0},
-{"vfsub.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSUB_R_H,                MASK_VFSUB_R_H,         match_opcode, 0},
-{"vfmul.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMUL_H,                  MASK_VFMUL_H,           match_opcode, 0},
-{"vfmul.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMUL_R_H,                MASK_VFMUL_R_H,         match_opcode, 0},
-// {"vfdiv.h",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFDIV_H,                  MASK_VFDIV_H,           match_opcode, 0},
-// {"vfdiv.r.h",0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFDIV_R_H,                MASK_VFDIV_R_H,         match_opcode, 0},
-{"vfmin.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMIN_H,                  MASK_VFMIN_H,           match_opcode, 0},
-{"vfmin.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMIN_R_H,                MASK_VFMIN_R_H,         match_opcode, 0},
-{"vfmax.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAX_H,                  MASK_VFMAX_H,           match_opcode, 0},
-{"vfmax.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAX_R_H,                MASK_VFMAX_R_H,         match_opcode, 0},
-// {"vfsqrt.h",         0, INSN_CLASS_XGAP9, "d,s",     MATCH_VFSQRT_H,                 MASK_VFSQRT_H,          match_opcode, 0},
-{"vfmac.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAC_H,                  MASK_VFMAC_H,           match_opcode, 0},
-{"vfmac.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMAC_R_H,                MASK_VFMAC_R_H,         match_opcode, 0},
-{"vfmre.h",     0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMRE_H,                  MASK_VFMRE_H,           match_opcode, 0},
-{"vfmre.r.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFMRE_R_H,                MASK_VFMRE_R_H,         match_opcode, 0},
-{"vfclass.h",   0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCLASS_H,                MASK_VFCLASS_H,         match_opcode, 0},
-{"vfsgnj.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJ_H,                 MASK_VFSGNJ_H,          match_opcode, 0},
-{"vfsgnj.r.h",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJ_R_H,               MASK_VFSGNJ_R_H,        match_opcode, 0},
-{"vfsgnjn.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJN_H,                MASK_VFSGNJN_H,         match_opcode, 0},
-{"vfsgnjn.r.h", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJN_R_H,              MASK_VFSGNJN_R_H,       match_opcode, 0},
-{"vfsgnjx.h",   0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJX_H,                MASK_VFSGNJX_H,         match_opcode, 0},
-{"vfsgnjx.r.h", 0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFSGNJX_R_H,              MASK_VFSGNJX_R_H,       match_opcode, 0},
-{"vfeq.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFEQ_H,                   MASK_VFEQ_H,            match_opcode, 0},
-{"vfeq.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFEQ_R_H,                 MASK_VFEQ_R_H,          match_opcode, 0},
-{"vfne.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFNE_H,                   MASK_VFNE_H,            match_opcode, 0},
-{"vfne.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFNE_R_H,                 MASK_VFNE_R_H,          match_opcode, 0},
-{"vflt.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLT_H,                   MASK_VFLT_H,            match_opcode, 0},
-{"vflt.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLT_R_H,                 MASK_VFLT_R_H,          match_opcode, 0},
-{"vfge.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGE_H,                   MASK_VFGE_H,            match_opcode, 0},
-{"vfge.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGE_R_H,                 MASK_VFGE_R_H,          match_opcode, 0},
-{"vfle.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLE_H,                   MASK_VFLE_H,            match_opcode, 0},
-{"vfle.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFLE_R_H,                 MASK_VFLE_R_H,          match_opcode, 0},
-{"vfgt.h",      0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGT_H,                   MASK_VFGT_H,            match_opcode, 0},
-{"vfgt.r.h",    0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFGT_R_H,                 MASK_VFGT_R_H,          match_opcode, 0},
-{"vfcpka.h.s",  0, INSN_CLASS_XGAP9, "d,s,t",           MATCH_VFCPKA_H_S,               MASK_VFCPKA_H_S,        match_opcode, 0},
+{"vfadd.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFADD_H,                  MASK_VFADD_H,           match_opcode, 0},
+{"vfadd.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFADD_R_H,                MASK_VFADD_R_H,         match_opcode, 0},
+{"vfsub.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSUB_H,                  MASK_VFSUB_H,           match_opcode, 0},
+{"vfsub.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSUB_R_H,                MASK_VFSUB_R_H,         match_opcode, 0},
+{"vfmul.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMUL_H,                  MASK_VFMUL_H,           match_opcode, 0},
+{"vfmul.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMUL_R_H,                MASK_VFMUL_R_H,         match_opcode, 0},
+// {"vfdiv.h",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFDIV_H,                  MASK_VFDIV_H,           match_opcode, 0},
+// {"vfdiv.r.h",0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFDIV_R_H,                MASK_VFDIV_R_H,         match_opcode, 0},
+{"vfmin.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMIN_H,                  MASK_VFMIN_H,           match_opcode, 0},
+{"vfmin.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMIN_R_H,                MASK_VFMIN_R_H,         match_opcode, 0},
+{"vfmax.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAX_H,                  MASK_VFMAX_H,           match_opcode, 0},
+{"vfmax.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAX_R_H,                MASK_VFMAX_R_H,         match_opcode, 0},
+// {"vfsqrt.h",         0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",     MATCH_VFSQRT_H,                 MASK_VFSQRT_H,          match_opcode, 0},
+{"vfmac.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAC_H,                  MASK_VFMAC_H,           match_opcode, 0},
+{"vfmac.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMAC_R_H,                MASK_VFMAC_R_H,         match_opcode, 0},
+{"vfmre.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMRE_H,                  MASK_VFMRE_H,           match_opcode, 0},
+{"vfmre.r.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFMRE_R_H,                MASK_VFMRE_R_H,         match_opcode, 0},
+{"vfclass.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCLASS_H_GAP9,           MASK_VFCLASS_H_GAP9,    match_opcode, 0},
+{"vfsgnj.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJ_H,                 MASK_VFSGNJ_H,          match_opcode, 0},
+{"vfsgnj.r.h",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJ_R_H,               MASK_VFSGNJ_R_H,        match_opcode, 0},
+{"vfsgnjn.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJN_H,                MASK_VFSGNJN_H,         match_opcode, 0},
+{"vfsgnjn.r.h", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJN_R_H,              MASK_VFSGNJN_R_H,       match_opcode, 0},
+{"vfsgnjx.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJX_H,                MASK_VFSGNJX_H,         match_opcode, 0},
+{"vfsgnjx.r.h", 0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFSGNJX_R_H,              MASK_VFSGNJX_R_H,       match_opcode, 0},
+{"vfeq.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFEQ_H,                   MASK_VFEQ_H,            match_opcode, 0},
+{"vfeq.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFEQ_R_H,                 MASK_VFEQ_R_H,          match_opcode, 0},
+{"vfne.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFNE_H,                   MASK_VFNE_H,            match_opcode, 0},
+{"vfne.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFNE_R_H,                 MASK_VFNE_R_H,          match_opcode, 0},
+{"vflt.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLT_H,                   MASK_VFLT_H,            match_opcode, 0},
+{"vflt.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLT_R_H,                 MASK_VFLT_R_H,          match_opcode, 0},
+{"vfge.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGE_H,                   MASK_VFGE_H,            match_opcode, 0},
+{"vfge.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGE_R_H,                 MASK_VFGE_R_H,          match_opcode, 0},
+{"vfle.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLE_H,                   MASK_VFLE_H,            match_opcode, 0},
+{"vfle.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFLE_R_H,                 MASK_VFLE_R_H,          match_opcode, 0},
+{"vfgt.h",      0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGT_H,                   MASK_VFGT_H,            match_opcode, 0},
+{"vfgt.r.h",    0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFGT_R_H,                 MASK_VFGT_R_H,          match_opcode, 0},
+{"vfcpka.h.s",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s,t",           MATCH_VFCPKA_H_S,               MASK_VFCPKA_H_S,        match_opcode, 0},
 
-{"vfcvt.x.h",   0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_X_H,                MASK_VFCVT_X_H,         match_opcode, 0},
-{"vfcvt.xu.h",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_XU_H,               MASK_VFCVT_XU_H,        match_opcode, 0},
-{"vfcvt.h.x",   0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_H_X,                MASK_VFCVT_H_X,         match_opcode, 0},
-{"vfcvt.h.xu",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_H_XU,               MASK_VFCVT_H_XU,        match_opcode, 0},
+{"vfcvt.x.h",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_X_H,                MASK_VFCVT_X_H,         match_opcode, 0},
+{"vfcvt.xu.h",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_XU_H,               MASK_VFCVT_XU_H,        match_opcode, 0},
+{"vfcvt.h.x",   0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_H_X,                MASK_VFCVT_H_X,         match_opcode, 0},
+{"vfcvt.h.xu",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_H_XU,               MASK_VFCVT_H_XU,        match_opcode, 0},
 
 /* Pseudos */
-{"vfabs.h",     0, INSN_CLASS_XGAP9, "d,w",             MATCH_VFSGNJX_H,                MASK_VFSGNJX_H,         match_rs1_eq_rs2,   INSN_ALIAS },
-{"vfneg.h",     0, INSN_CLASS_XGAP9, "d,w",             MATCH_VFSGNJN_H,                MASK_VFSGNJN_H,         match_rs1_eq_rs2,   INSN_ALIAS },
+{"vfabs.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,w",             MATCH_VFSGNJX_H,                MASK_VFSGNJX_H,         match_rs1_eq_rs2,   INSN_ALIAS },
+{"vfneg.h",     0, INSN_CLASS_XPULP_FHALF_GAP9, "d,w",             MATCH_VFSGNJN_H,                MASK_VFSGNJN_H,         match_rs1_eq_rs2,   INSN_ALIAS },
 
 
 /* SIMD2 FP16 <-> FP16ALT */
-{"vfcvt.h.ah",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_H_AH,               MASK_VFCVT_H_AH,        match_opcode, 0},
-{"vfcvt.ah.h",  0, INSN_CLASS_XGAP9, "d,s",             MATCH_VFCVT_AH_H,               MASK_VFCVT_AH_H,        match_opcode, 0},
+{"vfcvt.h.ah",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_H_AH,               MASK_VFCVT_H_AH,        match_opcode, 0},
+{"vfcvt.ah.h",  0, INSN_CLASS_XPULP_FHALF_GAP9, "d,s",             MATCH_VFCVT_AH_H,               MASK_VFCVT_AH_H,        match_opcode, 0},
 
 
 /***********************************************************************************************************************/

@@ -1110,6 +1110,7 @@ riscv_parsing_subset_version (riscv_parse_subset_t *rps,
 			      bfd_boolean std_ext_p)
 {
   bfd_boolean major_p = TRUE;
+  bfd_boolean assigned = FALSE;
   unsigned version = 0;
   unsigned major = 0;
   unsigned minor = 0;
@@ -1143,7 +1144,10 @@ riscv_parsing_subset_version (riscv_parse_subset_t *rps,
 	  version = 0;
 	}
       else if (ISDIGIT (*p))
-	version = (version * 10) + (*p - '0');
+	{
+	  version = (version * 10) + (*p - '0');
+	  assigned = TRUE;
+	}
       else
 	break;
     }
@@ -1153,7 +1157,7 @@ riscv_parsing_subset_version (riscv_parse_subset_t *rps,
   else
     minor = version;
 
-  if (major == 0 && minor == 0)
+  if ((major == 0 && minor == 0) && !assigned)
     {
       /* We don't found any version string, use default version.  */
       *major_version = default_major_version;
@@ -1499,6 +1503,37 @@ riscv_add_subset (riscv_subset_list_t *subset_list,
     subset_list->tail->next = s;
 
   subset_list->tail = s;
+}
+
+/* Remove subset from list.  */
+void
+riscv_remove_subset (riscv_subset_list_t *subset_list,
+		     const char *subset)
+{
+  if (subset_list->head == NULL)
+    return;
+
+  riscv_subset_t *cur = subset_list->head;
+  riscv_subset_t *prev = NULL;
+
+  while (strcmp(cur->name, subset) != 0)
+    {
+      prev = cur;
+      cur = cur->next;
+    }
+
+  if (prev)
+    {
+      prev->next = cur->next;
+      free ((void *)cur->name);
+      free (cur);
+    }
+  else
+    subset_list->head = cur->next;
+
+  /* we removed the tail, we need to update the tail pointer */
+  if (prev->next == NULL)
+    subset_list->tail = prev;
 }
 
 /* Find subset in list without version checking, return NULL if not found.  */
