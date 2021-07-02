@@ -1972,7 +1972,7 @@ rvc_lui:
                       if (args[1]=='i') {
                           ++args;
                           if (regno>1)
-                                as_fatal (_("internal error: wrong loop number argument: x%d, range:[x0,x1]"),
+                                as_bad (_("wrong loop number argument: x%d, range:[x0,x1]"),
                                           (int) regno);
                       }
 		      INSERT_OPERAND (RD, *ip, regno);
@@ -2074,25 +2074,45 @@ rvc_lui:
                    bF: 2 bits unsigned imm
                  */
               if (args[1]=='1') {
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
+		if ((imm_expr->X_op != O_symbol && imm_expr->X_op != O_constant)
+		    || reg_lookup (&s, RCLASS_GPR, &regno))
+		  as_bad(_("%s immediate value must be a constant or label"),
+			 ip->insn_mo->name);
                 s = expr_end;
                 if (imm_expr->X_op == O_constant) {
                         if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 0x0FFF))
-                                as_fatal (_("internal error: %s constant too large for lp.start/lp.endi, range:[0, %d]"),
-                                  saved_s, 0x1FFF);
+                                as_bad (_("%ld constant out of range for %s, range:[0, %d]"),
+					imm_expr->X_add_number, ip->insn_mo->name, 0x1FFE);
+			if ((imm_expr->X_add_number % 2) == 1)
+			  {
+			    as_warn (_("constant for %s must be even: %ld truncated to %ld"),
+				     ip->insn_mo->name, imm_expr->X_add_number,
+				     imm_expr->X_add_number-1);
+			    imm_expr->X_add_number--;
+			  }
                         INSERT_OPERAND (IMM12, *ip, (imm_expr->X_add_number>>1));
                 } else *imm_reloc = BFD_RELOC_RISCV_REL12;
               } else if (args[1]=='2') {
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
+		if ((imm_expr->X_op != O_symbol && imm_expr->X_op != O_constant)
+		    || reg_lookup (&s, RCLASS_GPR, &regno))
+		  as_bad(_("%s immediate value must be a constant or label"),
+			 ip->insn_mo->name);
                 s = expr_end;
                 if (imm_expr->X_op == O_constant) {
                         if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 31))
-                                as_fatal (_("internal error: %s constant too large for lp.setupi, range:[0, %d]"),
-                                  saved_s, 63);
+                                as_bad (_("%ld constant out of range for lp.setupi, range:[0, %d]"),
+                                  imm_expr->X_add_number, 62);
+			if ((imm_expr->X_add_number % 2) == 1)
+			  {
+			    as_warn (_("constant for lp.setupi must be even: "
+				       "%ld truncated to %ld"),
+				     imm_expr->X_add_number, imm_expr->X_add_number-1);
+			    imm_expr->X_add_number--;
+			  }
                         INSERT_OPERAND (IMM5, *ip, (imm_expr->X_add_number>>1));
                 } else *imm_reloc = BFD_RELOC_RISCV_RELU5;
               } else if (args[1]=='3') {
@@ -2159,15 +2179,15 @@ rvc_lui:
 	    case 'j': /* Sign-extended immediate.  */
               if (args[1]=='i') {
                 /* immediate loop count, we don't want to use BFD_RELOC_RISCV_LO12_I to avoid colliding with relaxation */
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
                 check_absolute_expr (ip, imm_expr, FALSE);
                 s = expr_end;
-                if (imm_expr->X_op != O_constant || imm_expr->X_add_number >= (signed)RISCV_IMM_REACH ||
+                if (imm_expr->X_add_number >= (signed)RISCV_IMM_REACH ||
                     imm_expr->X_add_number < 0)
-                        as_fatal (_("internal error: non constant or too large lsetupi loop count %s, range:[0, %d["),
-                                  saved_s, (int) RISCV_IMM_REACH);
+                        as_bad (_("%ld constant out of range for %s, range:[0, %d]"),
+				imm_expr->X_add_number, ip->insn_mo->name,
+				(int) RISCV_IMM_REACH-1);
 
                 INSERT_OPERAND (IMM12, *ip, imm_expr->X_add_number);
                 continue;
