@@ -1073,6 +1073,12 @@ const struct riscv_opcode riscv_opcodes[] =
 {"p.machhurn",          0, INSN_CLASS_XPULP_MACRN_HI, "d,s,t,b5",     MATCH_MACHHURN,                         MASK_MACMULNR,  match_opcode,   0},
 
 /* Mul with norm/round 16x16 into 32 */
+/* these need to get before the one with the postfix 'n' */
+{"p.muls",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
+{"p.mulhhs",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
+{"p.mulu",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
+{"p.mulhhu",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
+
 {"p.mulsn",             0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULSN,                            MASK_MACMULNR,  match_opcode,   0},
 {"p.mulhhsn",           0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHSN,                          MASK_MACMULNR,  match_opcode,   0},
 {"p.mulsrn",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULSRN,                           MASK_MACMULNR,  match_opcode,   0},
@@ -1083,10 +1089,6 @@ const struct riscv_opcode riscv_opcodes[] =
 {"p.mulurn",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULURN,                           MASK_MACMULNR,  match_opcode,   0},
 {"p.mulhhurn",          0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t,b5",     MATCH_MULHHURN,                         MASK_MACMULNR,  match_opcode,   0},
 
-{"p.muls",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULS,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhs",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHS,                           MASK_MACMUL,    match_opcode,   0},
-{"p.mulu",              0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULU,                             MASK_MACMUL,    match_opcode,   0},
-{"p.mulhhu",            0, INSN_CLASS_XPULP_MULRN_HI, "d,s,t",        MATCH_MULHHU,                           MASK_MACMUL,    match_opcode,   0},
 
 /* just use standard RISC-V mul extension */
 // /* 32x32 into 32 multiplication */
