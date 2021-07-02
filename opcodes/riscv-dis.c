@@ -494,7 +494,7 @@ print_insn_args (const char *d, insn_t l, bfd_vma pc, disassemble_info *info)
 	case 'j':
           if (d[1]=='i') {
              ++d;
-             print (info->stream, "%d", (int) EXTRACT_ITYPE_IMM (l));
+             print (info->stream, "%d", (int)ENCODE_LOOP_UIMM(l));
              break;
           }
 	  if (((l & MASK_ADDI) == MATCH_ADDI && rs1 != 0)

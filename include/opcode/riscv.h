@@ -153,6 +153,9 @@ static const char * const riscv_pred_succ[16] =
 #define ENCODE_RVC_J_IMM(x) \
   ((RV_X(x, 1, 3) << 3) | (RV_X(x, 4, 1) << 11) | (RV_X(x, 5, 1) << 2) | (RV_X(x, 6, 1) << 7) | (RV_X(x, 7, 1) << 6) | (RV_X(x, 8, 2) << 9) | (RV_X(x, 10, 1) << 8) | (RV_X(x, 11, 1) << 12))
 
+/* PULP */
+#define ENCODE_LOOP_UIMM(x) \
+  (RV_X(x, 20, 12))
 #define ENCODE_I1TYPE_UIMM(x) \
   (RV_X(x, 0, 5) << 15)
 #define ENCODE_I6TYPE_IMM(x) \
