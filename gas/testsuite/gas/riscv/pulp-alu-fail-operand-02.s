@@ -1,0 +1,33 @@
+# Source 1 must be of type register
+target:
+	p.abs t4,5
+	p.slet t4,7,t6
+	p.sletu t4,3,t6
+	p.min t4,5,t6
+	p.minu t4,3,t6
+	p.max t4,4,t6
+	p.maxu t4,6,t6
+	p.exths t4,30
+	p.exthz t4,23
+	p.extbs t4,25
+	p.extbz t4,21
+	p.clip t4,2,5
+	p.clipu t4,16,5
+	p.clipr t4,17,t6
+	p.clipur t4,14,t6
+	p.addn t4,5,t0,4
+	p.addun t4,18,t0,4
+	p.addrn t6,19,t3,9
+	p.addurn t6,4,t3,14
+	p.addnr t6,6,t3
+	p.addunr t6,7,t3
+	p.addrnr t6,9,t3
+	p.addurnr t6,5,t3
+	p.subn t6,11,t3,6
+	p.subun t6,14,t3,24
+	p.subrn t6,15,t3,21
+	p.suburn t6,24,t3,3
+	p.subnr t6,4,t3
+	p.subunr t6,8,t3
+	p.subrnr t6,7,t3
+	p.suburnr t6,6,t3
