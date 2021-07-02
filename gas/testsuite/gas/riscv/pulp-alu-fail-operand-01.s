@@ -1,0 +1,33 @@
+# Destination must be of type register
+target:
+	p.abs 5,t2
+	p.slet 10,t2,t6
+	p.sletu 11,t2,t6
+	p.min 15,t2,t6
+	p.minu 16,t2,t6
+	p.max 8,t2,t6
+	p.maxu 3,t2,t6
+	p.exths 2,t2
+	p.exthz 6,t2
+	p.extbs 4,t2
+	p.extbz 7,t2
+	p.clip 17,t2,5
+	p.clipu 11,t2,5
+	p.clipr 16,t2,t6
+	p.clipur 15,t2,t6
+	p.addn 9,t2,t0,4
+	p.addun 30,t2,t0,4
+	p.addrn 21,t0,t3,9
+	p.addurn 6,t0,t3,14
+	p.addnr 2,t0,t3
+	p.addunr 26,t0,t3
+	p.addrnr 3,t0,t3
+	p.addurnr 14,t0,t3
+	p.subn 15,t0,t3,6
+	p.subun 9,t0,t3,24
+	p.subrn 24,t0,t3,21
+	p.suburn 25,t0,t3,3
+	p.subnr 3,t0,t3
+	p.subunr 12,t0,t3
+	p.subrnr 13,t0,t3
+	p.suburnr 8,t0,t3
