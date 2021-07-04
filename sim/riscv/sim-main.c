@@ -106,6 +106,48 @@ riscv_subset_supports (const char *feature)
   return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
+/* Table of known PULP extension groups.y */
+
+static struct pulp_ext_group_info pulp_ext_groups[] =
+{
+#define PULP_EXT_GROUP(NAME, MAJOR, MINOR, FLAGS0, FLAGS1)	\
+  {NAME, MAJOR, MINOR, FLAGS0, FLAGS1},
+
+  /* from opcodes/riscv.h */
+  PULP_ALL_EXT_GROUPS
+  {NULL, 0, 0, 0, 0}
+
+#undef PULP_EXT_GROUP
+};
+
+/* Determine whether an insn_class is supported by currently enabled PULP
+   extension groups. */
+
+static bfd_boolean
+riscv_pulp_ext_group_supports (enum riscv_insn_class insn_class)
+{
+  struct pulp_ext_group_info *group;
+
+  for (group = pulp_ext_groups; group->name; group++)
+    {
+      if (riscv_lookup_subset_version (&riscv_subsets, group->name,
+				       group->major, group->minor) != NULL)
+	{
+	  if (insn_class < 64)
+	    return group->ext0_flags >> insn_class & 1;
+	  else if (insn_class < 128)
+	    return group->ext1_flags >> insn_class & 1;
+	  else
+	    {
+	      fprintf (stderr, "internal error: too many custom pulp extensions");
+	      abort ();
+	    }
+	}
+    }
+
+  return FALSE;
+}
+
 static bfd_boolean
 riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 {
@@ -125,38 +167,31 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
-    case INSN_CLASS_XPULP_SLIM:
-      return riscv_subset_supports ("xpulpslim");
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XPULP_V0:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0,
-					  RISCV_DONT_CARE_VERSION) != NULL;
+      /* from opcodes/riscv.h */
+      PULP_EXTENSION_COMPAT_MAP
 
-    case INSN_CLASS_XPULP_V1:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1,
-					  RISCV_DONT_CARE_VERSION) != NULL;
+#undef INSN_CLASS
 
-    case INSN_CLASS_XPULP_V2:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2,
-					  RISCV_DONT_CARE_VERSION) != NULL;
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XGAP8:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8,
-					  RISCV_DONT_CARE_VERSION) != NULL;
+    /* from opcode/riscv.h */
+    PULP_EXTENSION_MAP
 
-    case INSN_CLASS_XPULP_V3:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3,
-					  RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP9:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9,
-					  RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_NN:
-      return riscv_subset_supports ("xpulpnn");
+#undef INSN_CLASS
 
     default:
       fprintf(stderr, "Unreachable");
+      abort ();
       return FALSE;
     }
 }
@@ -3353,8 +3388,29 @@ execute_one (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       return execute_m (cpu, iw, op);
     /* case INSN_CLASS_XPULP_V0: */
     /* case INSN_CLASS_XPULP_V1: */
-    case INSN_CLASS_XPULP_V2:
+
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)			\
+    case INSN_CLASS_XPULP_##NAME:
+
+      /* from opcodes/riscv.h */
+      PULP_EXTENSION_COMPAT_MAP
+
+      TRACE_INSN (cpu, "PULP v0/v1 compatibility insns not supported: %d",
+		  op->insn_class);
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+#undef INSN_CLASS
+
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:
+
+      /* from opcode/riscv.h */
+      PULP_EXTENSION_MAP
+
       return execute_xpulp (cpu, iw, op);
+#undef INSN_CLASS
+
     case_default:
     default:
       TRACE_INSN (cpu, "UNHANDLED EXTENSION: %d", op->insn_class);
