@@ -2398,7 +2398,10 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
   unsigned_word s_imm = EXTRACT_STYPE_IMM (iw);
   unsigned_word sb_imm = EXTRACT_SBTYPE_IMM (iw);
   unsigned_word shamt_imm = ((iw >> OP_SH_SHAMT) & OP_MASK_SHAMT);
+  unsigned_word vsimm6 = sext(EXTRACT_I6TYPE_IMM(iw), 6);
+
   unsigned_word tmp;
+  unsigned_word b0, b1, b2, b3, low, high;
   int shift;
   sim_cia pc = cpu->pc + 4;
 
@@ -3336,7 +3339,7 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       store_rd (cpu, rd, tmp);
       goto done;
     case MATCH_SUBURNR:
-     TRACE_INSN (cpu, "p.suburnr %s, %s, %s;  //",
+      TRACE_INSN (cpu, "p.suburnr %s, %s, %s;  //",
 		    rd_name, rs1_name, rs2_name);
       tmp = cpu->regs[rd] - cpu->regs[rs1];
       shift = cpu->regs[rs2] & 0x1f;
@@ -3344,6 +3347,823 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       store_rd (cpu, rd, tmp);
       goto done;
   }
+
+#define RS1V (cpu->regs[rs1])
+#define RS2V (cpu->regs[rs2])
+#define RDV (cpu->regs[rd])
+
+  /* PULP bitrev */
+
+  if ((iw & (MASK_BITREV)) == (MATCH_BITREV))
+    {
+      /* d,s,bi,b5 */
+      unsigned_word bits = uimm5;
+      unsigned_word group = luimm5 & 3;
+      unsigned_word x = RS1V << bits;
+      TRACE_INSN (cpu, "pv.bitrev %s, %s, %"PRIiTW", %"PRIiTW"; //",
+		  rd_name, rs1_name, group, bits);
+      switch (group)
+	{
+	case 2: /* radix 8 special case */
+	  {
+	    int s = 30;
+	    tmp = x;
+	    /* since 32 is not divisible by 3, we drop the first two bits */
+	    for (tmp >>= 2; tmp; tmp >>= 3)
+	      {
+		x <<= 3;
+		x |= tmp & 7;
+		s -= 3;
+	      }
+	    if (s > 0)
+	      x <<= s;
+	  }
+	  break;
+	case 0:
+	  x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+	case 1:
+	  x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+	  x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+	case 3: /* doesn't actually exist */
+	  x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+	  x = ((x >> 16) | (x << 16));
+	}
+      store_rd (cpu, rd, x);
+      goto done;
+    }
+
+  /* PULP SIMD operations */
+
+  /* These refer to an external OP macro that defines the operation for this
+     particular insn. The arguments passed to it are of the correct SIMD size
+     and zero extended by default. Use sext() in the OP macro to produce a sign
+     extended version. */
+
+#define PULP_VECTOR_HI_V(INSN, MATCH, MASK)                                   \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = OP (zext (RS1V, 16), zext (RS2V, 16)) & 0xffff;                   \
+      high = OP (zext (RS1V >> 16, 16), zext (RS2V >> 16, 16)) & 0xffff;      \
+      store_rd (cpu, rd, low | (high << 16));                                 \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SC(INSN, MATCH, MASK)                                  \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = OP (zext (RS1V, 16), zext (RS2V, 16)) & 0xffff;                   \
+      high = OP (zext (RS1V >> 16, 16), zext (RS2V, 16)) & 0xffff;            \
+      store_rd (cpu, rd, low | (high << 16));                                 \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SCI(INSN, MATCH, MASK)                                 \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      low = OP (zext (RS1V, 16), vsimm6) & 0xffff;                            \
+      high = OP (zext (RS1V >> 16, 16), vsimm6) & 0xffff;                     \
+      store_rd (cpu, rd, low | (high << 16));                                 \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SCI_U(INSN, MATCH, MASK)                               \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      low = OP (zext (RS1V, 16), zext (vsimm6, 6)) & 0xffff;                  \
+      high = OP (zext (RS1V >> 16, 16), zext (vsimm6, 6)) & 0xffff;           \
+      store_rd (cpu, rd, low | (high << 16));                                 \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_V(INSN, MATCH, MASK)                                   \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      b0 = OP (zext (RS1V, 8), zext (RS2V, 8)) & 0xff;                        \
+      b1 = OP (zext (RS1V >> 8, 8), zext (RS2V >> 8, 8)) & 0xff;              \
+      b2 = OP (zext (RS1V >> 16, 8), zext (RS2V >> 16, 8)) & 0xff;            \
+      b3 = OP (zext (RS1V >> 24, 8), zext (RS2V >> 24, 8)) & 0xff;            \
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));           \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SC(INSN, MATCH, MASK)                                  \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      b0 = OP (zext (RS1V, 8), zext (RS2V, 8)) & 0xff;                        \
+      b1 = OP (zext (RS1V >> 8, 8), zext (RS2V, 8)) & 0xff;                   \
+      b2 = OP (zext (RS1V >> 16, 8), zext (RS2V, 8)) & 0xff;                  \
+      b3 = OP (zext (RS1V >> 24, 8), zext (RS2V, 8)) & 0xff;                  \
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));           \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SCI(INSN, MATCH, MASK)                                 \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      b0 = OP (zext (RS1V, 8), vsimm6) & 0xff;                                \
+      b1 = OP (zext (RS1V >> 8, 8), vsimm6) & 0xff;                           \
+      b2 = OP (zext (RS1V >> 16, 8), vsimm6) & 0xff;                          \
+      b3 = OP (zext (RS1V >> 24, 8), vsimm6) & 0xff;                          \
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));           \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SCI_U(INSN, MATCH, MASK)                               \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      b0 = OP (zext (RS1V, 8), zext (vsimm6, 6)) & 0xff;                      \
+      b1 = OP (zext (RS1V >> 8, 8), zext (vsimm6, 6)) & 0xff;                 \
+      b2 = OP (zext (RS1V >> 16, 8), zext (vsimm6, 6)) & 0xff;                \
+      b3 = OP (zext (RS1V >> 24, 8), zext (vsimm6, 6)) & 0xff;                \
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));           \
+      goto done;                                                              \
+    }
+
+  /* Similar to the previous macros, but instead of concatenating the resulting
+     words we can freely chose the function */
+
+#define PULP_VECTOR_HI_V_FOLD(INSN, MATCH, MASK)                              \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = OP (zext (RS1V, 16), zext (RS2V, 16));                            \
+      high = OP (zext (RS1V >> 16, 16), zext (RS2V >> 16, 16));               \
+      store_rd (cpu, rd, FOLD2 (low, high, RDV));                             \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SC_FOLD(INSN, MATCH, MASK)                             \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = OP (zext (RS1V, 16), zext (RS2V, 16));                            \
+      high = OP (zext (RS1V >> 16, 16), zext (RS2V, 16));                     \
+      store_rd (cpu, rd, FOLD2 (low, high, RDV));                             \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SCI_FOLD(INSN, MATCH, MASK)                            \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      low = OP (zext (RS1V, 16), vsimm6);                                     \
+      high = OP (zext (RS1V >> 16, 16), vsimm6);                              \
+      store_rd (cpu, rd, FOLD2 (low, high, RDV));                             \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_HI_SCI_U_FOLD(INSN, MATCH, MASK)                          \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      low = OP (zext (RS1V, 16), zext (vsimm6, 6));                           \
+      high = OP (zext (RS1V >> 16, 16), zext (vsimm6, 6));                    \
+      store_rd (cpu, rd, FOLD2 (low, high, RDV));                             \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_V_FOLD(INSN, MATCH, MASK)                              \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      b0 = OP (zext (RS1V, 8), zext (RS2V, 8));                               \
+      b1 = OP (zext (RS1V >> 8, 8), zext (RS2V >> 8, 8));                     \
+      b2 = OP (zext (RS1V >> 16, 8), zext (RS2V >> 16, 8));                   \
+      b3 = OP (zext (RS1V >> 24, 8), zext (RS2V >> 24, 8));                   \
+      store_rd (cpu, rd, FOLD4 (b0, b1, b2, b3, RDV));                        \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SC_FOLD(INSN, MATCH, MASK)                             \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      b0 = OP (zext (RS1V, 8), zext (RS2V, 8));                               \
+      b1 = OP (zext (RS1V >> 8, 8), zext (RS2V, 8));                          \
+      b2 = OP (zext (RS1V >> 16, 8), zext (RS2V, 8));                         \
+      b3 = OP (zext (RS1V >> 24, 8), zext (RS2V, 8));                         \
+      store_rd (cpu, rd, FOLD4 (b0, b1, b2, b3, RDV));                        \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SCI_FOLD(INSN, MATCH, MASK)                            \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      b0 = OP (zext (RS1V, 8), vsimm6);                                       \
+      b1 = OP (zext (RS1V >> 8, 8), vsimm6);                                  \
+      b2 = OP (zext (RS1V >> 16, 8), vsimm6);                                 \
+      b3 = OP (zext (RS1V >> 24, 8), vsimm6);                                 \
+      store_rd (cpu, rd, FOLD4 (b0, b1, b2, b3, RDV));                        \
+      goto done;                                                              \
+    }
+
+#define PULP_VECTOR_QI_SCI_U_FOLD(INSN, MATCH, MASK)                          \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW "; //", rd_name, rs1_name,    \
+                  vsimm6);                                                    \
+      b0 = OP (zext (RS1V, 8), zext (vsimm6, 6));                             \
+      b1 = OP (zext (RS1V >> 8, 8), zext (vsimm6, 6));                        \
+      b2 = OP (zext (RS1V >> 16, 8), zext (vsimm6, 6));                       \
+      b3 = OP (zext (RS1V >> 24, 8), zext (vsimm6, 6));                       \
+      store_rd (cpu, rd, FOLD4 (b0, b1, b2, b3, RDV));                        \
+      goto done;                                                              \
+    }
+
+#define OP(A, B) ((A) + (B))
+  PULP_VECTOR_HI_V  ("pv.add.h",     MATCH_V_OP_ADD|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.add.sc.h",  MATCH_V_OP_ADD|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.add.sci.h", MATCH_V_OP_ADD|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.add.b",     MATCH_V_OP_ADD|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.add.sc.b",  MATCH_V_OP_ADD|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.add.sci.b", MATCH_V_OP_ADD|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext ((A) + (B), 16) >> 1)
+  PULP_VECTOR_HI_V  ("pv.add.h.div2", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1, MASK_V_OP  );
+#undef OP
+#define OP(A, B) ((signed_word)sext ((A) + (B), 16) >> 2)
+  PULP_VECTOR_HI_V  ("pv.add.h.div4", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2, MASK_V_OP  );
+#undef OP
+#define OP(A, B) ((signed_word)sext ((A) + (B), 16) >> 3)
+  PULP_VECTOR_HI_V  ("pv.add.h.div8", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3, MASK_V_OP  );
+#undef OP
+
+#define OP(A, B) ((A) - (B))
+  PULP_VECTOR_HI_V  ("pv.sub.h",     MATCH_V_OP_SUB|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.sub.sc.h",  MATCH_V_OP_SUB|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.sub.sci.h", MATCH_V_OP_SUB|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.sub.b",     MATCH_V_OP_SUB|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.sub.sc.b",  MATCH_V_OP_SUB|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.sub.sci.b", MATCH_V_OP_SUB|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext ((A) - (B), 16) >> 1)
+  PULP_VECTOR_HI_V  ("pv.sub.h.div2", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1, MASK_V_OP  );
+#undef OP
+#define OP(A, B) ((signed_word)sext ((A) - (B), 16) >> 2)
+  PULP_VECTOR_HI_V  ("pv.sub.h.div4", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2, MASK_V_OP  );
+#undef OP
+#define OP(A, B) ((signed_word)sext ((A) - (B), 16) >> 3)
+  PULP_VECTOR_HI_V  ("pv.sub.h.div8", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3, MASK_V_OP  );
+#undef OP
+
+#define OP(A, B) (((signed_word)sext((A) + (B), 16)) >> 1)
+  PULP_VECTOR_HI_V  ("pv.avg.h",     MATCH_V_OP_AVG|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.avg.sc.h",  MATCH_V_OP_AVG|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.avg.sci.h", MATCH_V_OP_AVG|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (((signed_word)sext((A) + (B), 8)) >> 1)
+  PULP_VECTOR_QI_V  ("pv.avg.b",     MATCH_V_OP_AVG|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.avg.sc.b",  MATCH_V_OP_AVG|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.avg.sci.b", MATCH_V_OP_AVG|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) (zext((A) + (B), 16) >> 1)
+  PULP_VECTOR_HI_V  ("pv.avgu.h",     MATCH_V_OP_AVGU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.avgu.sc.h",  MATCH_V_OP_AVGU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.avgu.sci.h", MATCH_V_OP_AVGU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (zext((A) + (B), 8) >> 1)
+  PULP_VECTOR_QI_V  ("pv.avgu.b",     MATCH_V_OP_AVGU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.avgu.sc.b",  MATCH_V_OP_AVGU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.avgu.sci.b", MATCH_V_OP_AVGU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) (((signed_word)sext(A, 16)) < ((signed_word)sext(B, 16)) ? A : B)
+  PULP_VECTOR_HI_V  ("pv.min.h",     MATCH_V_OP_MIN|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.min.sc.h",  MATCH_V_OP_MIN|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.min.sci.h", MATCH_V_OP_MIN|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (((signed_word)sext(A, 8)) < ((signed_word)sext(B, 8)) ? A : B)
+  PULP_VECTOR_QI_V  ("pv.min.b",     MATCH_V_OP_MIN|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.min.sc.b",  MATCH_V_OP_MIN|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.min.sci.b", MATCH_V_OP_MIN|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+/* TODO: immediate is zero extended */
+#define OP(A, B) (((unsigned_word)A) < ((unsigned_word)B) ? A : B)
+  PULP_VECTOR_HI_V  ("pv.minu.h",     MATCH_V_OP_MINU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.minu.sc.h",  MATCH_V_OP_MINU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.minu.sci.h", MATCH_V_OP_MINU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.minu.b",     MATCH_V_OP_MINU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.minu.sc.b",  MATCH_V_OP_MINU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.minu.sci.b", MATCH_V_OP_MINU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) (((signed_word)sext(A, 16)) > ((signed_word)sext(B, 16)) ? A : B)
+  PULP_VECTOR_HI_V  ("pv.max.h",     MATCH_V_OP_MAX|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.max.sc.h",  MATCH_V_OP_MAX|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.max.sci.h", MATCH_V_OP_MAX|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (((signed_word)sext(A, 8)) > ((signed_word)sext(B, 8)) ? A : B)
+  PULP_VECTOR_QI_V  ("pv.max.b",     MATCH_V_OP_MAX|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.max.sc.b",  MATCH_V_OP_MAX|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.max.sci.b", MATCH_V_OP_MAX|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+/* TODO: immediate is zero extended */
+#define OP(A, B) (((unsigned_word)A) > ((unsigned_word)B) ? A : B)
+  PULP_VECTOR_HI_V  ("pv.maxu.h",     MATCH_V_OP_MAXU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.maxu.sc.h",  MATCH_V_OP_MAXU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.maxu.sci.h", MATCH_V_OP_MAXU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.maxu.b",     MATCH_V_OP_MAXU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.maxu.sc.b",  MATCH_V_OP_MAXU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.maxu.sci.b", MATCH_V_OP_MAXU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+/* TODO: immediate is zero extended */
+#define OP(A, B) (((unsigned_word)A) >> ((unsigned_word)B))
+  PULP_VECTOR_HI_V  ("pv.srl.h",     MATCH_V_OP_SRL|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.srl.sc.h",  MATCH_V_OP_SRL|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.srl.sci.h", MATCH_V_OP_SRL|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.srl.b",     MATCH_V_OP_SRL|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.srl.sc.b",  MATCH_V_OP_SRL|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.srl.sci.b", MATCH_V_OP_SRL|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+/* TODO: immediate is zero extended */
+#define OP(A, B) ((signed_word)sext(A, 16) >> ((signed_word)B))
+  PULP_VECTOR_HI_V  ("pv.sra.h",     MATCH_V_OP_SRA|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.sra.sc.h",  MATCH_V_OP_SRA|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.sra.sci.h", MATCH_V_OP_SRA|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) >> ((signed_word)B))
+  PULP_VECTOR_QI_V  ("pv.sra.b",     MATCH_V_OP_SRA|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.sra.sc.b",  MATCH_V_OP_SRA|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.sra.sci.b", MATCH_V_OP_SRA|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+/* TODO: immediate is zero extended */
+#define OP(A, B) (((unsigned_word)A) << ((unsigned_word)B))
+  PULP_VECTOR_HI_V  ("pv.sll.h",     MATCH_V_OP_SLL|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.sll.sc.h",  MATCH_V_OP_SLL|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U("pv.sll.sci.h", MATCH_V_OP_SLL|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.sll.b",     MATCH_V_OP_SLL|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.sll.sc.b",  MATCH_V_OP_SLL|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U("pv.sll.sci.b", MATCH_V_OP_SLL|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) | (B))
+  PULP_VECTOR_HI_V  ("pv.or.h",     MATCH_V_OP_OR|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.or.sc.h",  MATCH_V_OP_OR|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.or.sci.h", MATCH_V_OP_OR|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.or.b",     MATCH_V_OP_OR|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.or.sc.b",  MATCH_V_OP_OR|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.or.sci.b", MATCH_V_OP_OR|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) ^ (B))
+  PULP_VECTOR_HI_V  ("pv.xor.h",     MATCH_V_OP_XOR|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.xor.sc.h",  MATCH_V_OP_XOR|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.xor.sci.h", MATCH_V_OP_XOR|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.xor.b",     MATCH_V_OP_XOR|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.xor.sc.b",  MATCH_V_OP_XOR|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.xor.sci.b", MATCH_V_OP_XOR|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) & (B))
+  PULP_VECTOR_HI_V  ("pv.and.h",     MATCH_V_OP_AND|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.and.sc.h",  MATCH_V_OP_AND|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.and.sci.h", MATCH_V_OP_AND|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.and.b",     MATCH_V_OP_AND|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.and.sc.b",  MATCH_V_OP_AND|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.and.sci.b", MATCH_V_OP_AND|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext(A, 16) < 0 ? (-sext(A, 16)) : A)
+  PULP_VECTOR_HI_V  ("pv.abs.h", MATCH_V_OP_ABS|MATCH_V_OP_H_VV, MASK_V_OP2  );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) < 0 ? (-sext(A, 8)) : (A))
+  PULP_VECTOR_QI_V  ("pv.abs.b", MATCH_V_OP_ABS|MATCH_V_OP_B_VV, MASK_V_OP2  );
+#undef OP
+
+  /* these don't operate on h or b wide words so we handle them manually */
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_EXTRACT|MATCH_V_OP_H_VI))
+    {
+      TRACE_INSN (cpu, "pv.extract.h"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = sext(RS1V >> (16 * (vsimm6 & 1)), 16);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_EXTRACT|MATCH_V_OP_B_VI))
+    {
+      TRACE_INSN (cpu, "pv.extract.b"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = sext(RS1V >> (8 * (vsimm6 & 3)), 8);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  /* yes these masks are weird */
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_DOTSP|MATCH_V_OP_H_VI))
+    {
+      TRACE_INSN (cpu, "pv.extractu.h"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = zext(RS1V >> (16 * (vsimm6 & 1)), 16);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_DOTSP|MATCH_V_OP_B_VI))
+    {
+      TRACE_INSN (cpu, "pv.extractu.b"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = zext(RS1V >> (8 * (vsimm6 & 3)), 8);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_SDOTUP|MATCH_V_OP_H_VI))
+    {
+      TRACE_INSN (cpu, "pv.insert.h"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = RDV & ~(0xffff << (16 * (vsimm6 & 1)));
+      tmp |=  (zext(RS1V, 16) << (16 * (vsimm6 & 1)));
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_SDOTUP|MATCH_V_OP_B_VI))
+    {
+      TRACE_INSN (cpu, "pv.insert.b"" %s, %s, %"PRIiTW"; //",
+		  rd_name, rs1_name, vsimm6);
+      tmp = RDV & ~(0xff << (8 * (vsimm6 & 3)));
+      tmp |=  (zext(RS1V, 8) << (8 * (vsimm6 & 3)));
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+
+#define OP(A, B) ((A) == (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpeq.h",     MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpeq.sc.h",  MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpeq.sci.h", MATCH_V_OP_CMPEQ|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpeq.b",     MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpeq.sc.b",  MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpeq.sci.b", MATCH_V_OP_CMPEQ|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) != (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpne.h",     MATCH_V_OP_CMPNE|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpne.sc.h",  MATCH_V_OP_CMPNE|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpne.sci.h", MATCH_V_OP_CMPNE|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpne.b",     MATCH_V_OP_CMPNE|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpne.sc.b",  MATCH_V_OP_CMPNE|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpne.sci.b", MATCH_V_OP_CMPNE|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext(A, 16) > (signed_word)sext(B, 16) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpgt.h",     MATCH_V_OP_CMPGT|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpgt.sc.h",  MATCH_V_OP_CMPGT|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpgt.sci.h", MATCH_V_OP_CMPGT|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) > (signed_word)sext(B, 8) ? 0xffffffff : 0)
+  PULP_VECTOR_QI_V  ("pv.cmpgt.b",     MATCH_V_OP_CMPGT|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpgt.sc.b",  MATCH_V_OP_CMPGT|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpgt.sci.b", MATCH_V_OP_CMPGT|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext(A, 16) >= (signed_word)sext(B, 16) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpge.h",     MATCH_V_OP_CMPGE|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpge.sc.h",  MATCH_V_OP_CMPGE|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpge.sci.h", MATCH_V_OP_CMPGE|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) >= (signed_word)sext(B, 8) ? 0xffffffff : 0)
+  PULP_VECTOR_QI_V  ("pv.cmpge.b",     MATCH_V_OP_CMPGE|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpge.sc.b",  MATCH_V_OP_CMPGE|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpge.sci.b", MATCH_V_OP_CMPGE|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext(A, 16) < (signed_word)sext(B, 16) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmplt.h",     MATCH_V_OP_CMPLT|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmplt.sc.h",  MATCH_V_OP_CMPLT|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmplt.sci.h", MATCH_V_OP_CMPLT|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) < (signed_word)sext(B, 8) ? 0xffffffff : 0)
+  PULP_VECTOR_QI_V  ("pv.cmplt.b",     MATCH_V_OP_CMPLT|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmplt.sc.b",  MATCH_V_OP_CMPLT|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmplt.sci.b", MATCH_V_OP_CMPLT|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext(A, 16) <= (signed_word)sext(B, 16) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmple.h",     MATCH_V_OP_CMPLE|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmple.sc.h",  MATCH_V_OP_CMPLE|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmple.sci.h", MATCH_V_OP_CMPLE|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext(A, 8) <= (signed_word)sext(B, 8) ? 0xffffffff : 0)
+  PULP_VECTOR_QI_V  ("pv.cmple.b",     MATCH_V_OP_CMPLE|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmple.sc.b",  MATCH_V_OP_CMPLE|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmple.sci.b", MATCH_V_OP_CMPLE|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) > (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpgtu.h",     MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpgtu.sc.h",  MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpgtu.sci.h", MATCH_V_OP_CMPGTU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpgtu.b",     MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpgtu.sc.b",  MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpgtu.sci.b", MATCH_V_OP_CMPGTU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) >= (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpgeu.h",     MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpgeu.sc.h",  MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpgeu.sci.h", MATCH_V_OP_CMPGEU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpgeu.b",     MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpgeu.sc.b",  MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpgeu.sci.b", MATCH_V_OP_CMPGEU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) < (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpltu.h",     MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpltu.sc.h",  MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpltu.sci.h", MATCH_V_OP_CMPLTU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpltu.b",     MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpltu.sc.b",  MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpltu.sci.b", MATCH_V_OP_CMPLTU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((A) <= (B) ? 0xffffffff : 0)
+  PULP_VECTOR_HI_V  ("pv.cmpleu.h",     MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC ("pv.cmpleu.sc.h",  MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI("pv.cmpleu.sci.h", MATCH_V_OP_CMPLEU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V  ("pv.cmpleu.b",     MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC ("pv.cmpleu.sc.b",  MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI("pv.cmpleu.sci.b", MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef OP
+
+#define OP(A, B) ((signed_word)sext (A, 16) * (signed_word)sext (B, 16))
+#define FOLD2(A, B, ACC) ((signed_word)A + (signed_word)B)
+  PULP_VECTOR_HI_V_FOLD  ("pv.dotsp.h",     MATCH_V_OP_DOTUP|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.dotsp.sc.h",  MATCH_V_OP_DOTUP|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_FOLD("pv.dotsp.sci.h", MATCH_V_OP_DOTUP|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext (A, 8) * (signed_word)sext (B, 8))
+#define FOLD4(A, B, C, D, ACC) ((signed_word)A + (signed_word)B	\
+			   + (signed_word)C + (signed_word)D)
+  PULP_VECTOR_QI_V_FOLD  ("pv.dotsp.b",     MATCH_V_OP_DOTUP|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.dotsp.sc.b",  MATCH_V_OP_DOTUP|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_FOLD("pv.dotsp.sci.b", MATCH_V_OP_DOTUP|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+#define OP(A, B) (A * B)
+#define FOLD2(A, B, ACC) (A + B)
+#define FOLD4(A, B, C, D, ACC) (A + B + C + D)
+  PULP_VECTOR_HI_V_FOLD  ("pv.dotup.h",     MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.dotup.sc.h",  MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U_FOLD("pv.dotup.sci.h", MATCH_V_OP_EXTRACTU|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V_FOLD  ("pv.dotup.b",     MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.dotup.sc.b",  MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U_FOLD("pv.dotup.sci.b", MATCH_V_OP_EXTRACTU|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+#define OP(A, B) (A * (signed_word)sext (B, 16))
+#define FOLD2(A, B, ACC) (A + B)
+  PULP_VECTOR_HI_V_FOLD  ("pv.dotusp.h",     MATCH_V_OP_INSERT|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.dotusp.sc.h",  MATCH_V_OP_INSERT|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_FOLD("pv.dotusp.sci.h", MATCH_V_OP_INSERT|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (A * (signed_word)sext (B, 8))
+#define FOLD4(A, B, C, D, ACC) (A + B + C + D)
+  PULP_VECTOR_QI_V_FOLD  ("pv.dotusp.b",     MATCH_V_OP_INSERT|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.dotusp.sc.b",  MATCH_V_OP_INSERT|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_FOLD("pv.dotusp.sci.b", MATCH_V_OP_INSERT|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+#define OP(A, B) ((signed_word)sext (A, 16) * (signed_word)sext (B, 16))
+#define FOLD2(A, B, ACC) ((signed_word)ACC + (signed_word)A + (signed_word)B)
+  PULP_VECTOR_HI_V_FOLD  ("pv.sdotsp.h",     MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.sdotsp.sc.h",  MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_FOLD("pv.sdotsp.sci.h", MATCH_V_OP_SDOTUSP|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) ((signed_word)sext (A, 8) * (signed_word)sext (B, 8))
+#define FOLD4(A, B, C, D, ACC) ((signed_word)ACC + (signed_word)A \
+				+ (signed_word)B + (signed_word)C + (signed_word)D)
+  PULP_VECTOR_QI_V_FOLD  ("pv.sdotsp.b",     MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.sdotsp.sc.b",  MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_FOLD("pv.sdotsp.sci.b", MATCH_V_OP_SDOTUSP|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+#define OP(A, B) (A * B)
+#define FOLD2(A, B, ACC) (ACC + A + B)
+#define FOLD4(A, B, C, D, ACC) (ACC + A + B + C + D)
+  PULP_VECTOR_HI_V_FOLD  ("pv.sdotup.h",     MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.sdotup.sc.h",  MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_U_FOLD("pv.sdotup.sci.h", MATCH_V_OP_DOTUSP|MATCH_V_OP_H_VI, MASK_V_OP1 );
+  PULP_VECTOR_QI_V_FOLD  ("pv.sdotup.b",     MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.sdotup.sc.b",  MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_U_FOLD("pv.sdotup.sci.b", MATCH_V_OP_DOTUSP|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+#define OP(A, B) (A * (signed_word)sext (B, 16))
+#define FOLD2(A, B, ACC) (A + B + ACC)
+  PULP_VECTOR_HI_V_FOLD  ("pv.sdotusp.h",     MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VV, MASK_V_OP  );
+  PULP_VECTOR_HI_SC_FOLD ("pv.sdotusp.sc.h",  MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VR, MASK_V_OP  );
+  PULP_VECTOR_HI_SCI_FOLD("pv.sdotusp.sci.h", MATCH_V_OP_SDOTSP|MATCH_V_OP_H_VI, MASK_V_OP1 );
+#undef OP
+#define OP(A, B) (A * (signed_word)sext (B, 8))
+#define FOLD4(A, B, C, D, ACC) (A + B + C + D + ACC)
+  PULP_VECTOR_QI_V_FOLD  ("pv.sdotusp.b",     MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VV, MASK_V_OP  );
+  PULP_VECTOR_QI_SC_FOLD ("pv.sdotusp.sc.b",  MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VR, MASK_V_OP  );
+  PULP_VECTOR_QI_SCI_FOLD("pv.sdotusp.sci.b", MATCH_V_OP_SDOTSP|MATCH_V_OP_B_VI, MASK_V_OP1 );
+#undef FOLD4
+#undef FOLD2
+#undef OP
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV))
+    {
+      TRACE_INSN (cpu, "pv.shuffle.h %s, %s, %s;  //", rd_name, rs1_name, rs2_name);
+      low = (RS1V >> (16 * (RS2V & 1))) & 0xffff;
+      high = (RS1V >> (16 * ((RS2V >> 16) & 1))) & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP1)) == (MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI))
+    {
+      TRACE_INSN (cpu, "pv.shuffle.sci.h %s, %s, %"PRIiTW";  //", rd_name, rs1_name, vsimm6);
+      low = (RS1V >> (16 * (vsimm6 & 1))) & 0xffff;
+      high = (RS1V >> (16 * ((vsimm6 >> 1) & 1))) & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VV))
+    {
+      TRACE_INSN (cpu, "pv.shuffle.b %s, %s, %s;  //", rd_name, rs1_name, rs2_name);
+      b0 = (RS1V >> (8 * (RS2V & 3))) & 0xff;
+      b1 = (RS1V >> (8 * ((RS2V >> 8) & 3))) & 0xff;
+      b2 = (RS1V >> (8 * ((RS2V >> 16) & 3))) & 0xff;
+      b3 = (RS1V >> (8 * ((RS2V >> 24) & 3))) & 0xff;
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));
+      goto done;
+    }
+
+#define PULP_VECTOR_QI_SHUFFLE_SCI(INSN, MATCH, MASK, INDX)                   \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %" PRIiTW ";  //", rd_name, rs1_name,   \
+                  vsimm6);                                                    \
+      b0 = (RS1V >> (8 * (vsimm6 & 3))) & 0xff;                               \
+      b1 = (RS1V >> (8 * ((vsimm6 >> 2) & 3))) & 0xff;                        \
+      b2 = (RS1V >> (8 * ((vsimm6 >> 4) & 3))) & 0xff;                        \
+      b3 = (RS1V >> (8 * INDX)) & 0xff;                                       \
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));           \
+      goto done;                                                              \
+    }
+
+  PULP_VECTOR_QI_SHUFFLE_SCI("pv.shufflei0.sci.b", MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI, MASK_V_OP1, 0)
+  PULP_VECTOR_QI_SHUFFLE_SCI("pv.shufflei1.sci.b", MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI, MASK_V_OP1, 1)
+  PULP_VECTOR_QI_SHUFFLE_SCI("pv.shufflei2.sci.b", MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI, MASK_V_OP1, 2)
+  PULP_VECTOR_QI_SHUFFLE_SCI("pv.shufflei3.sci.b", MATCH_V_OP_SHUFFLE|MATCH_V_OP_B_VI, MASK_V_OP1, 3)
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_SHUFFLE2 | MATCH_V_OP_H_VV))
+    {
+      TRACE_INSN (cpu, "pv.shuffle2.h %s, %s, %s;  //", rd_name, rs1_name, rs2_name);
+      low = ((((RS2V >> 1) & 1) ? RS1V : RDV) >> (16 * (RS2V & 1))) & 0xffff;
+      high = ((((RS2V >> 17) & 1) ? RS1V : RDV) >> (16 * ((RS2V >> 16) & 1))) & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_SHUFFLE2 | MATCH_V_OP_B_VV))
+    {
+      TRACE_INSN (cpu, "pv.shuffle2.b %s, %s, %s;  //", rd_name, rs1_name, rs2_name);
+      b0 = ((((RS2V >> 2) & 1) ? RS1V : RDV) >> (8 * (RS2V & 3))) & 0xff;
+      b1 = ((((RS2V >> 10) & 1) ? RS1V : RDV) >> (8 * ((RS2V >> 8) & 3))) & 0xff;
+      b2 = ((((RS2V >> 18) & 1) ? RS1V : RDV) >> (8 * ((RS2V >> 16) & 3))) & 0xff;
+      b3 = ((((RS2V >> 26) & 1) ? RS1V : RDV) >> (8 * ((RS2V >> 24) & 3))) & 0xff;
+      store_rd (cpu, rd, b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_PACK | MATCH_V_OP_H_VV))
+    {
+      TRACE_INSN (cpu, "pv.pack %s, %s, %s;  //", rd_name, rs1_name, rs2_name);
+      low = RS2V & 0xffff;
+      high = RS1V & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_PACKH | MATCH_V_OP_H_VV))
+    {
+      TRACE_INSN (cpu, "pv.pack.h %s, %s, %s;  //", rd_name, rs1_name,
+                  rs2_name);
+      low = (RS2V >> 16) & 0xffff;
+      high = (RS1V >> 16) & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_PACKHI | MATCH_V_OP_B_VV))
+    {
+      TRACE_INSN (cpu, "pv.packhi.b %s, %s, %s;  //", rd_name, rs1_name,
+                  rs2_name);
+      b2 = RS2V & 0xff;
+      b3 = RS1V & 0xff;
+      store_rd (cpu, rd, (RDV & 0xffff) | (b2 << 16) | (b3 << 24));
+      goto done;
+    }
+
+  if ((iw & (MASK_V_OP)) == (MATCH_V_OP_PACKLO | MATCH_V_OP_B_VV))
+    {
+      TRACE_INSN (cpu, "pv.packlo.b %s, %s, %s;  //", rd_name, rs1_name,
+                  rs2_name);
+      b0 = RS2V & 0xff;
+      b1 = RS1V & 0xff;
+      store_rd (cpu, rd, b0 | (b1 << 8) | (RDV & 0xffff0000));
+      goto done;
+    }
+
+#define PULP_VECTOR_HI_CPLXMUL_R(INSN, MATCH, MASK, DIV)                      \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = (sext (RS1V, 16) * sext (RS2V, 16))                               \
+            - ((sext (RS1V >> 16, 16)) * (sext (RS2V >> 16, 16)));            \
+      low = ((signed_word)low >> DIV) & 0xffff;                               \
+      store_rd (cpu, rd, low | (RDV & 0xffff0000));                           \
+      goto done;                                                              \
+    }
+
+  PULP_VECTOR_HI_CPLXMUL_R("pv.cplxmul.h.r"     , MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S0, MASK_V_OP11, 15);
+  PULP_VECTOR_HI_CPLXMUL_R("pv.cplxmul.h.r.div2", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S1, MASK_V_OP11, 16);
+  PULP_VECTOR_HI_CPLXMUL_R("pv.cplxmul.h.r.div4", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S2, MASK_V_OP11, 17);
+  PULP_VECTOR_HI_CPLXMUL_R("pv.cplxmul.h.r.div8", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S3, MASK_V_OP11, 18);
+
+#define PULP_VECTOR_HI_CPLXMUL_I(INSN, MATCH, MASK, DIV)                      \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      high = (sext (RS1V, 16) * (sext (RS2V >> 16, 16)))                      \
+             + ((sext (RS1V >> 16, 16)) * sext (RS2V, 16));                   \
+      high = ((signed_word)high >> DIV) & 0xffff;                             \
+      store_rd (cpu, rd, (high << 16) | (RDV & 0xffff));                      \
+      goto done;                                                              \
+    }
+
+  PULP_VECTOR_HI_CPLXMUL_I("pv.cplxmul.h.i"     , MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S0, MASK_V_OP11, 15);
+  PULP_VECTOR_HI_CPLXMUL_I("pv.cplxmul.h.i.div2", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S1, MASK_V_OP11, 16);
+  PULP_VECTOR_HI_CPLXMUL_I("pv.cplxmul.h.i.div4", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S2, MASK_V_OP11, 17);
+  PULP_VECTOR_HI_CPLXMUL_I("pv.cplxmul.h.i.div8", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S3, MASK_V_OP11, 18);
+
+#define PULP_VECTOR_HI_SUBROT(INSN, MATCH, MASK, DIV)                         \
+  if ((iw & (MASK)) == (MATCH))                                               \
+    {                                                                         \
+      TRACE_INSN (cpu, INSN " %s, %s, %s;  //", rd_name, rs1_name, rs2_name); \
+      low = ((sext (RS1V >> 16, 16)) - (sext (RS2V >> 16, 16))) & 0xffff;     \
+      high = (sext (RS2V, 16) - sext (RS1V, 16)) & 0xffff;                    \
+      low = ((signed_word)sext (low, 16) >> DIV) & 0xffff;                    \
+      high = ((signed_word)sext (high, 16) >> DIV) & 0xffff;                  \
+      store_rd (cpu, rd, low | (high << 16));                                 \
+      goto done;                                                              \
+    }
+
+  PULP_VECTOR_HI_SUBROT("pv.subrotmj.h"     , MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S0, MASK_V_OP, 0);
+  PULP_VECTOR_HI_SUBROT("pv.subrotmj.h.div2", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S1, MASK_V_OP, 1);
+  PULP_VECTOR_HI_SUBROT("pv.subrotmj.h.div4", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S2, MASK_V_OP, 2);
+  PULP_VECTOR_HI_SUBROT("pv.subrotmj.h.div8", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S3, MASK_V_OP, 3);
+
+  if ((iw & (MASK_V_OP2)) == (MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV))
+    {
+      TRACE_INSN (cpu, "pv.cplxconj.h %s, %s;  //", rd_name, rs1_name);
+      low = RS1V & 0xffff;
+      high = -sext (RS1V >> 16, 16) & 0xffff;
+      store_rd (cpu, rd, low | (high << 16));
+      goto done;
+    }
 
   /* trap unimplemented insn */
 
