@@ -33,9 +33,6 @@
 #include "elf/riscv.h"
 #include "opcode/riscv.h"
 
-#define _WITH_PULP_CHIP_INFO_FUNCT_
-#include "pulp-opts.h"
-
 #include <stdint.h>
 
 /* Information about an instruction, including its format, operands
@@ -97,11 +94,7 @@ static struct riscv_set_options riscv_opts =
   DEFAULT_RISCV_ATTR, /* arch_attr */
 };
 
-static struct Pulp_Target_Chip Pulp_Chip = {PULP_CHIP_NONE, PULP_NONE, -1, -1, -1, -1, -1};
-
 static void pulp_set_chip(const char *arg);
-static void pulp_add_chip_info(void);
-
 
 static void
 riscv_set_rvc (bfd_boolean rvc_value)
@@ -129,6 +122,45 @@ riscv_subset_supports (const char *feature)
   return riscv_lookup_subset (&riscv_subsets, feature) != NULL;
 }
 
+/* Table of known PULP extension groups.y */
+
+static struct pulp_ext_group_info pulp_ext_groups[] =
+{
+#define PULP_EXT_GROUP(NAME, MAJOR, MINOR, FLAGS0, FLAGS1)	\
+  {NAME, MAJOR, MINOR, FLAGS0, FLAGS1},
+
+  /* from opcodes/riscv.h */
+  PULP_ALL_EXT_GROUPS
+  {NULL, 0, 0, 0, 0}
+
+#undef PULP_EXT_GROUP
+};
+
+/* Determine whether an insn_class is supported by currently enabled PULP
+   extension groups. */
+
+static bfd_boolean
+riscv_pulp_ext_group_supports (enum riscv_insn_class insn_class)
+{
+  struct pulp_ext_group_info *group;
+
+  for (group = pulp_ext_groups; group->name; group++)
+    {
+      if (riscv_lookup_subset_version (&riscv_subsets, group->name,
+				       group->major, group->minor) != NULL)
+	{
+	  if (insn_class < 64)
+	    return group->ext0_flags >> insn_class & 1;
+	  else if (insn_class < 128)
+	    return group->ext1_flags >> insn_class & 1;
+	  else
+	    as_fatal (_("internal error: too many custom pulp extensions"));
+	}
+    }
+
+  return FALSE;
+}
+
 static bfd_boolean
 riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 {
@@ -148,29 +180,27 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
-    case INSN_CLASS_XPULP_SLIM:
-      return riscv_subset_supports ("xpulpslim");
+    /* pulpv0 and pulpv1 compatibility */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 0, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XPULP_V0:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 0, RISCV_DONT_CARE_VERSION) != NULL;
+      /* from opcodes/riscv.h */
+      PULP_EXTENSION_COMPAT_MAP
 
-    case INSN_CLASS_XPULP_V1:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 1, RISCV_DONT_CARE_VERSION) != NULL;
+#undef INSN_CLASS
 
-    case INSN_CLASS_XPULP_V2:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 2, RISCV_DONT_CARE_VERSION) != NULL;
+    /* pulpv2 onwards */
+#define INSN_CLASS(NAME, ARCH)						\
+    case INSN_CLASS_XPULP_##NAME:					\
+      return riscv_lookup_subset_version (&riscv_subsets, ARCH, 2, 0) != NULL \
+	|| riscv_pulp_ext_group_supports (insn_class);
 
-    case INSN_CLASS_XGAP8:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 8, RISCV_DONT_CARE_VERSION) != NULL;
+    /* from opcode/riscv.h */
+    PULP_EXTENSION_MAP
 
-    case INSN_CLASS_XPULP_V3:
-      return riscv_lookup_subset_version (&riscv_subsets, "xpulpv", 3, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XGAP9:
-      return riscv_lookup_subset_version (&riscv_subsets, "xgap", 9, RISCV_DONT_CARE_VERSION) != NULL;
-
-    case INSN_CLASS_XPULP_NN:
-      return riscv_subset_supports ("xpulpnn");
+#undef INSN_CLASS
 
     default:
       as_fatal ("Unreachable");
@@ -852,55 +882,6 @@ md_begin (void)
 
   /* Set the default alignment for the text section.  */
   record_alignment (text_section, riscv_opts.rvc ? 1 : 2);
-}
-
-#define PULPINFO_NAME "Pulp_Info"
-#define PULPINFO_NAMESZ 10
-#define PULPINFO_TYPE 1
-
-static void pulp_add_chip_info(void)
-
-{
-        segT Pulp_Chip_Info;
-        segT old_section = now_seg;
-        int old_subsection = now_subseg;
-        char *p;
-        char LineBuffer[512];
-        unsigned int Len=0;
-        char *Msg = NULL;
-
-        PulpChipInfoImage(&Pulp_Chip, LineBuffer);
-        Len = strlen(LineBuffer);
-        Msg = (char *) xmalloc(Len+5);
-        strcpy(Msg, LineBuffer);
-        Len++;
-        do Msg[Len++] = 0; while ((Len & 3) != 0);
-
-        Pulp_Chip_Info = subseg_new(".Pulp_Chip.Info", 0);
-        bfd_set_section_flags(Pulp_Chip_Info, SEC_READONLY | SEC_HAS_CONTENTS);
-
-        /* Follow the standard note section layout: First write the length of the name string.  */
-        p = frag_more(4);
-        md_number_to_chars (p, (valueT) PULPINFO_NAMESZ, 4);
-
-        /* Next comes the length of the "descriptor", i.e., the actual data.  */
-        p = frag_more(4);
-        md_number_to_chars (p, (valueT) Len, 4);
-
-        /* Write the note type.  */
-        p = frag_more(4);
-        md_number_to_chars (p, (valueT) PULPINFO_TYPE, 4);
-
-        /* Write the name field.  */
-        p = frag_more (PULPINFO_NAMESZ);
-        memcpy (p, PULPINFO_NAME, PULPINFO_NAMESZ);
-
-        /* Finally, write the descriptor.  */
-        p = frag_more (Len);
-        memcpy (p, Msg, Len);
-
-        free(Msg);
-        subseg_set (old_section, old_subsection);
 }
 
 static insn_t
@@ -1991,7 +1972,7 @@ rvc_lui:
                       if (args[1]=='i') {
                           ++args;
                           if (regno>1)
-                                as_fatal (_("internal error: wrong loop number argument: x%d, range:[x0,x1]"),
+                                as_bad (_("wrong loop number argument: x%d, range:[x0,x1]"),
                                           (int) regno);
                       }
 		      INSERT_OPERAND (RD, *ip, regno);
@@ -2093,25 +2074,45 @@ rvc_lui:
                    bF: 2 bits unsigned imm
                  */
               if (args[1]=='1') {
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
+		if ((imm_expr->X_op != O_symbol && imm_expr->X_op != O_constant)
+		    || reg_lookup (&s, RCLASS_GPR, &regno))
+		  as_bad(_("%s immediate value must be a constant or label"),
+			 ip->insn_mo->name);
                 s = expr_end;
                 if (imm_expr->X_op == O_constant) {
                         if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 0x0FFF))
-                                as_fatal (_("internal error: %s constant too large for lp.start/lp.endi, range:[0, %d]"),
-                                  saved_s, 0x1FFF);
+                                as_bad (_("%ld constant out of range for %s, range:[0, %d]"),
+					imm_expr->X_add_number, ip->insn_mo->name, 0x1FFE);
+			if ((imm_expr->X_add_number % 2) == 1)
+			  {
+			    as_warn (_("constant for %s must be even: %ld truncated to %ld"),
+				     ip->insn_mo->name, imm_expr->X_add_number,
+				     imm_expr->X_add_number-1);
+			    imm_expr->X_add_number--;
+			  }
                         INSERT_OPERAND (IMM12, *ip, (imm_expr->X_add_number>>1));
                 } else *imm_reloc = BFD_RELOC_RISCV_REL12;
               } else if (args[1]=='2') {
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
+		if ((imm_expr->X_op != O_symbol && imm_expr->X_op != O_constant)
+		    || reg_lookup (&s, RCLASS_GPR, &regno))
+		  as_bad(_("%s immediate value must be a constant or label"),
+			 ip->insn_mo->name);
                 s = expr_end;
                 if (imm_expr->X_op == O_constant) {
                         if (imm_expr->X_add_number < 0 || ((imm_expr->X_add_number>>1) > 31))
-                                as_fatal (_("internal error: %s constant too large for lp.setupi, range:[0, %d]"),
-                                  saved_s, 63);
+                                as_bad (_("%ld constant out of range for lp.setupi, range:[0, %d]"),
+                                  imm_expr->X_add_number, 62);
+			if ((imm_expr->X_add_number % 2) == 1)
+			  {
+			    as_warn (_("constant for lp.setupi must be even: "
+				       "%ld truncated to %ld"),
+				     imm_expr->X_add_number, imm_expr->X_add_number-1);
+			    imm_expr->X_add_number--;
+			  }
                         INSERT_OPERAND (IMM5, *ip, (imm_expr->X_add_number>>1));
                 } else *imm_reloc = BFD_RELOC_RISCV_RELU5;
               } else if (args[1]=='3') {
@@ -2178,15 +2179,15 @@ rvc_lui:
 	    case 'j': /* Sign-extended immediate.  */
               if (args[1]=='i') {
                 /* immediate loop count, we don't want to use BFD_RELOC_RISCV_LO12_I to avoid colliding with relaxation */
-                char *saved_s=s;
                 ++args;
                 my_getExpression (imm_expr, s);
                 check_absolute_expr (ip, imm_expr, FALSE);
                 s = expr_end;
-                if (imm_expr->X_op != O_constant || imm_expr->X_add_number >= (signed)RISCV_IMM_REACH ||
+                if (imm_expr->X_add_number >= (signed)RISCV_IMM_REACH ||
                     imm_expr->X_add_number < 0)
-                        as_fatal (_("internal error: non constant or too large lsetupi loop count %s, range:[0, %d["),
-                                  saved_s, (int) RISCV_IMM_REACH);
+                        as_bad (_("%ld constant out of range for %s, range:[0, %d]"),
+				imm_expr->X_add_number, ip->insn_mo->name,
+				(int) RISCV_IMM_REACH-1);
 
                 INSERT_OPERAND (IMM12, *ip, imm_expr->X_add_number);
                 continue;
@@ -2441,14 +2442,47 @@ enum options
   OPTION_NO_ARCH_ATTR,
   OPTION_MRVC,
   OPTION_MNO_RVC,
-  OPTION_L2,
-  OPTION_L1CL,
-  OPTION_L1FC,
-  OPTION_PE,
-  OPTION_FC,
   OPTION_CPU,
   OPTION_CHIP,
+  OPTION_PULP_COMPAT,
+  OPTION_NO_PULP_COMPAT,
+  OPTION_NO_PULP_INFER,
+  OPTION_PRINT_EXTS,
+  /* TODO: goes into class */
+  OPTION_PULP_INDREGREG,
+  OPTION_NO_PULP_INDREGREG,
+
+#define INSN_CLASS(NAME, ARCH) \
+  OPTION_PULP_##NAME,	       \
+  OPTION_NO_PULP_##NAME,
+
+  PULP_EXTENSION_MAP
+
+#undef INSN_CLASS
+
   OPTION_END_OF_ENUM
+};
+
+bfd_boolean pulp_compat = FALSE;
+bfd_boolean pulp_no_infer = FALSE;
+bfd_boolean print_exts = FALSE;
+
+struct pulp_exts_as_opts
+{
+  /* The name of the PULP extension */
+  const char *name;
+  /* The command-line options that turn the extension on or off */
+  int option_on;
+  int option_off;
+};
+
+static const struct pulp_exts_as_opts pulp_exts_opts[] = {
+#define INSN_CLASS(NAME, ARCH) \
+  { ARCH, OPTION_PULP_##NAME, OPTION_NO_PULP_##NAME },
+
+  PULP_EXTENSION_MAP
+
+#undef INSN_CLASS
 };
 
 struct option md_longopts[] =
@@ -2463,15 +2497,58 @@ struct option md_longopts[] =
   {"march-attr", no_argument, NULL, OPTION_ARCH_ATTR},
   {"mno-arch-attr", no_argument, NULL, OPTION_NO_ARCH_ATTR},
 
+  /* PULP */
   {"mrvc", no_argument, NULL, OPTION_MRVC},
   {"mno-rvc", no_argument, NULL, OPTION_MNO_RVC},
-  {"mL2", required_argument, NULL, OPTION_L2},
-  {"mL1Cl", required_argument, NULL, OPTION_L1CL},
-  {"mL1Fc", required_argument, NULL, OPTION_L1FC},
-  {"mPE", required_argument, NULL, OPTION_PE},
-  {"mFC", required_argument, NULL, OPTION_FC},
   {"mcpu", required_argument, NULL, OPTION_CPU},
   {"mchip", required_argument, NULL, OPTION_CHIP},
+  {"mno-pulp-infer", no_argument, NULL, OPTION_NO_PULP_INFER},
+  {"mprint-exts", no_argument, NULL, OPTION_PRINT_EXTS},
+  /* PULP extension options */
+  {"mpulp-abs", no_argument, NULL, OPTION_PULP_ABS},
+  {"mno-pulp-abs", no_argument, NULL, OPTION_NO_PULP_ABS},
+  {"mpulp-addsubrn", no_argument, NULL, OPTION_PULP_ADDSUBRN},
+  {"mno-pulp-addsubrn", no_argument, NULL, OPTION_NO_PULP_ADDSUBRN},
+  {"mpulp-bitop", no_argument, NULL, OPTION_PULP_BITOP},
+  {"mno-pulp-bitop", no_argument, NULL, OPTION_NO_PULP_BITOP},
+  {"mpulp-bitop-small", no_argument, NULL, OPTION_PULP_BITOP_SMALL},
+  {"mno-pulp-bitop-small", no_argument, NULL, OPTION_NO_PULP_BITOP_SMALL},
+  {"mpulp-bitrev", no_argument, NULL, OPTION_PULP_BITREV},
+  {"mno-pulp-bitrev", no_argument, NULL, OPTION_NO_PULP_BITREV},
+  {"mpulp-br", no_argument, NULL, OPTION_PULP_BR},
+  {"mno-pulp-br", no_argument, NULL, OPTION_NO_PULP_BR},
+  {"mpulp-clip", no_argument, NULL, OPTION_PULP_CLIP},
+  {"mno-pulp-clip", no_argument, NULL, OPTION_NO_PULP_CLIP},
+  {"mpulp-compat", no_argument, NULL, OPTION_PULP_COMPAT},
+  {"mno-pulp-compat", no_argument, NULL, OPTION_NO_PULP_COMPAT},
+  {"mpulp-elw", no_argument, NULL, OPTION_PULP_ELW},
+  {"mno-pulp-elw", no_argument, NULL, OPTION_NO_PULP_ELW},
+  {"mpulp-hwloop", no_argument, NULL, OPTION_PULP_HWLOOP},
+  {"mno-pulp-hwloop", no_argument, NULL, OPTION_NO_PULP_HWLOOP},
+  {"mpulp-indregreg", no_argument, NULL, OPTION_PULP_INDREGREG},
+  {"mno-pulp-indregreg", no_argument, NULL, OPTION_NO_PULP_INDREGREG},
+  {"mpulp-mac-alt", no_argument, NULL, OPTION_PULP_MAC_ALT},
+  {"mno-pulp-mac-alt", no_argument, NULL, OPTION_NO_PULP_MAC_ALT},
+  {"mpulp-mac-si", no_argument, NULL, OPTION_PULP_MAC_SI},
+  {"mno-pulp-mac-si", no_argument, NULL, OPTION_NO_PULP_MAC_SI},
+  {"mpulp-macrn-hi", no_argument, NULL, OPTION_PULP_MACRN_HI},
+  {"mno-pulp-macrn-hi", no_argument, NULL, OPTION_NO_PULP_MACRN_HI},
+  {"mpulp-minmax", no_argument, NULL, OPTION_PULP_MINMAX},
+  {"mno-pulp-minmax", no_argument, NULL, OPTION_NO_PULP_MINMAX},
+  {"mpulp-mulrn-hi", no_argument, NULL, OPTION_PULP_MULRN_HI},
+  {"mno-pulp-mulrn-hi", no_argument, NULL, OPTION_NO_PULP_MULRN_HI},
+  {"mpulp-partmac", no_argument, NULL, OPTION_PULP_PARTMAC},
+  {"mno-pulp-partmac", no_argument, NULL, OPTION_NO_PULP_PARTMAC},
+  {"mpulp-postmod", no_argument, NULL, OPTION_PULP_POSTMOD},
+  {"mno-pulp-postmod", no_argument, NULL, OPTION_NO_PULP_POSTMOD},
+  {"mpulp-slet", no_argument, NULL, OPTION_PULP_SLET},
+  {"mno-pulp-slet", no_argument, NULL, OPTION_NO_PULP_SLET},
+  {"mpulp-vect", no_argument, NULL, OPTION_PULP_VECT},
+  {"mno-pulp-vect", no_argument, NULL, OPTION_NO_PULP_VECT},
+  {"mpulp-vectgap8", no_argument, NULL, OPTION_PULP_VECT_GAP8},
+  {"mno-pulp-vectgap8", no_argument, NULL, OPTION_NO_PULP_VECT_GAP8},
+  {"mpulp-vectshufflepack", no_argument, NULL, OPTION_PULP_VECT_SHUFFLEPACK},
+  {"mno-pulp-vectshufflepack", no_argument, NULL, OPTION_NO_PULP_VECT_SHUFFLEPACK},
 
   {NULL, no_argument, NULL, 0}
 };
@@ -2497,13 +2574,28 @@ riscv_set_abi (unsigned new_xlen, enum float_abi new_float_abi, bfd_boolean rve)
 int
 md_parse_option (int c, const char *arg)
 {
-  int Arg;
-  static int Defined = 0;
+  unsigned i = 0;
+
+  /* Parse pulp extension enable/disable switches. Currently, the disable
+     switches can only disable extensions, that have been added with their
+     explict subextension names (either via march or enable switches). */
+  /* TODO: Test disable switches against PULP extension groups.  */
+  for (i = 0; i < ARRAY_SIZE (pulp_exts_opts); i++)
+    if (c == pulp_exts_opts[i].option_on)
+      {
+	riscv_add_subset (&riscv_subsets, pulp_exts_opts[i].name, 2, 0);
+	return 1;
+      }
+    else if (c == pulp_exts_opts[i].option_off)
+      {
+	riscv_remove_subset (&riscv_subsets, pulp_exts_opts[i].name);
+	return 1;
+      }
 
   switch (c)
     {
     case OPTION_MARCH:
-      if (!Defined) riscv_set_arch (arg);
+      riscv_set_arch (arg);
       break;
 
     case OPTION_NO_PIC:
@@ -2551,34 +2643,38 @@ md_parse_option (int c, const char *arg)
 
     case OPTION_NO_ARCH_ATTR:
       riscv_opts.arch_attr = FALSE;
+      break;
     /* PULP specific mdargs */
     case OPTION_MRVC:
       riscv_set_rvc (TRUE);
       break;
-    case OPTION_L2:
-        Arg = atoi(arg);
-        if (Pulp_Chip.Pulp_L2_Size == -1 || Pulp_Chip.Pulp_L2_Size == Arg) Pulp_Chip.Pulp_L2_Size = Arg;
+
+    case OPTION_MNO_RVC:
+      riscv_set_rvc (FALSE);
       break;
-    case OPTION_L1CL:
-        Arg = atoi(arg);
-        if (Pulp_Chip.Pulp_L1_Cluster_Size == -1 || Pulp_Chip.Pulp_L1_Cluster_Size == Arg) Pulp_Chip.Pulp_L1_Cluster_Size = Arg;
-      break;
-    case OPTION_L1FC:
-        Arg = atoi(arg);
-        if (Pulp_Chip.Pulp_L1_FC_Size == -1 || Pulp_Chip.Pulp_L1_FC_Size == Arg) Pulp_Chip.Pulp_L1_FC_Size = Arg;
-      break;
-    case OPTION_PE:
-        Arg = atoi(arg);
-        if (Pulp_Chip.Pulp_PE == -1 || Pulp_Chip.Pulp_PE == Arg) Pulp_Chip.Pulp_PE = Arg;
-      break;
-    case OPTION_FC:
-        Arg = atoi(arg);
-        if (Pulp_Chip.Pulp_FC == -1 || Pulp_Chip.Pulp_FC == Arg) Pulp_Chip.Pulp_FC = Arg;
-      break;
+
     case OPTION_CPU:
+      /* TODO */
       break;
+
     case OPTION_CHIP:
-      pulp_set_chip(arg); Defined = 1;
+      pulp_set_chip(arg);
+      break;
+
+    case OPTION_PULP_COMPAT:
+      pulp_compat = TRUE;
+      break;
+
+    case OPTION_NO_PULP_COMPAT:
+      pulp_compat = FALSE;
+      break;
+
+    case OPTION_NO_PULP_INFER:
+      pulp_no_infer = TRUE;
+      break;
+
+    case OPTION_PRINT_EXTS:
+      print_exts = TRUE;
       break;
 
     default:
@@ -2599,22 +2695,15 @@ static void pulp_set_chip(const char *arg)
 
   if (strncmp (p, "PULPINO", 7) == 0) {
         riscv_set_arch ("rv32imcxpulpv1");
-        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_PULPINO]);
   } else if (strncmp (p, "HONEY", 5) == 0) {
         riscv_set_arch ("rv32imcxpulpv0");
-        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_HONEY]);
-/* __GAP8 Start */
   } else if (strncmp (p, "GAP8", 4) == 0) {
         riscv_set_arch ("rv32imcxgap8");
-        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP8]);
-/* __GAP8 Stop */
   } else if (strncmp (p, "GAP9", 4) == 0) {
         riscv_set_arch ("rv32imcxgap9");
-        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else if (strncmp (p, "HUA20", 5) == 0) {
         riscv_set_arch ("RV32IMCXgap9");
 	as_fatal ("#### unsupported pulp chip %s", p);
-        UpdatePulpChip(&Pulp_Chip, &Pulp_Defined_Chips[PULP_CHIP_GAP9]);
   } else {
         as_fatal ("unsupported pulp chip %s", arg);
   }
@@ -2683,70 +2772,136 @@ riscv_after_parse_args (void)
   if (flag_dwarf_cie_version == -1)
     flag_dwarf_cie_version = 3;
 
-  /* Set PULP specific options */
-  riscv_subset_t *subset;
+  /* PULP specific checks */
+  /* We downgrade certain PULP subextensions to version 0 when we want to run in
+     pulpv0/v1 compatibility mode. This is rather ugly, but good enough to kinda
+     support backwards compatibility. */
 
-  for (subset = riscv_subsets.head; subset != NULL; subset = subset->next) {
+  if (pulp_compat)
+    {
+      static const char *compat_exts[] = {
+#define INSN_CLASS(NAME, ARCH) \
+	ARCH,
 
-    char *p = subset->name;
-    int len;
-    /* only consider if it's a custom extension */
-    if (*p != 'x')
-      continue;
+	PULP_EXTENSION_COMPAT_MAP
+#undef INSN_CLASS
+	NULL,
+      };
 
-    /* balasr hack: concatenate major version that was stripped back to string before parsing */
-    int buflen = snprintf (NULL, 0, "%d", subset->major_version) + strlen (subset->name);
-    char* full_subset_name = xmalloc (buflen + 1);
-    snprintf (full_subset_name, buflen + 1, "%s%d", subset->name, subset->major_version);
+      const char **arch;
 
-    switch (PulpDecodeCpu(full_subset_name+1, &len)) {
-    case PULP_RISCV:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_RISCV) Pulp_Chip.processor = PULP_RISCV;
-      else as_fatal("-Xriscv: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-    case PULP_V0:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V0) Pulp_Chip.processor = PULP_V0;
-      else as_fatal("-Xpulpv0: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-    case PULP_V1:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V1) Pulp_Chip.processor = PULP_V1;
-      else as_fatal("-Xpulpv1: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-    case PULP_V2:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V2) Pulp_Chip.processor = PULP_V2;
-      else as_fatal("-Xpulpv2: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-    case PULP_V3:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_V3) Pulp_Chip.processor = PULP_V3;
-      else as_fatal("-Xpulpv3: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-/* __GAP8 Start */
-    case PULP_GAP8:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP8) Pulp_Chip.processor = PULP_GAP8;
-      else as_fatal("-Xgap8: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-/* __GAP8 Stop */
-    case PULP_SLIM:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_SLIM) Pulp_Chip.processor = PULP_SLIM;
-      else as_fatal("-Xpulpslim: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-    case PULP_GAP9:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_GAP9) Pulp_Chip.processor = PULP_GAP9;
-      else as_fatal("-Xgap9: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      strcpy(subset, "XGAP9");
-      break;
-    case PULP_NN:
-      if (Pulp_Chip.processor == PULP_NONE || Pulp_Chip.processor == PULP_NN) Pulp_Chip.processor = PULP_NN;
-      else as_fatal("-Xpulpnn: pulp architecture is already defined as %s", PulpProcessorImage(Pulp_Chip.processor));
-      break;
-      /* ignore PULP_NONE since tests are expecting us not to crash here */
-    default:
-      break;
+      for (arch = compat_exts; *arch; arch++)
+	{
+	  if (riscv_subset_supports(*arch))
+	    {
+	      riscv_remove_subset (&riscv_subsets, *arch);
+	      riscv_add_subset (&riscv_subsets, *arch, 0, 0);
+	    }
+	}
     }
 
-    if (!full_subset_name)
-      free (full_subset_name);
-  }
+  /* In case we want full control over used extensions */
+  if (pulp_no_infer)
+    return;
+
+  /* infer additional float extensions (moves and conversions) */
+  /* vfmv and vfcvt only make sense when integer reg is not smaller than float
+     reg */
+  if (riscv_subset_supports ("xfvecsingle")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecsinglenotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvechalf")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvechalfnotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvecalthalf")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecalthalfnotthirtytwod", 2, 0);
+
+  if (riscv_subset_supports ("xfvecquarter")
+      && !(xlen == 32 && riscv_subset_supports ("d")))
+    riscv_add_subset (&riscv_subsets, "xfvecquarternotthirtytwod", 2, 0);
+
+  /* automatically add conversion insns between floating point subsets */
+  if (riscv_subset_supports ("xfhalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfhalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfhalfwithd", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfalthalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfhalf"))
+	riscv_add_subset (&riscv_subsets, "xfalthalfwithhalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfquarter"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithd", 2, 0);
+      if (riscv_subset_supports ("xfhalf"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithhalf", 2, 0);
+      if (riscv_subset_supports ("xfalthalf"))
+	riscv_add_subset (&riscv_subsets, "xfquarterwithalthalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecsingle"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecsinglewithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecsinglewithd", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvechalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvechalfwithsingle", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecalthalf"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithsingle", 2, 0);
+      if (riscv_subset_supports ("xfvechalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecalthalfwithhalf", 2, 0);
+    }
+
+  if (riscv_subset_supports ("xfvecquarter"))
+    {
+      if (riscv_subset_supports ("f"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithf", 2, 0);
+      if (riscv_subset_supports ("d"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithd", 2, 0);
+      if (riscv_subset_supports ("xfvecsingle"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithsingle", 2, 0);
+      if (riscv_subset_supports ("xfvechalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithhalf", 2, 0);
+      if (riscv_subset_supports ("xfvecalthalf"))
+	riscv_add_subset (&riscv_subsets, "xfvecquarterwithalthalf", 2, 0);
+    }
+
+  /* if we want to see what extensions are enabled */
+  if (print_exts)
+    fprintf(stdout, "arch=%s\n",
+	    riscv_arch_str (xlen, &riscv_subsets));
 }
 
 long
@@ -3449,21 +3604,70 @@ md_show_usage (FILE *stream)
 {
   fprintf (stream, _("\
 RISC-V options:\n\
-  -fpic          generate position-independent code\n\
-  -fno-pic       don't generate position-independent code (default)\n\
-  -march=ISA     set the RISC-V architecture\n\
-  -mabi=ABI      set the RISC-V ABI\n\
-  -mrelax        enable relax (default)\n\
-  -mno-relax     disable relax\n\
-  -march-attr    generate RISC-V arch attribute\n\
-  -mno-arch-attr don't generate RISC-V arch attribute\n\
-  -mchip=CHIP    set Pulp chip target\n\
-  -mL2           set pulp L2 size to Value\n\
-  -mL1Cl=Value   set pulp cluster L1 size to Value\n\
-  -mL1Fc=Value   set pulp fabric controller L1 size, if any, to Value\n\
-  -mPE=Value     define number of processing element in Pulp cluster\n\
-  -mFC=Value     if Value=0 assume there is no fabric controler, if Value!=0 assume there is one FC\n\
-  -mchip=Name    define targeted chip as Name\n\
+  -fpic                   Generate position-independent code\n\
+  -fno-pic                Don't generate position-independent code (default)\n\
+  -march=ISA              Set the RISC-V architecture\n\
+  -mabi=ABI               Set the RISC-V ABI\n\
+  -mrelax                 Enable relax (default)\n\
+  -mno-relax              Disable relax\n\
+  -march-attr             Generate RISC-V arch attribute\n\
+  -mno-arch-attr          Don't generate RISC-V arch attribute\n\
+  -mchip=CHIP             Set PULP chip target\n\
+  -mprint-exts            Print canonical extension string\n\
+  -mno-pulp-infer         Disable extension inference\n\
+  -mpulp-abs              Use PULP abs instruction\n\
+  -mno-pulp-abs\n\
+  -mpulp-addsubrn         Use PULP add/sub with norm/round instructions\n\
+  -mno-pulp-addsubrn\n\
+  -mpulp-bitop            Use PULP bit manipulation instructions\n\
+  -mno-pulp-bitop\n\
+  -mpulp-bitop-small      Use PULP bit manipulation instructions. This is a\n\
+                          subset of the PULP bit manipulation instructions.\n\
+                          Used in pulpv0 and pulpv1. Use only if you know\n\
+                          what you do.\n\
+  -mno-pulp-bitop-small\n\
+  -mpulp-bitrev           Use PULP bitreverse instruction\n\
+  -mno-pulp-bitrev\n\
+  -mpulp-br               Use PULP branch instruction\n\
+  -mno-pulp-br\n\
+  -mpulp-clip             Use PULP clip instructions\n\
+  -mno-pulp-clip\n\
+  -mpulp-compat           Use PULP extension instructions (if any) in\n\
+  -mno-pulp-compat        pulpv0 and pulpv1 compatibility mode. This\n\
+                          changes the instruction encoding (postmod) and\n\
+                          instructions themselves (avg instead of addn).\n\
+                          Use only if you know what you do.\n\
+  -mpulp-elw              Use PULP ELW instruction (cluster synchronization)\n\
+  -mno-pulp-elw\n\
+  -mpulp-hwloop           Use PULP hardware loop instructions\n\
+  -mno-pulp-hwloop\n\
+  -mpulp-indregreg        Use PULP register offset load/store instructions\n\
+  -mno-pulp-indregreg\n\
+  -mpulp-mac-alt          Use PULP multiply accumulate instructions. This\n\
+  -mno-pulp-mac-alt       is a small subset of the PULP mac and partmac\n\
+                          instructions plus some alternate mac\n\
+                          instructions. Used in pulpv0. Use only if you\n\
+                          know what you do.\n\
+  -mpulp-mac-si           Use PULP multiply accumulate instructions (32x32\n\
+  -mno-pulp-mac-si        into 32)\n\
+  -mpulp-macrn-hi         Use PULP multiply accumulate instructions with\n\
+  -mno-pulp-macrn-hi      norm/round (16x16 into 32)\n\
+  -mpulp-minmax           Use PULP minmax instructions\n\
+  -mno-pulp-minmax\n\
+  -mpulp-mulrn-hi         Use PULP multiply instructions with norm/round\n\
+  -mno-pulp-mulrn-hi      (16x16 into 32)\n\
+  -mpulp-partmac          Use PULP multiply accumulate instructions (16x16\n\
+  -mno-pulp-partmac       into 32)\n\
+  -mpulp-postmod          Use PULP pointer post modification instructions\n\
+  -mno-pulp-postmod\n\
+  -mpulp-slet             Use PULP slet/sletu instructions\n\
+  -mno-pulp-slet\n\
+  -mpulp-vect             Use PULP SIMD instructions\n\
+  -mno-pulp-vect\n\
+  -mpulp-vectgap8         Use PULP GAP8 additional SIMD instructions\n\
+  -mno-pulp-vectgap8\n\
+  -mpulp-vectshufflepack  Use PULP SIMD shuffle and pack instructions\n\
+  -mno-pulp-vectshufflepack\n\
 "));
 }
 
@@ -3491,12 +3695,6 @@ tc_riscv_regname_to_dw2regnum (char *regname)
 
   as_bad (_("unknown register `%s'"), regname);
   return -1;
-}
-
-void pulp_md_end(void)
-
-{
-    pulp_add_chip_info();
 }
 
 void
