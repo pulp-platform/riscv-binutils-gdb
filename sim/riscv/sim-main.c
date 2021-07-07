@@ -291,22 +291,42 @@ store_csr (SIM_CPU *cpu, const char *name, int csr, unsigned_word *reg,
     case CSR_TIMEH:
       RISCV_ASSERT_RV32 (cpu, "CSR: %s", name);
 
-    case CSR_LPSTART0:
+      /* corev */
+    case CSR_COREV_LPSTART0:
       cpu->csr.lpstart0 = val;
       break;
-    case CSR_LPEND0:
+    case CSR_COREV_LPEND0:
       cpu->csr.lpend0 = val;
       break;
-    case CSR_LPCOUNT0:
+    case CSR_COREV_LPCOUNT0:
       cpu->csr.lpcount0 = val;
       break;
-    case CSR_LPSTART1:
+    case CSR_COREV_LPSTART1:
       cpu->csr.lpstart1 = val;
       break;
-    case CSR_LPEND1:
+    case CSR_COREV_LPEND1:
       cpu->csr.lpend1 = val;
       break;
-    case CSR_LPCOUNT1:
+    case CSR_COREV_LPCOUNT1:
+      cpu->csr.lpcount1 = val;
+      break;
+      /* pulpv 3 */
+    case CSR_PULPV3_LPSTART0:
+      cpu->csr.lpstart0 = val;
+      break;
+    case CSR_PULPV3_LPEND0:
+      cpu->csr.lpend0 = val;
+      break;
+    case CSR_PULPV3_LPCOUNT0:
+      cpu->csr.lpcount0 = val;
+      break;
+    case CSR_PULPV3_LPSTART1:
+      cpu->csr.lpstart1 = val;
+      break;
+    case CSR_PULPV3_LPEND1:
+      cpu->csr.lpend1 = val;
+      break;
+    case CSR_PULPV3_LPCOUNT1:
       cpu->csr.lpcount1 = val;
       break;
 
