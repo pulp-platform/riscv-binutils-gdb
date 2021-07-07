@@ -2347,9 +2347,9 @@ zext (unsigned_word w, int bit)
 static int
 clip (long long int low, long long int x, long long int high)
 {
-  if (x > high)
+  if (x >= high)
     return high;
-  else if (x < low)
+  else if (x <= low)
     return low;
   else
     return x;
