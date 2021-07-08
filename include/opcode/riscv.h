@@ -540,7 +540,7 @@ struct pulp_ext_group_info
   uint64_t ext1_flags;
 };
 
-#define BIT(x) (1ul << x)
+#define BIT(x) (1ull << (uint64_t)x)
 
 /* Bitmasks that signal whether a current instruction class / extension is
    supported. */
