@@ -1330,6 +1330,14 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
 {"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
 
+{"pv.add.h.div2",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div4",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div8",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
+{"pv.sub.h.div2",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div4",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div8",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
 /* shuffle pack */
 {"pv.shuffle.h",        0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
 {"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
