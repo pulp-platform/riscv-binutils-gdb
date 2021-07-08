@@ -811,7 +811,7 @@ const struct riscv_opcode riscv_opcodes[] =
   | PULP_BR               |        |        | x      | x      | x    | x      | x    | x     |
   | PULP_ELW              | x      | x      | x      | x      | x    | x      | x    | x     |
   | PULP_NN               |        |        |        |        |      | x      |      |       |
-  | PULP_BITREV           |        |        |        |        |      |        | x    |       |
+  | PULP_BITREV           |        |        |        | x      |      |        | x    |       |
   | PULP_FINX_GAP9        |        |        |        |        |      |        | x    |       |
   | PULP_HALFFLOAT_GAP9   |        |        |        |        |      |        | x    |       |
 
