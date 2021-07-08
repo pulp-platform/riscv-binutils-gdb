@@ -4331,6 +4331,12 @@ void step_once (SIM_CPU *cpu)
       break;
     }
 
+  if (op->name == NULL)
+    {
+      TRACE_INSN (cpu, "INSN NOT FOUND IN OPC TABLE");
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+    }
+
   /* TODO: Try to use a common counter and only update on demand (reads).  */
   if (RISCV_XLEN (cpu) == 32)
     {
