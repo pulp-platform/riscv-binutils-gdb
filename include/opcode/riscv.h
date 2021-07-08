@@ -470,6 +470,7 @@ enum riscv_insn_class
   INSN_CLASS(MULRN_HI, "xpulpmulrnhi")					\
   INSN_CLASS(VECT, "xpulpvect")						\
   INSN_CLASS(VECT_SHUFFLEPACK, "xpulpvectshufflepack")			\
+  INSN_CLASS(VECT_COMPLEX, "xpulpvectcomplex")				\
   INSN_CLASS(BR, "xpulpbr")						\
   INSN_CLASS(ELW, "xpulpelw")						\
   INSN_CLASS(VECT_GAP8, "xpulpvectgap8")				\
@@ -577,6 +578,8 @@ struct pulp_ext_group_info
 
 #define PULP_EXT_GROUP_PULPV3 (PULP_EXT_GROUP_BASE			\
 			       | BIT (INSN_CLASS_XPULP_BITREV)		\
+			       | BIT (INSN_CLASS_XPULP_VECT_COMPLEX))	\
+
 #define PULP_EXT_GROUP_NN  (PULP_EXT_GROUP_BASE			\
 			    | BIT (INSN_CLASS_XPULP_NN))
 
