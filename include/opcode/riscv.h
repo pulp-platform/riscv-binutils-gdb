@@ -106,7 +106,7 @@ static const char * const riscv_pred_succ[16] =
 #define EXTRACT_I1TYPE_UIMM(x) \
   (RV_X(x, 15, 5))
 #define EXTRACT_I6TYPE_IMM(x) \
-  ((RV_X(x, 20, 5)<<1)|RV_X(x, 25, 1))
+  ((RV_X(x, 20, 5)<<1)|RV_X(x, 25, 1)) /* TODO: where is the sign here, probably need RV_IMM_SIGN */
 #define EXTRACT_I5TYPE_UIMM(x) \
   (RV_X(x, 25, 5))
 #define EXTRACT_I5_1_TYPE_UIMM(x) \
@@ -382,6 +382,7 @@ enum riscv_insn_class
    INSN_CLASS_XPULP_MULRN_HI,
    INSN_CLASS_XPULP_VECT,
    INSN_CLASS_XPULP_VECT_SHUFFLEPACK,
+   INSN_CLASS_XPULP_VECT_COMPLEX,
    INSN_CLASS_XPULP_BR,
    INSN_CLASS_XPULP_ELW,
    INSN_CLASS_XPULP_VECT_GAP8,
@@ -469,6 +470,7 @@ enum riscv_insn_class
   INSN_CLASS(MULRN_HI, "xpulpmulrnhi")					\
   INSN_CLASS(VECT, "xpulpvect")						\
   INSN_CLASS(VECT_SHUFFLEPACK, "xpulpvectshufflepack")			\
+  INSN_CLASS(VECT_COMPLEX, "xpulpvectcomplex")				\
   INSN_CLASS(BR, "xpulpbr")						\
   INSN_CLASS(ELW, "xpulpelw")						\
   INSN_CLASS(VECT_GAP8, "xpulpvectgap8")				\
@@ -538,7 +540,7 @@ struct pulp_ext_group_info
   uint64_t ext1_flags;
 };
 
-#define BIT(x) (1ul << x)
+#define BIT(x) (1ull << (uint64_t)x)
 
 /* Bitmasks that signal whether a current instruction class / extension is
    supported. */
@@ -554,7 +556,7 @@ struct pulp_ext_group_info
       | BIT (INSN_CLASS_XPULP_MAC_ALT)					\
       | BIT (INSN_CLASS_XPULP_ELW)
 
-/* pulpv2 and pulpv3 */
+/* base for pulpv2 onwards */
 #define PULP_EXT_GROUP_BASE						\
   BIT(INSN_CLASS_XPULP_POSTMOD)						\
     /* TODO: indregreg missing */					\
@@ -574,6 +576,10 @@ struct pulp_ext_group_info
   | BIT (INSN_CLASS_XPULP_BR)						\
   | BIT (INSN_CLASS_XPULP_ELW)
 
+#define PULP_EXT_GROUP_PULPV3 (PULP_EXT_GROUP_BASE			\
+			       | BIT (INSN_CLASS_XPULP_BITREV)		\
+			       | BIT (INSN_CLASS_XPULP_VECT_COMPLEX))	\
+
 #define PULP_EXT_GROUP_NN  (PULP_EXT_GROUP_BASE			\
 			    | BIT (INSN_CLASS_XPULP_NN))
 
@@ -586,7 +592,7 @@ struct pulp_ext_group_info
 			     | BIT (INSN_CLASS_XPULP_FINX_GAP9)		\
 			     | BIT (INSN_CLASS_XPULP_FHALF_GAP9))
 
-#define COREV_EXT_GROUP (PULP_EXT_GROUP_BASE)
+#define COREV_EXT_GROUP (PULP_EXT_GROUP_PULPV3)
 
 /* PULP extension groupings. These macros are used to generate tables that
   associate the extension name, its version with a set of extension flags. Since
@@ -599,7 +605,7 @@ struct pulp_ext_group_info
   PULP_EXT_GROUP ("xpulpv",      0,  0, PULP_EXT_GROUP_COMPAT, 0)	\
   PULP_EXT_GROUP ("xpulpv",      1,  0, PULP_EXT_GROUP_COMPAT, 0)	\
   PULP_EXT_GROUP ("xpulpv",      2,  0, PULP_EXT_GROUP_BASE, 0)		\
-  PULP_EXT_GROUP ("xpulpv",      3,  0, PULP_EXT_GROUP_BASE, 0)		\
+  PULP_EXT_GROUP ("xpulpv",      3,  0, PULP_EXT_GROUP_PULPV3, 0)	\
   PULP_EXT_GROUP ("xpulpnnall", -1, -1, PULP_EXT_GROUP_BASE, 0)		\
   PULP_EXT_GROUP ("xgap",        8,  0, PULP_EXT_GROUP_GAP8, 0)		\
   PULP_EXT_GROUP ("xgap",        9,  0, PULP_EXT_GROUP_GAP9, 0)		\
