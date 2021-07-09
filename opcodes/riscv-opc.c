@@ -806,12 +806,13 @@ const struct riscv_opcode riscv_opcodes[] =
   | PULP_ADDSUBRN         |        |        | x      | x      | x    | x      | x    | x     |
   | PULP_VECT             |        |        | x      | x      | x    | x      | x    | x     |
   | PULP_VECT_SHUFFLEPACK |        |        | x      | x      | x    | x      | x    | x     |
+  | PULP_VECT_COMPLEX     |        |        |        | x      |      | x      |      | x     |
   | PULP_VECT_GAP8        |        |        |        |        | x    |        |      |       |
   | PULP_VECT_GAP9        |        |        |        |        |      |        | x    |       |
   | PULP_BR               |        |        | x      | x      | x    | x      | x    | x     |
   | PULP_ELW              | x      | x      | x      | x      | x    | x      | x    | x     |
   | PULP_NN               |        |        |        |        |      | x      |      |       |
-  | PULP_BITREV           |        |        |        |        |      |        | x    |       |
+  | PULP_BITREV           |        |        |        | x      |      |        | x    |       |
   | PULP_FINX_GAP9        |        |        |        |        |      |        | x    |       |
   | PULP_HALFFLOAT_GAP9   |        |        |        |        |      |        | x    |       |
 
@@ -1329,6 +1330,14 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.cmpleu.sc.b",      0, INSN_CLASS_XPULP_VECT, "d,s,t",        MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VR,      MASK_V_OP,      match_opcode,   0},
 {"pv.cmpleu.sci.b",     0, INSN_CLASS_XPULP_VECT, "d,s,bu",       MATCH_V_OP_CMPLEU|MATCH_V_OP_B_VI,      MASK_V_OP1,     match_opcode,   0},
 
+{"pv.add.h.div2",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div4",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.add.h.div8",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_ADD_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
+{"pv.sub.h.div2",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S1,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div4",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S2,  MASK_V_OP,      match_opcode,   0},
+{"pv.sub.h.div8",       0, INSN_CLASS_XPULP_VECT,   "d,s,t", MATCH_V_OP_SUB_DIV|MATCH_V_OP_H_VV_S3,  MASK_V_OP,      match_opcode,   0},
+
 /* shuffle pack */
 {"pv.shuffle.h",        0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VV,     MASK_V_OP,      match_opcode,   0},
 {"pv.shuffle.sci.h",    0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,bu",       MATCH_V_OP_SHUFFLE|MATCH_V_OP_H_VI,     MASK_V_OP1,     match_opcode,   0},
@@ -1357,6 +1366,24 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* PULP bitrev */
 {"p.bitrev",            0, INSN_CLASS_XPULP_BITREV,   "d,s,bi,b5",     MATCH_BITREV,                           MASK_BITREV,    match_opcode,   0},
+
+/* PULP vectcomplex */
+{"pv.cplxmul.h.r",      0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div2", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div4", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.r.div8", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULR|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+
+{"pv.cplxmul.h.i",      0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S0, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div2", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S1, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div4", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S2, MASK_V_OP11,    match_opcode,   0},
+{"pv.cplxmul.h.i.div8", 0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_CPLXMULI|MATCH_V_OP_H_VV_S3, MASK_V_OP11,    match_opcode,   0},
+
+{"pv.subrotmj.h",       0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S0, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div2",  0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S1, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div4",  0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S2, MASK_V_OP,      match_opcode,   0},
+{"pv.subrotmj.h.div8",  0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_S3, MASK_V_OP,      match_opcode,   0},
+
+{"pv.cplxconj.h",       0, INSN_CLASS_XPULP_VECT_COMPLEX,   "d,s",   MATCH_V_OP_CPLXCONJ|MATCH_V_OP_H_VV,    MASK_V_OP2,     match_opcode,   0},
 
 /* PULP vectgap8 */
 /* Vector, Gap8 only */
