@@ -1350,7 +1350,8 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.shuffle2.h",       0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_H_VV,    MASK_V_OP,      match_opcode,   0},
 {"pv.shuffle2.b",       0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_SHUFFLE2|MATCH_V_OP_B_VV,    MASK_V_OP,      match_opcode,   0},
 
-{"pv.pack.h",           0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.pack",             0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACK|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
+{"pv.pack.h",           0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACKH|MATCH_V_OP_H_VV,        MASK_V_OP,      match_opcode,   0},
 
 {"pv.packhi.b",         0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACKHI|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
 {"pv.packlo.b",         0, INSN_CLASS_XPULP_VECT_SHUFFLEPACK, "d,s,t",        MATCH_V_OP_PACKLO|MATCH_V_OP_B_VV,      MASK_V_OP,      match_opcode,   0},
