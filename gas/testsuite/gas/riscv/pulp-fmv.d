@@ -1,5 +1,5 @@
 #source: pulp-fmv.s
-#as: -march=rv32ixfhalf_xfalthalf_xfquarter
+#as: -march=rv32i_xfalthalf_xfhalf_xfquarter -mno-pulp-infer
 #objdump: -dr
 
 .*:[ 	]+file format .*
