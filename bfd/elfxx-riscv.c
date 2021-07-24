@@ -1463,7 +1463,7 @@ riscv_parse_prefixed_ext (riscv_parse_subset_t *rps,
 
 static const char * const riscv_std_z_ext_strtab[] =
   {
-    NULL
+    "zfinx", "zdinx", NULL
   };
 
 /* Same as `riscv_std_z_ext_strtab', but for S-class extensions.  */
@@ -1616,6 +1616,34 @@ riscv_parse_subset (riscv_parse_subset_t *rps,
 			  arch);
       return FALSE;
     }
+
+  if (riscv_lookup_subset (rps->subset_list, "zfinx")
+      && riscv_lookup_subset (rps->subset_list, "f"))
+    {
+        rps->error_handler
+          (_("-march=%s: z*inx does not support the `f' extension"),
+           arch);
+        return FALSE;
+    }
+
+  if (riscv_lookup_subset (rps->subset_list, "zfinx")
+      && riscv_lookup_subset (rps->subset_list, "d"))
+    {
+        rps->error_handler
+          (_("-march=%s: z*inx does not support the `d' extension"),
+           arch);
+        return FALSE;
+    }
+
+  if (riscv_lookup_subset (rps->subset_list, "zfinx")
+      && riscv_lookup_subset (rps->subset_list, "q"))
+    {
+        rps->error_handler
+          (_("-march=%s: z*inx does not support the `q' extension"),
+           arch);
+        return FALSE;
+    }
+
   return TRUE;
 }
 
