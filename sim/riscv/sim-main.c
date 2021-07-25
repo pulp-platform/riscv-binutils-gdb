@@ -159,11 +159,19 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
     case INSN_CLASS_M: return riscv_subset_supports ("m");
     case INSN_CLASS_F: return riscv_subset_supports ("f");
     case INSN_CLASS_D: return riscv_subset_supports ("d");
+    case INSN_CLASS_ZFINX: return riscv_subset_supports ("zfinx");
+    case INSN_CLASS_ZDINX: return riscv_subset_supports ("zdinx");
     case INSN_CLASS_D_AND_C:
       return riscv_subset_supports ("d") && riscv_subset_supports ("c");
 
     case INSN_CLASS_F_AND_C:
       return riscv_subset_supports ("f") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_ZDINX_AND_C:
+      return riscv_subset_supports ("zdinx") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_ZFINX_AND_C:
+      return riscv_subset_supports ("zfinx") && riscv_subset_supports ("c");
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
@@ -229,6 +237,33 @@ store_rd (SIM_CPU *cpu, int rd, unsigned_word val)
     {
       cpu->regs[rd] = val;
       TRACE_REG (cpu, rd);
+    }
+}
+
+static INLINE void
+store_rd_dinx (SIM_CPU *cpu, int rd, unsigned64 val)
+{
+  if (rd && RISCV_XLEN (cpu) == 64)
+    {
+      cpu->regs[rd] = val;
+      TRACE_REG (cpu, rd);
+    }
+  else if (rd && RISCV_XLEN (cpu) == 32)
+    {
+#if 0 /* TODO: zdinx probably will only allow even register pairs (odd
+	 reserved), but gcc currently doesn't have this restriction during code
+	 generation */
+      if ((rd % 2) != 0)
+	{
+	  SIM_DESC sd = CPU_STATE (cpu);
+	  TRACE_INSN (cpu, "STORE INTO ODD REGISTER PAIR (RV32)");
+	  sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+	}
+#endif
+      cpu->regs[rd] = val & 0xffffffff;
+      cpu->regs[rd + 1] = (val >> 32) & 0xffffffff;
+      TRACE_REG (cpu, rd);
+      TRACE_REG (cpu, rd + 1);
     }
 }
 
@@ -986,6 +1021,685 @@ execute_f (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_FSFLAGS:
       TRACE_INSN (cpu, "fsflags %s, %s",
 		  rd_name, frs1_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "fflags", CSR_FFLAGS, &cpu->csr.fflags));
+      store_csr (cpu, "fflags", CSR_FFLAGS, &cpu->csr.fflags, cpu->regs[rs1]);
+      break;
+    default:
+      TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+    }
+
+ done:
+  return pc;
+}
+
+static sim_cia
+execute_zdinx (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
+{
+  SIM_DESC sd = CPU_STATE (cpu);
+  unsigned int mask_arithmetic = MASK_FADD_D;
+  unsigned int mask_mul_add = MASK_FMADD_S;
+  unsigned int mask_convert = MASK_FCVT_S_W;
+
+  static const int round_modes[] =
+  {
+      sim_fpu_round_near, sim_fpu_round_zero,
+      sim_fpu_round_down, sim_fpu_round_up,
+      sim_fpu_round_default, sim_fpu_round_default,
+      sim_fpu_round_default
+  };
+
+  int rd = (iw >> OP_SH_RD) & OP_MASK_RD;
+  int rs1 = (iw >> OP_SH_RS1) & OP_MASK_RS1;
+  int rs2 = (iw >> OP_SH_RS2) & OP_MASK_RS2;
+  int rs3 = (iw >> OP_SH_RS3) & OP_MASK_RS3;
+  const char *rd_name = riscv_gpr_names_abi[rd];
+  const char *rs1_name = riscv_gpr_names_abi[rs1];
+  const char *rs2_name = riscv_gpr_names_abi[rs2];
+  const char *rs3_name = riscv_gpr_names_abi[rs3];
+  unsigned_word i_imm = EXTRACT_ITYPE_IMM (iw);
+  unsigned_word s_imm = EXTRACT_STYPE_IMM (iw);
+  uint32_t u32;
+  int32_t i32;
+  uint64_t u64;
+  int64_t i64;
+  unsigned32 tmp32;
+  unsigned64 tmp64;
+  float tmpf;
+  double tmpd;
+  union conv64 fargrs1, fargrs2, fargrs3, frd;
+
+  sim_cia pc = cpu->pc + 4;
+
+  /* Rounding mode.  */
+  int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
+  int rounding = round_modes[rm];
+
+  sim_fpu sft, sft2;
+  sim_fpu sfa, sfb, sfc;
+
+  /* for rv32 we have to deal with register pairs */
+  if (RISCV_XLEN (cpu) == 64)
+    {
+      fargrs1.v = cpu->regs[rs1];
+      fargrs2.v = cpu->regs[rs2];
+      fargrs3.v = cpu->regs[rs3];
+
+      sim_fpu_64to (&sfa, cpu->regs[rs1]);
+      sim_fpu_64to (&sfb, cpu->regs[rs2]);
+    }
+  else
+    {
+#if 0
+      if ((rs1 % 2) != 0 || (rs2 % 2) != 0)
+	{
+	  TRACE_INSN (cpu, "ODD REGISTER ARGUMENT for: %s", op->name);
+	  sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL)
+	}
+#endif
+      /* access x0 means both x1 is not touched and the constant is zero */
+      fargrs1.w[0] = rs1 ? cpu->regs[rs1]     : 0;
+      fargrs1.w[1] = rs1 ? cpu->regs[rs1 + 1] : 0;
+      fargrs2.w[0] = rs2 ? cpu->regs[rs2]     : 0;
+      fargrs2.w[1] = rs2 ? cpu->regs[rs2 + 1] : 0;
+      fargrs3.w[0] = rs3 ? cpu->regs[rs3]     : 0;
+      fargrs3.w[1] = rs3 ? cpu->regs[rs3 + 1] : 0;
+
+      sim_fpu_64to (&sfa, fargrs1.v);
+      sim_fpu_64to (&sfb, fargrs2.v);
+    }
+
+  switch (op->match & mask_mul_add)
+    {
+    case MATCH_FMADD_D:
+      TRACE_INSN (cpu, "fmadd.d %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_64to (&sfc, fargrs3.v);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_add (&sft, &sfc, &sft2);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FMSUB_D:
+      TRACE_INSN (cpu, "fmsub.d %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_64to (&sfc, fargrs3.v);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_sub (&sft, &sft2, &sfc);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FNMADD_D:
+      TRACE_INSN (cpu, "fnmadd.d %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_64to (&sfc, fargrs3.v);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_neg (&sft2, &sft2);
+      sim_fpu_sub (&sft, &sft2, &sfc);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FNMSUB_D:
+      TRACE_INSN (cpu, "fnmsub.d %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_64to (&sfc, fargrs3.v);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_neg (&sft2, &sft2);
+      sim_fpu_add (&sft, &sft2, &sfc);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    }
+
+  switch (op->match & mask_arithmetic)
+    {
+    case MATCH_FADD_D:
+      TRACE_INSN (cpu, "fadd.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_add (&sft, &sfa, &sfb);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FSUB_D:
+      TRACE_INSN (cpu, "fsub.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_sub (&sft, &sfa, &sfb);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FMUL_D:
+      TRACE_INSN (cpu, "fmul.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_mul (&sft, &sfa, &sfb);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FDIV_D:
+      TRACE_INSN (cpu, "fdiv.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_div (&sft, &sfa, &sfb);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FSQRT_D:
+      TRACE_INSN (cpu, "fsqrt.d %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_sqrt (&sft, &sfa);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    }
+
+  switch (op->match & mask_convert)
+    {
+    case MATCH_FCVT_W_D:
+      TRACE_INSN (cpu, "fcvt.w.d %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_to32i (&i32, &sfa, rounding);
+      cpu->regs[rd] = i32;
+      goto done;
+    case MATCH_FCVT_WU_D:
+      TRACE_INSN (cpu, "fcvt.wu.d %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_to32u (&u32, &sfa, rounding);
+      i32 = u32;
+      cpu->regs[rd] = i32;
+      goto done;
+    case MATCH_FCVT_D_W:
+      TRACE_INSN (cpu, "fcvt.d.w %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_i32to (&sft, cpu->regs[rs1], rounding);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FCVT_D_WU:
+      TRACE_INSN (cpu, "fcvt.d.wu %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_u32to (&sft, cpu->regs[rs1], rounding);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FCVT_S_D:
+      TRACE_INSN (cpu, "fcvt.s.d %s, %s",
+		  rd_name, rs1_name);
+      sft = sfa;
+      sim_fpu_round_32 (&sft, sim_fpu_round_near, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp32, &sft);
+      store_rd (cpu, rd, tmp32);
+      goto done;
+    case MATCH_FCVT_D_S:
+      TRACE_INSN (cpu, "fcvt.d.s %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_32to (&sft, cpu->regs[rs1]);
+      sim_fpu_to64 (&tmp64, &sft);
+      store_rd_dinx (cpu, rd, tmp64);
+      goto done;
+    case MATCH_FCVT_L_D:
+      TRACE_INSN (cpu, "fcvt.l.d %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      memcpy (&tmpd, &cpu->regs[rs1], sizeof (tmpd));
+      cpu->regs[rd] = (int64_t) tmpd;
+      goto done;
+    case MATCH_FCVT_LU_D:
+      TRACE_INSN (cpu, "fcvt.lu.d %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      memcpy (&tmpd, &cpu->regs[rs1], sizeof (tmpd));
+      cpu->regs[rd] = (uint64_t) tmpd;
+      goto done;
+    case MATCH_FCVT_D_L:
+      TRACE_INSN (cpu, "fcvt.d.l %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      tmpd = (double) ((int64_t) cpu->regs[rs1]);
+      memcpy (&cpu->regs[rd], &tmpd, sizeof (cpu->regs[rd]));
+      goto done;
+    case MATCH_FCVT_D_LU:
+      TRACE_INSN (cpu, "fcvt.d.lu %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      tmpd = (double) cpu->regs[rs1];
+      memcpy (&cpu->regs[rd], &tmpd, sizeof (cpu->regs[rd]));
+      goto done;
+    }
+
+  switch (op->match)
+    {
+    case MATCH_FSGNJ_D:
+      TRACE_INSN (cpu, "fsgnj.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = fargrs1.w[1] & 0x7fffffff;
+      u32 |= fargrs2.w[1] & 0x80000000;
+      frd.w[1] = u32;
+      frd.w[0] = fargrs1.w[0];
+      store_rd_dinx (cpu, rd, frd.v);
+      break;
+    case MATCH_FSGNJN_D:
+      TRACE_INSN (cpu, "fsgnjn.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = fargrs1.w[1] & 0x7fffffff;
+      u32 |= (fargrs2.w[1] & 0x80000000) ^ 0x80000000;
+      frd.w[1] = u32;
+      frd.w[0] = fargrs1.w[0];
+      store_rd_dinx (cpu, rd, frd.v);
+      break;
+    case MATCH_FSGNJX_D:
+      TRACE_INSN (cpu, "fsgnjx.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = fargrs1.w[1] & 0x7fffffff;
+      u32 |= (fargrs1.w[1] & 0x80000000) ^ (fargrs2.w[1] & 0x80000000);
+      frd.w[1] = u32;
+      frd.w[0] = fargrs1.w[0];
+      store_rd_dinx (cpu, rd, frd.v);
+      break;
+    case MATCH_FMIN_D:
+      TRACE_INSN (cpu, "fmin.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      if (fargrs1.d < fargrs2.d)
+	store_rd_dinx (cpu, rd, fargrs1.v);
+      else
+	store_rd_dinx (cpu, rd, fargrs2.v);
+      break;
+    case MATCH_FMAX_D:
+      TRACE_INSN (cpu, "fmax.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      if (fargrs1.d > fargrs2.d)
+	store_rd_dinx (cpu, rd, fargrs1.v);
+      else
+	store_rd_dinx (cpu, rd, fargrs2.v);
+      break;
+    case MATCH_FEQ_D:
+      TRACE_INSN (cpu, "feq.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_eq (&sfa, &sfb);
+      break;
+    case MATCH_FLE_D:
+      TRACE_INSN (cpu, "fle.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_le (&sfa, &sfb);
+      break;
+    case MATCH_FLT_D:
+      TRACE_INSN (cpu, "flt.d %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_lt (&sfa, &sfb);
+      break;
+    case MATCH_FCLASS_D:
+      TRACE_INSN (cpu, "fclass.d %s, %s",
+		  rd_name, rs1_name);
+      switch (sim_fpu_is (&sfa))
+	{
+	case SIM_FPU_IS_NINF:
+	  cpu->regs[rd] = 1;
+	  break;
+	case SIM_FPU_IS_NNUMBER:
+	  cpu->regs[rd] = 1 << 1;
+	  break;
+	case SIM_FPU_IS_NDENORM:
+	  cpu->regs[rd] = 1 << 2;
+	  break;
+	case SIM_FPU_IS_NZERO:
+	  cpu->regs[rd] = 1 << 3;
+	  break;
+	case SIM_FPU_IS_PZERO:
+	  cpu->regs[rd] = 1 << 4;
+	  break;
+	case SIM_FPU_IS_PDENORM:
+	  cpu->regs[rd] = 1 << 5;
+	  break;
+	case SIM_FPU_IS_PNUMBER:
+	  cpu->regs[rd] = 1 << 6;
+	  break;
+	case SIM_FPU_IS_PINF:
+	  cpu->regs[rd] = 1 << 7;
+	  break;
+	case SIM_FPU_IS_SNAN:
+	  cpu->regs[rd] = 1 << 8;
+	  break;
+	case SIM_FPU_IS_QNAN:
+	  cpu->regs[rd] = 1 << 9;
+	  break;
+	}
+      break;
+    default:
+      TRACE_INSN (cpu, "UNHANDLED INSN: %s", op->name);
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
+    }
+
+ done:
+  return pc;
+
+}
+
+static sim_cia
+execute_zfinx (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
+{
+  SIM_DESC sd = CPU_STATE (cpu);
+  unsigned int mask_arithmetic = MASK_FADD_S;
+  unsigned int mask_mul_add = MASK_FMADD_S;
+  unsigned int mask_convert = MASK_FCVT_S_W;
+
+  static const int round_modes[] =
+  {
+      sim_fpu_round_near, sim_fpu_round_zero,
+      sim_fpu_round_down, sim_fpu_round_up,
+      sim_fpu_round_default, sim_fpu_round_default,
+      sim_fpu_round_default
+  };
+
+  int rd = (iw >> OP_SH_RD) & OP_MASK_RD;
+  int rs1 = (iw >> OP_SH_RS1) & OP_MASK_RS1;
+  int rs2 = (iw >> OP_SH_RS2) & OP_MASK_RS2;
+  int rs3 = (iw >> OP_SH_RS3) & OP_MASK_RS3;
+  const char *rd_name = riscv_gpr_names_abi[rd];
+  const char *rs1_name = riscv_gpr_names_abi[rs1];
+  const char *rs2_name = riscv_gpr_names_abi[rs2];
+  const char *rs3_name = riscv_gpr_names_abi[rs3];
+  unsigned_word i_imm = EXTRACT_ITYPE_IMM (iw);
+  unsigned_word s_imm = EXTRACT_STYPE_IMM (iw);
+  uint32_t u32;
+  int32_t i32;
+  int64_t i64;
+  uint64_t u64;
+  unsigned_word tmp;
+  float tmpf;
+  union conv32 fargrs1, fargrs2;
+
+  sim_cia pc = cpu->pc + 4;
+
+  /* Rounding mode.  */
+  int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
+  int rounding = round_modes[rm];
+
+  sim_fpu sft, sft2;
+  sim_fpu sfa, sfb, sfc;
+  sim_fpu_32to (&sfa, cpu->regs[rs1]);
+  sim_fpu_32to (&sfb, cpu->regs[rs2]);
+
+  fargrs1.w = cpu->regs[rs1];
+  fargrs2.w = cpu->regs[rs2];
+
+  switch (op->match & mask_mul_add)
+    {
+    case MATCH_FMADD_S:
+      TRACE_INSN (cpu, "fmadd.s %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_32to (&sfc, cpu->regs[rs3]);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_add (&sft, &sfc, &sft2);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FMSUB_S:
+      TRACE_INSN (cpu, "fmsub.s %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_32to (&sfc, cpu->regs[rs3]);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_sub (&sft, &sft2, &sfc);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FNMADD_S:
+      TRACE_INSN (cpu, "fnmadd.s %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_32to (&sfc, cpu->regs[rs3]);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_neg (&sft2, &sft2);
+      sim_fpu_sub (&sft, &sft2, &sfc);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FNMSUB_S:
+      TRACE_INSN (cpu, "fnmsub.s %s, %s, %s, %s",
+		  rd_name, rs1_name, rs2_name, rs3_name);
+      sim_fpu_32to (&sfc, cpu->regs[rs3]);
+      sim_fpu_mul (&sft2, &sfa, &sfb);
+      sim_fpu_neg (&sft2, &sft2);
+      sim_fpu_add (&sft, &sft2, &sfc);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  switch (op->match & mask_arithmetic)
+    {
+    case MATCH_FADD_S:
+      TRACE_INSN (cpu, "fadd.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_add (&sft, &sfa, &sfb);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FSUB_S:
+      TRACE_INSN (cpu, "fsub.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_sub (&sft, &sfa, &sfb);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FMUL_S:
+      TRACE_INSN (cpu, "fmul.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_mul (&sft, &sfa, &sfb);
+      sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FDIV_S:
+      TRACE_INSN (cpu, "fdiv.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_div (&sft, &sfa, &sfb);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FSQRT_S:
+      TRACE_INSN (cpu, "fsqrt.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      sim_fpu_sqrt (&sft, &sfa);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    }
+
+  switch (op->match & mask_convert)
+    {
+    case MATCH_FCVT_W_S:
+      TRACE_INSN (cpu, "fcvt.w.s %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_to32i (&i32, &sfa, rounding);
+      cpu->regs[rd] = i32;
+      goto done;
+    case MATCH_FCVT_WU_S:
+      TRACE_INSN (cpu, "fcvt.wu.s %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_to32u (&u32, &sfa, rounding);
+      i32 = u32;
+      cpu->regs[rd] = i32;
+      goto done;
+    case MATCH_FCVT_S_W:
+      TRACE_INSN (cpu, "fcvt.s.w %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_i32to (&sft, cpu->regs[rs1], rounding);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FCVT_S_WU:
+      TRACE_INSN (cpu, "fcvt.s.wu %s, %s",
+		  rd_name, rs1_name);
+      sim_fpu_u32to (&sft, cpu->regs[rs1], rounding);
+      sim_fpu_round_32 (&sft, rounding, sim_fpu_denorm_default);
+      sim_fpu_to32 (&tmp, &sft);
+      store_rd (cpu, rd, tmp);
+      goto done;
+    case MATCH_FCVT_L_S:
+      TRACE_INSN (cpu, "fcvt.l.s %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      memcpy (&tmpf, &cpu->regs[rs1], sizeof (tmpf));
+      cpu->regs[rd] = (int64_t) tmpf;
+      goto done;
+    case MATCH_FCVT_LU_S:
+      TRACE_INSN (cpu, "fcvt.lu.s %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      memcpy (&tmpf, &cpu->regs[rs1], sizeof (tmpf));
+      cpu->regs[rd] = (uint64_t) tmpf;
+      goto done;
+    case MATCH_FCVT_S_L:
+      TRACE_INSN (cpu, "fcvt.s.l %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      tmpf = (float) ((int64_t) cpu->regs[rs1]);
+      memcpy (&cpu->regs[rd], &tmpf, sizeof (cpu->regs[rd]));
+      goto done;
+    case MATCH_FCVT_S_LU:
+      TRACE_INSN (cpu, "fcvt.s.lu %s, %s",
+		  rd_name, rs1_name);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      tmpf = (float) cpu->regs[rs1];
+      memcpy (&cpu->regs[rd], &tmpf, sizeof (cpu->regs[rd]));
+      goto done;
+    }
+
+  switch (op->match)
+    {
+    case MATCH_FSGNJ_S:
+      TRACE_INSN (cpu, "fsgnj.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = cpu->regs[rs1] & 0x7fffffff;
+      u32 |= cpu->regs[rs2] & 0x80000000;
+      cpu->regs[rd] = u32;
+      break;
+    case MATCH_FSGNJN_S:
+      TRACE_INSN (cpu, "fsgnjn.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = cpu->regs[rs1] & 0x7fffffff;
+      u32 |= (cpu->regs[rs2] & 0x80000000) ^ 0x80000000;
+      cpu->regs[rd] = u32;
+      break;
+    case MATCH_FSGNJX_S:
+      TRACE_INSN (cpu, "fsgnx.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      u32 = cpu->regs[rs1] & 0x7fffffff;
+      u32 |= (cpu->regs[rs1] & 0x80000000) ^ (cpu->regs[rs2] & 0x80000000);
+      cpu->regs[rd] = u32;
+      break;
+    case MATCH_FMIN_S:
+      TRACE_INSN (cpu, "fmin.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      if (fargrs1.s < fargrs2.s)
+	cpu->regs[rd] = fargrs1.w;
+      else
+	cpu->regs[rd] = fargrs2.w;
+      break;
+    case MATCH_FMAX_S:
+      TRACE_INSN (cpu, "fmax.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      if (fargrs1.s > fargrs2.s)
+	cpu->regs[rd] = fargrs1.w;
+      else
+	cpu->regs[rd] = fargrs2.w;
+      break;
+    case MATCH_FEQ_S:
+      TRACE_INSN (cpu, "feq.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_eq (&sfa, &sfb);
+      break;
+    case MATCH_FLE_S:
+      TRACE_INSN (cpu, "fle.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_le (&sfa, &sfb);
+      break;
+    case MATCH_FLT_S:
+      TRACE_INSN (cpu, "flt.s %s, %s, %s",
+		  rd_name, rs1_name, rs2_name);
+      cpu->regs[rd] = sim_fpu_is_lt (&sfa, &sfb);
+      break;
+    case MATCH_FCLASS_S:
+      TRACE_INSN (cpu, "fclass.s %s, %s",
+		  rd_name, rs1_name);
+      switch (sim_fpu_is (&sfa))
+	{
+	case SIM_FPU_IS_NINF:
+	  cpu->regs[rd] = 1;
+	  break;
+	case SIM_FPU_IS_NNUMBER:
+	  cpu->regs[rd] = 1 << 1;
+	  break;
+	case SIM_FPU_IS_NDENORM:
+	  cpu->regs[rd] = 1 << 2;
+	  break;
+	case SIM_FPU_IS_NZERO:
+	  cpu->regs[rd] = 1 << 3;
+	  break;
+	case SIM_FPU_IS_PZERO:
+	  cpu->regs[rd] = 1 << 4;
+	  break;
+	case SIM_FPU_IS_PDENORM:
+	  cpu->regs[rd] = 1 << 5;
+	  break;
+	case SIM_FPU_IS_PNUMBER:
+	  cpu->regs[rd] = 1 << 6;
+	  break;
+	case SIM_FPU_IS_PINF:
+	  cpu->regs[rd] = 1 << 7;
+	  break;
+	case SIM_FPU_IS_SNAN:
+	  cpu->regs[rd] = 1 << 8;
+	  break;
+	case SIM_FPU_IS_QNAN:
+	  cpu->regs[rd] = 1 << 9;
+	  break;
+	}
+      break;
+    case MATCH_FRCSR:
+      TRACE_INSN (cpu, "frcsr %s",
+		  rd_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "fcsr", CSR_FCSR, &cpu->csr.fcsr));
+      break;
+    case MATCH_FSCSR:
+      TRACE_INSN (cpu, "fscsr %s, %sf",
+		  rd_name, rs1_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "fcsr", CSR_FCSR, &cpu->csr.fcsr));
+      store_csr (cpu, "fcsr", CSR_FCSR, &cpu->csr.fcsr, cpu->regs[rs1]);
+      break;
+    case MATCH_FRRM:
+      TRACE_INSN (cpu, "frrm %s",
+		  rd_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "frm", CSR_FRM, &cpu->csr.frm));
+      break;
+    case MATCH_FSRM:
+      TRACE_INSN (cpu, "fsrm %s, %s",
+		  rd_name, rs1_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "frm", CSR_FCSR, &cpu->csr.frm));
+      store_csr (cpu, "frm", CSR_FCSR, &cpu->csr.frm, cpu->regs[rs1]);
+      break;
+    case MATCH_FRFLAGS:
+      TRACE_INSN (cpu, "frflags %s",
+		  rd_name);
+      store_rd (cpu, rd, fetch_csr (cpu, "fflags", CSR_FFLAGS, &cpu->csr.fflags));
+      break;
+    case MATCH_FSFLAGS:
+      TRACE_INSN (cpu, "fsflags %s, %s",
+		  rd_name, rs1_name);
       store_rd (cpu, rd, fetch_csr (cpu, "fflags", CSR_FFLAGS, &cpu->csr.fflags));
       store_csr (cpu, "fflags", CSR_FFLAGS, &cpu->csr.fflags, cpu->regs[rs1]);
       break;
@@ -4217,6 +4931,7 @@ execute_one (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case INSN_CLASS_C:
     case INSN_CLASS_F_AND_C:
     case INSN_CLASS_D_AND_C:
+      /* todo compressed ZFINX insn */
       return execute_c (cpu, iw, op);
     case INSN_CLASS_D:
       return execute_d (cpu, iw, op);
@@ -4226,6 +4941,11 @@ execute_one (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       return execute_i (cpu, iw, op);
     case INSN_CLASS_M:
       return execute_m (cpu, iw, op);
+    case INSN_CLASS_ZFINX:
+      return execute_zfinx (cpu, iw, op);
+    case INSN_CLASS_ZDINX:
+      return execute_zdinx (cpu, iw, op);
+
     /* case INSN_CLASS_XPULP_V0: */
     /* case INSN_CLASS_XPULP_V1: */
 
@@ -4437,7 +5157,7 @@ reg_store (sim_cpu *cpu, int rn, unsigned char *buf, int len)
 /* Initialize the state for a single cpu.  Usuaully this involves clearing all
    registers back to their reset state.  Should also hook up the fetch/store
    helper functions too.  */
-void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid)
+void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid, char* attr_arch)
 {
   const char *extensions;
   int i;
@@ -4456,10 +5176,20 @@ void initialize_cpu (SIM_DESC sd, SIM_CPU *cpu, int mhartid)
   for ( ; *p; ++p)
     *p = tolower (*p);
 
-  /* FIXME: Note that is somehow not configurable. We always get the first entry
-   * of model_list.def no matter the configure flags. For now we enable all the
-   * extensions that are available. */
-  riscv_set_arch (low_ext);
+  /* To determine the arch string we do the following with decreasing priority:
+     1. Take arch attribute from elf file
+     2. use --model MODEL
+
+     TODO: ideally we would let --model take preference, but we can't determine
+     whether --model was given by the user or the default value taken */
+  if (attr_arch)
+    {
+      riscv_set_arch (attr_arch);
+      free (attr_arch);
+    }
+  else
+    riscv_set_arch (low_ext);
+
   riscv_opts.rvc = TRUE;
 
   if (!riscv_hash[0])

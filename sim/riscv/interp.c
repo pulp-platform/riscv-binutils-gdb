@@ -30,6 +30,7 @@
 #include "libiberty.h"
 #include "bfd.h"
 #include "elf-bfd.h"
+#include "elf/riscv.h"
 
 #include "sim-main.h"
 #include "sim-options.h"
@@ -73,6 +74,24 @@ free_state (SIM_DESC sd)
     sim_module_uninstall (sd);
   sim_cpu_free_all (sd);
   sim_state_free (sd);
+}
+
+/* Parse a .attribute directive.  */
+
+static char *
+parse_riscv_attribute (struct bfd *abfd)
+{
+  char *attr_str = NULL;
+  obj_attribute *attr;
+
+  if (!abfd)
+    return NULL;
+
+  attr = elf_known_obj_attributes_proc (abfd);
+  if (attr && attr[Tag_RISCV_arch].s)
+    attr_str = xstrdup (attr[Tag_RISCV_arch].s);
+
+  return attr_str;
 }
 
 SIM_DESC
@@ -136,8 +155,8 @@ sim_open (SIM_OPEN_KIND kind, host_callback *callback,
   for (i = 0; i < MAX_NR_PROCESSORS; ++i)
     {
       SIM_CPU *cpu = STATE_CPU (sd, i);
-
-      initialize_cpu (sd, cpu, i);
+      /* somehow *abfd is NULL, but STATE_PROG_BFD is not */
+      initialize_cpu (sd, cpu, i, parse_riscv_attribute (STATE_PROG_BFD(sd)));
     }
 
   /* Allocate external memory if none specified by user.
