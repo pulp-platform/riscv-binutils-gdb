@@ -353,8 +353,12 @@ enum riscv_insn_class
    INSN_CLASS_M,
    INSN_CLASS_F,
    INSN_CLASS_D,
+   INSN_CLASS_ZFINX,
+   INSN_CLASS_ZDINX,
    INSN_CLASS_D_AND_C,
    INSN_CLASS_F_AND_C,
+   INSN_CLASS_ZFINX_AND_C,
+   INSN_CLASS_ZDINX_AND_C,
    INSN_CLASS_Q,
 
    /* PULP extensions */

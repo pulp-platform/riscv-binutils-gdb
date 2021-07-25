@@ -25,6 +25,20 @@
 #include "machs.h"
 #include "sim-base.h"
 
+union conv32
+{
+  uint32_t w;
+  float s;
+};
+
+union conv64
+{
+  uint32_t w[2];
+  uint64_t v;
+  double d;
+};
+
+
 typedef union FRegisterValue
 {
   uint64_t     v[2];
@@ -89,7 +103,7 @@ struct sim_state {
 };
 
 extern void step_once (SIM_CPU *);
-extern void initialize_cpu (SIM_DESC, SIM_CPU *, int);
+extern void initialize_cpu (SIM_DESC, SIM_CPU *, int, char *);
 extern void initialize_env (SIM_DESC, const char * const *argv,
 			    const char * const *env);
 

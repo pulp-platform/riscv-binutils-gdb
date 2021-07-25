@@ -138,11 +138,19 @@ riscv_multi_subset_supports (enum riscv_insn_class insn_class)
     case INSN_CLASS_M: return riscv_subset_supports ("m");
     case INSN_CLASS_F: return riscv_subset_supports ("f");
     case INSN_CLASS_D: return riscv_subset_supports ("d");
+    case INSN_CLASS_ZFINX: return riscv_subset_supports ("zfinx");
+    case INSN_CLASS_ZDINX: return riscv_subset_supports ("zdinx");
     case INSN_CLASS_D_AND_C:
       return riscv_subset_supports ("d") && riscv_subset_supports ("c");
 
     case INSN_CLASS_F_AND_C:
       return riscv_subset_supports ("f") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_ZDINX_AND_C:
+      return riscv_subset_supports ("zdinx") && riscv_subset_supports ("c");
+
+    case INSN_CLASS_ZFINX_AND_C:
+      return riscv_subset_supports ("zfinx") && riscv_subset_supports ("c");
 
     case INSN_CLASS_Q: return riscv_subset_supports ("q");
 
