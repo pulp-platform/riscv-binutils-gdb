@@ -3519,24 +3519,26 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_SBPOST:
       TRACE_INSN (cpu, "p.sb %s, %" PRIiTW "(%s!); // ",
 		  rs2_name, s_imm, rs1_name);
+      tmp = cpu->regs[rs1] + s_imm;
       sim_core_write_unaligned_1 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_SHPOST:
       TRACE_INSN (cpu, "p.sh %s, %" PRIiTW "(%s!); // ",
 		  rs2_name, s_imm, rs1_name);
+      tmp = cpu->regs[rs1] + s_imm;
       sim_core_write_unaligned_2 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
-
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_SWPOST:
       TRACE_INSN (cpu, "p.sw %s, %" PRIiTW "(%s!); // ",
 		  rs2_name, s_imm, rs1_name);
+      tmp = cpu->regs[rs1] + s_imm;
       sim_core_write_unaligned_4 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += s_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     }
 
@@ -3563,23 +3565,26 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_SBRRPOST:
       TRACE_INSN (cpu, "p.sb %s, %s(%s!); // ",
 		  rs2_name, rs3_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs3];
       sim_core_write_unaligned_1 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_SHRRPOST:
       TRACE_INSN (cpu, "p.sh %s, %s(%s!); // ",
 		  rs2_name, rs3_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs3];
       sim_core_write_unaligned_2 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_SWRRPOST:
       TRACE_INSN (cpu, "p.sw %s, %s(%s!); // ",
 		  rs2_name, rs3_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs3];
       sim_core_write_unaligned_4 (cpu, cpu->pc, write_map,
 				  cpu->regs[rs1], cpu->regs[rs2]);
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs3]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     }
 
@@ -3590,42 +3595,47 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_LBPOST:
       TRACE_INSN (cpu, "p.lb %s, %" PRIiTW "(%s!); // ",
 		  rd_name, i_imm, rs1_name);
+      tmp = cpu->regs[rs1] + i_imm;
       store_rd (cpu, rd, EXTEND8 (
 	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1])));
-      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LBUPOST:
       TRACE_INSN (cpu, "p.lbu %s, %" PRIiTW "(%s!); // ",
 		  rd_name, i_imm, rs1_name);
+      tmp = cpu->regs[rs1] + i_imm;
       store_rd (cpu, rd,
 	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LHPOST:
       TRACE_INSN (cpu, "p.lh %s, %" PRIiTW "(%s!); // ",
 		  rd_name, i_imm, rs1_name);
+      tmp = cpu->regs[rs1] + i_imm;
       store_rd (cpu, rd, EXTEND16 (
 	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1])));
-      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LHUPOST:
       TRACE_INSN (cpu, "p.lhu %s, %" PRIiTW "(%s!); // ",
 		  rd_name, i_imm, rs1_name);
+      tmp = cpu->regs[rs1] + i_imm;
       store_rd (cpu, rd,
 	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LWPOST:
       TRACE_INSN (cpu, "p.lw %s, %" PRIiTW "(%s!); // ",
 		  rd_name, i_imm, rs1_name);
+      tmp = cpu->regs[rs1] + i_imm;
       store_rd (cpu, rd,
 	sim_core_read_unaligned_4 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += i_imm);
+      store_rd (cpu, rs1, tmp);
       goto done;
     }
 
@@ -3673,42 +3683,47 @@ execute_xpulp (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_LBRRPOST:
       TRACE_INSN (cpu, "p.lb %s, %s(%s!); // ",
 		  rd_name, rs2_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
       store_rd (cpu, rd, EXTEND8 (
 	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1])));
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LBURRPOST:
       TRACE_INSN (cpu, "p.lbu %s, %s(%s!); // ",
 		  rd_name, rs2_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
       store_rd (cpu, rd,
 	sim_core_read_unaligned_1 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LHRRPOST:
       TRACE_INSN (cpu, "p.lh %s, %s(%s!); // ",
 		  rd_name, rs2_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
       store_rd (cpu, rd, EXTEND16 (
 	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1])));
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LHURRPOST:
       TRACE_INSN (cpu, "p.lhu %s, %s(%s!); // ",
 		  rd_name, rs2_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
       store_rd (cpu, rd,
 	sim_core_read_unaligned_2 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     case MATCH_LWRRPOST:
       TRACE_INSN (cpu, "p.lw %s, %s(%s!); // ",
 		  rd_name, rs2_name, rs1_name);
+      tmp = cpu->regs[rs1] + cpu->regs[rs2];
       store_rd (cpu, rd,
 	sim_core_read_unaligned_4 (cpu, cpu->pc, read_map,
 				   cpu->regs[rs1]));
-      store_rd (cpu, rs1, cpu->regs[rs1] += cpu->regs[rs2]);
+      store_rd (cpu, rs1, tmp);
       goto done;
     }
 
