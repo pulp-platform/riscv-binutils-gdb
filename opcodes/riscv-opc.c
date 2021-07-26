@@ -1500,14 +1500,10 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pv.subrotmj.h.div4",  0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUBROTMJ|MATCH_V_OP_H_VV_PS2,MASK_V_OP,      match_opcode,   0},
 
 {"pv.add.b.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
 {"pv.add.b.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-{"pv.add.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_ADD|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
 
 {"pv.sub.b.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS1,     MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div2",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS1,     MASK_V_OP,      match_opcode,   0},
 {"pv.sub.b.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_B_VV_PS2,     MASK_V_OP,      match_opcode,   0},
-{"pv.sub.h.div4",       0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_SUB|MATCH_V_OP_H_VV_PS2,     MASK_V_OP,      match_opcode,   0},
 
 {"pv.vitop.max",        0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_B_VV,       MASK_V_OP,      match_opcode,   0},
 {"pv.vitop.sel",        0, INSN_CLASS_XPULP_VECT_GAP8,   "d,s,t", MATCH_V_OP_VITOP|MATCH_V_OP_H_VV,       MASK_V_OP,      match_opcode,   0},
