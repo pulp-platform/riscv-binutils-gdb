@@ -77,6 +77,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
    */
 
+#define FP_SINGLE 0
+#define FP_DOUBLE 1
+#define FP_HALF   2
 
 typedef enum
 {
@@ -171,10 +174,12 @@ typedef enum
    emulating exact FPU behavior, sim_fpu_round_{32,64} should be
    called before packing the sim_fpu value.  */
 
+INLINE_SIM_FPU (void) sim_fpu_16to (sim_fpu *f, unsigned16 s);
 INLINE_SIM_FPU (void) sim_fpu_32to (sim_fpu *f, unsigned32 s);
 INLINE_SIM_FPU (void) sim_fpu_232to (sim_fpu *f, unsigned32 h, unsigned32 l);
 INLINE_SIM_FPU (void) sim_fpu_64to (sim_fpu *f, unsigned64 d);
 
+INLINE_SIM_FPU (void) sim_fpu_to16 (unsigned16 *s, const sim_fpu *f);
 INLINE_SIM_FPU (void) sim_fpu_to32 (unsigned32 *s, const sim_fpu *f);
 INLINE_SIM_FPU (void) sim_fpu_to232 (unsigned32 *h, unsigned32 *l, const sim_fpu *f);
 INLINE_SIM_FPU (void) sim_fpu_to64 (unsigned64 *d, const sim_fpu *f);
@@ -200,9 +205,12 @@ INLINE_SIM_FPU (unsigned64) sim_fpu_tofraction (const sim_fpu *s, int precision)
 
 /* Rounding operators.
 
-   Force an intermediate result to an exact 32/64 bit
+   Force an intermediate result to an exact 16/32/64 bit
    representation. */
 
+INLINE_SIM_FPU (int) sim_fpu_round_16 (sim_fpu *f,
+				       sim_fpu_round round,
+				       sim_fpu_denorm denorm);
 INLINE_SIM_FPU (int) sim_fpu_round_32 (sim_fpu *f,
 				       sim_fpu_round round,
 				       sim_fpu_denorm denorm);
@@ -250,6 +258,10 @@ INLINE_SIM_FPU (int) sim_fpu_sqrt (sim_fpu *f,
 
 /* Conversion of integer <-> floating point. */
 
+INLINE_SIM_FPU (int) sim_fpu_i16to (sim_fpu *f, signed16 i,
+				    sim_fpu_round round);
+INLINE_SIM_FPU (int) sim_fpu_u16to (sim_fpu *f, unsigned16 u,
+				    sim_fpu_round round);
 INLINE_SIM_FPU (int) sim_fpu_i32to (sim_fpu *f, signed32 i,
 				    sim_fpu_round round);
 INLINE_SIM_FPU (int) sim_fpu_u32to (sim_fpu *f, unsigned32 u,
@@ -267,6 +279,10 @@ INLINE_SIM_FPU (int) sim_fpu_u232to (sim_fpu *f, unsigned32 h, unsigned32 l,
 				     sim_fpu_round round);
 #endif
 
+INLINE_SIM_FPU (int) sim_fpu_to16i (signed16 *i, const sim_fpu *f,
+				    sim_fpu_round round);
+INLINE_SIM_FPU (int) sim_fpu_to16u (unsigned16 *u, const sim_fpu *f,
+				    sim_fpu_round round);
 INLINE_SIM_FPU (int) sim_fpu_to32i (signed32 *i, const sim_fpu *f,
 				    sim_fpu_round round);
 INLINE_SIM_FPU (int) sim_fpu_to32u (unsigned32 *u, const sim_fpu *f,
