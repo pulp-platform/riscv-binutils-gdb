@@ -404,6 +404,14 @@ enum riscv_insn_class
    INSN_CLASS_XPULP_FALTHALFWITHD,
    INSN_CLASS_XPULP_FALTHALFWITHHALF,
 
+   INSN_CLASS_XPULP_FHALFINX,
+   INSN_CLASS_XPULP_FHALFWITHFINX,
+   INSN_CLASS_XPULP_FHALFWITHDINX,
+   INSN_CLASS_XPULP_FALTHALFINX,
+   INSN_CLASS_XPULP_FALTHALFWITHFINX,
+   INSN_CLASS_XPULP_FALTHALFWITHDINX,
+   INSN_CLASS_XPULP_FALTHALFWITHHALFINX,
+
    INSN_CLASS_XPULP_FQUARTER,
    INSN_CLASS_XPULP_FQUARTERWITHF,
    INSN_CLASS_XPULP_FQUARTERWITHD,
@@ -483,19 +491,31 @@ enum riscv_insn_class
   INSN_CLASS(BITREV, "xpulpbitrev")					\
   INSN_CLASS(FINX_GAP9, "xpulpfinxgap9")				\
   INSN_CLASS(FHALF_GAP9, "xpulpfhalfgap9")				\
-  /* float extensions */						\
+  /* float extensions							\
+     									\
+     Internally, we split the conversion functions into separate        \
+     extension but these are not visible to the user. Later on,         \
+     we can options to disable certain conversion instructions if the   \
+     user has such a configuration. */                                  \
   INSN_CLASS(FHALF, "xfhalf")						\
-  INSN_CLASS(FHALFWITHF, "xfhalfwithf")					\
-  INSN_CLASS(FHALFWITHD, "xfhalfwithd")					\
+  INSN_CLASS(FHALFWITHF, "xfhalf")					\
+  INSN_CLASS(FHALFWITHD, "xfhalf")					\
   INSN_CLASS(FALTHALF, "xfalthalf")					\
-  INSN_CLASS(FALTHALFWITHF, "xfalthalfwithf")				\
-  INSN_CLASS(FALTHALFWITHD, "xfalthalfwithd")				\
-  INSN_CLASS(FALTHALFWITHHALF, "xfalthalfwithhalf")			\
+  INSN_CLASS(FALTHALFWITHF, "xfalthalf")				\
+  INSN_CLASS(FALTHALFWITHD, "xfalthalf")				\
+  INSN_CLASS(FALTHALFWITHHALF, "xfalthalf")				\
+  INSN_CLASS(FHALFINX, "xfhalfinx")					\
+  INSN_CLASS(FHALFWITHFINX, "xfhalfinx")				\
+  INSN_CLASS(FHALFWITHDINX, "xfhalfinx")				\
+  INSN_CLASS(FALTHALFINX, "xfalthalfinx")				\
+  INSN_CLASS(FALTHALFWITHFINX, "xfalthalfinx")				\
+  INSN_CLASS(FALTHALFWITHDINX, "xfalthalfinx")				\
+  INSN_CLASS(FALTHALFWITHHALFINX, "xfalthalfinx")			\
   INSN_CLASS(FQUARTER, "xfquarter")					\
-  INSN_CLASS(FQUARTERWITHF, "xfquarterwithf")				\
-  INSN_CLASS(FQUARTERWITHD, "xfquarterwithd")				\
-  INSN_CLASS(FQUARTERWITHHALF, "xfquarterwithhalf")			\
-  INSN_CLASS(FQUARTERWITHALTHALF, "xfquarterwithalthalf")		\
+  INSN_CLASS(FQUARTERWITHF, "xfquarter")				\
+  INSN_CLASS(FQUARTERWITHD, "xfquarter")				\
+  INSN_CLASS(FQUARTERWITHHALF, "xfquarter")				\
+  INSN_CLASS(FQUARTERWITHALTHALF, "xfquarter")				\
   INSN_CLASS(FVECSINGLE, "xfvecsingle")					\
   INSN_CLASS(FVECSINGLENOTTHIRTYTWOD, "xfvecsinglenotthirtytwod")	\
   INSN_CLASS(FVECSINGLEWITHF, "xfvecsinglewithf")			\
