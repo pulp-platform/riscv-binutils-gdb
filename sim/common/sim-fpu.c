@@ -1081,16 +1081,16 @@ sim_fpu_add (sim_fpu *f,
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
     }
+  if (sim_fpu_is_qnan (l))
+    {
+      *f = *l;
+      return 0;
+    }
   if (sim_fpu_is_snan (r))
     {
       *f = *r;
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
-    }
-  if (sim_fpu_is_qnan (l))
-    {
-      *f = *l;
-      return 0;
     }
   if (sim_fpu_is_qnan (r))
     {
@@ -1231,16 +1231,16 @@ sim_fpu_sub (sim_fpu *f,
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
     }
+  if (sim_fpu_is_qnan (l))
+    {
+      *f = *l;
+      return 0;
+    }
   if (sim_fpu_is_snan (r))
     {
       *f = *r;
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
-    }
-  if (sim_fpu_is_qnan (l))
-    {
-      *f = *l;
-      return 0;
     }
   if (sim_fpu_is_qnan (r))
     {
@@ -1385,16 +1385,16 @@ sim_fpu_mul (sim_fpu *f,
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
     }
+  if (sim_fpu_is_qnan (l))
+    {
+      *f = *l;
+      return 0;
+    }
   if (sim_fpu_is_snan (r))
     {
       *f = *r;
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
-    }
-  if (sim_fpu_is_qnan (l))
-    {
-      *f = *l;
-      return 0;
     }
   if (sim_fpu_is_qnan (r))
     {
@@ -1510,17 +1510,17 @@ sim_fpu_div (sim_fpu *f,
       f->class = sim_fpu_class_qnan;
       return sim_fpu_status_invalid_snan;
     }
-  if (sim_fpu_is_snan (r))
-    {
-      *f = *r;
-      f->class = sim_fpu_class_qnan;
-      return sim_fpu_status_invalid_snan;
-    }
   if (sim_fpu_is_qnan (l))
     {
       *f = *l;
       f->class = sim_fpu_class_qnan;
       return 0;
+    }
+  if (sim_fpu_is_snan (r))
+    {
+      *f = *r;
+      f->class = sim_fpu_class_qnan;
+      return sim_fpu_status_invalid_snan;
     }
   if (sim_fpu_is_qnan (r))
     {
