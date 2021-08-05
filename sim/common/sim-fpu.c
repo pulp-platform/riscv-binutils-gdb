@@ -310,7 +310,7 @@ pack_fpu (const sim_fpu *src,
 	  fraction >>= NR_GUARDS;
 	  /* When exp == EXPMAX (overflow from carry) fraction must
 	     have been made zero.  */
-	  ASSERT ((exp == EXPMAX) <= ((fraction & ~IMPLICIT_1) == 0));
+	  ASSERT ((exp == EXPMAX) <= ((fraction & ~(IMPLICIT_1  >> NR_GUARDS)) == 0));
 	}
       break;
     default:
