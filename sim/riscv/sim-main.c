@@ -424,7 +424,7 @@ execute_d (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* Rounding mode.  */
   int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
-  int rounding = round_modes[rm];
+  int rounding = round_modes[rm == 7 ? cpu->csr.frm : rm];
 
   sim_fpu sft, sft2;
   sim_fpu sfa, sfb, sfc;
@@ -738,7 +738,7 @@ execute_f (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* Rounding mode.  */
   int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
-  int rounding = round_modes[rm];
+  int rounding = round_modes[rm == 7 ? cpu->csr.frm : rm];
 
   sim_fpu sft, sft2;
   sim_fpu sfa, sfb, sfc;
@@ -1073,7 +1073,7 @@ execute_zdinx (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* Rounding mode.  */
   int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
-  int rounding = round_modes[rm];
+  int rounding = round_modes[rm == 7 ? cpu->csr.frm : rm];
 
   sim_fpu sft, sft2;
   sim_fpu sfa, sfb, sfc;
@@ -1418,7 +1418,7 @@ execute_zfinx (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* Rounding mode.  */
   int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
-  int rounding = round_modes[rm];
+  int rounding = round_modes[rm == 7 ? cpu->csr.frm : rm];
 
   sim_fpu sft, sft2;
   sim_fpu sfa, sfb, sfc;
@@ -3145,7 +3145,7 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 
   /* Rounding mode.  */
   int rm = (iw >> OP_SH_RM) & OP_MASK_RM;
-  int rounding = round_modes[rm];
+  int rounding = round_modes[rm == 7 ? cpu->csr.frm : rm];
 
   sim_fpu sft, sft2;
   sim_fpu sfa, sfb, sfc;
