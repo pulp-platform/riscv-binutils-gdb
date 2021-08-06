@@ -399,6 +399,7 @@ extern const sim_fpu sim_fpu_zero;
 extern const sim_fpu sim_fpu_one;
 extern const sim_fpu sim_fpu_two;
 extern const sim_fpu sim_fpu_qnan;
+extern const sim_fpu sim_fpu_negqnan;
 extern const sim_fpu sim_fpu_max32;
 extern const sim_fpu sim_fpu_max64;
 

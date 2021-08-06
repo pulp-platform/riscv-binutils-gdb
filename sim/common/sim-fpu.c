@@ -1936,7 +1936,7 @@ sim_fpu_sqrt (sim_fpu *f,
     }
   if (sim_fpu_is_qnan (r))
     {
-      *f = sim_fpu_qnan;
+      *f = *r;
       return 0;
     }
   if (sim_fpu_is_zero (r))
@@ -1963,7 +1963,7 @@ sim_fpu_sqrt (sim_fpu *f,
     }
   if (r->sign)
     {
-      *f = sim_fpu_qnan;
+      *f = sim_fpu_negqnan;
       return sim_fpu_status_invalid_sqrt;
     }
 
@@ -2634,6 +2634,9 @@ const sim_fpu sim_fpu_zero = {
 };
 const sim_fpu sim_fpu_qnan = {
   sim_fpu_class_qnan, 0, 0, 0
+};
+const sim_fpu sim_fpu_negqnan = {
+  sim_fpu_class_qnan, 1, 0, 0
 };
 const sim_fpu sim_fpu_one = {
   sim_fpu_class_number, 0, IMPLICIT_1, 0
