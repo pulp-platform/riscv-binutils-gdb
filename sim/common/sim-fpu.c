@@ -2579,7 +2579,7 @@ sim_fpu_eq (int *is,
   else
     {
       *is = 0;
-      return sim_fpu_status_invalid_qnan;
+      return 0;
     }
 }
 
