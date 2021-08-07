@@ -402,6 +402,7 @@ extern const sim_fpu sim_fpu_qnan;
 extern const sim_fpu sim_fpu_negqnan;
 extern const sim_fpu sim_fpu_max32;
 extern const sim_fpu sim_fpu_max64;
+extern const sim_fpu sim_fpu_canonical_nan;
 
 
 /* Select the applicable functions for the fp_word type */
