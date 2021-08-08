@@ -500,16 +500,27 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* Single-precision floating-point instruction subset */
 {"frcsr",     0, INSN_CLASS_F,   "d",  MATCH_FRCSR, MASK_FRCSR, match_opcode, INSN_ALIAS },
+{"frcsr",     0, INSN_CLASS_ZFINX,   "d",  MATCH_FRCSR, MASK_FRCSR, match_opcode, INSN_ALIAS },
 {"frsr",      0, INSN_CLASS_F,   "d",  MATCH_FRCSR, MASK_FRCSR, match_opcode, INSN_ALIAS },
+{"frsr",      0, INSN_CLASS_ZFINX,   "d",  MATCH_FRCSR, MASK_FRCSR, match_opcode, INSN_ALIAS },
 {"fscsr",     0, INSN_CLASS_F,   "s",  MATCH_FSCSR, MASK_FSCSR | MASK_RD, match_opcode, INSN_ALIAS },
 {"fscsr",     0, INSN_CLASS_F,   "d,s",  MATCH_FSCSR, MASK_FSCSR, match_opcode, INSN_ALIAS },
+{"fscsr",     0, INSN_CLASS_ZFINX,   "s",  MATCH_FSCSR, MASK_FSCSR | MASK_RD, match_opcode, INSN_ALIAS },
+{"fscsr",     0, INSN_CLASS_ZFINX,   "d,s",  MATCH_FSCSR, MASK_FSCSR, match_opcode, INSN_ALIAS },
 {"fssr",      0, INSN_CLASS_F,   "s",  MATCH_FSCSR, MASK_FSCSR | MASK_RD, match_opcode, INSN_ALIAS },
 {"fssr",      0, INSN_CLASS_F,   "d,s",  MATCH_FSCSR, MASK_FSCSR, match_opcode, INSN_ALIAS },
+{"fssr",      0, INSN_CLASS_ZFINX,   "s",  MATCH_FSCSR, MASK_FSCSR | MASK_RD, match_opcode, INSN_ALIAS },
+{"fssr",      0, INSN_CLASS_ZFINX,   "d,s",  MATCH_FSCSR, MASK_FSCSR, match_opcode, INSN_ALIAS },
 {"frrm",      0, INSN_CLASS_F,   "d",  MATCH_FRRM, MASK_FRRM, match_opcode, INSN_ALIAS },
+{"frrm",      0, INSN_CLASS_ZFINX,   "d",  MATCH_FRRM, MASK_FRRM, match_opcode, INSN_ALIAS },
 {"fsrm",      0, INSN_CLASS_F,   "s",  MATCH_FSRM, MASK_FSRM | MASK_RD, match_opcode, INSN_ALIAS },
 {"fsrm",      0, INSN_CLASS_F,   "d,s",  MATCH_FSRM, MASK_FSRM, match_opcode, INSN_ALIAS },
+{"fsrm",      0, INSN_CLASS_ZFINX,   "s",  MATCH_FSRM, MASK_FSRM | MASK_RD, match_opcode, INSN_ALIAS },
+{"fsrm",      0, INSN_CLASS_ZFINX,   "d,s",  MATCH_FSRM, MASK_FSRM, match_opcode, INSN_ALIAS },
 {"fsrmi",     0, INSN_CLASS_F,   "d,Z",  MATCH_FSRMI, MASK_FSRMI, match_opcode, INSN_ALIAS },
 {"fsrmi",     0, INSN_CLASS_F,   "Z",  MATCH_FSRMI, MASK_FSRMI | MASK_RD, match_opcode, INSN_ALIAS },
+{"fsrmi",     0, INSN_CLASS_ZFINX,   "d,Z",  MATCH_FSRMI, MASK_FSRMI, match_opcode, INSN_ALIAS },
+{"fsrmi",     0, INSN_CLASS_ZFINX,   "Z",  MATCH_FSRMI, MASK_FSRMI | MASK_RD, match_opcode, INSN_ALIAS },
 {"frflags",   0, INSN_CLASS_F,   "d",  MATCH_FRFLAGS, MASK_FRFLAGS, match_opcode, INSN_ALIAS },
 {"frflags",   0, INSN_CLASS_ZFINX,   "d",  MATCH_FRFLAGS, MASK_FRFLAGS, match_opcode, INSN_ALIAS },
 {"fsflags",   0, INSN_CLASS_F,   "s",  MATCH_FSFLAGS, MASK_FSFLAGS | MASK_RD, match_opcode, INSN_ALIAS },
@@ -518,6 +529,8 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fsflags",   0, INSN_CLASS_ZFINX,   "d,s",  MATCH_FSFLAGS, MASK_FSFLAGS, match_opcode, INSN_ALIAS },
 {"fsflagsi",  0, INSN_CLASS_F,   "d,Z",  MATCH_FSFLAGSI, MASK_FSFLAGSI, match_opcode, INSN_ALIAS },
 {"fsflagsi",  0, INSN_CLASS_F,   "Z",  MATCH_FSFLAGSI, MASK_FSFLAGSI | MASK_RD, match_opcode, INSN_ALIAS },
+{"fsflagsi",  0, INSN_CLASS_ZFINX,   "d,Z",  MATCH_FSFLAGSI, MASK_FSFLAGSI, match_opcode, INSN_ALIAS },
+{"fsflagsi",  0, INSN_CLASS_ZFINX,   "Z",  MATCH_FSFLAGSI, MASK_FSFLAGSI | MASK_RD, match_opcode, INSN_ALIAS },
 {"flw",      32, INSN_CLASS_F_AND_C, "D,Cm(Cc)",  MATCH_C_FLWSP, MASK_C_FLWSP, match_opcode, INSN_ALIAS|INSN_DREF|INSN_4_BYTE },
 {"flw",      32, INSN_CLASS_F_AND_C, "CD,Ck(Cs)",  MATCH_C_FLW, MASK_C_FLW, match_opcode, INSN_ALIAS|INSN_DREF|INSN_4_BYTE },
 {"flw",       0, INSN_CLASS_F,   "D,o(s)",  MATCH_FLW, MASK_FLW, match_opcode, INSN_DREF|INSN_4_BYTE },
@@ -1723,7 +1736,6 @@ const struct riscv_opcode riscv_opcodes[] =
 
 /* Floating point extensions: half/quarter floats and vector instructions */
 /* RV32Xfhalf - half-precision floats */
-
 {"flh",       0, INSN_CLASS_XPULP_FHALF, "D,o(s)",  MATCH_FLH, MASK_FLH, match_opcode,   WR_xd|RD_xs1 },
 {"flh",       0, INSN_CLASS_XPULP_FHALF, "D,A,s",  0, (int) M_FLH, match_never,  INSN_MACRO },
 {"fsh",       0, INSN_CLASS_XPULP_FHALF, "T,q(s)",  MATCH_FSH, MASK_FSH, match_opcode,   RD_xs1|RD_xs2 },
@@ -1765,14 +1777,56 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fmv.x.h",   0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FMV_X_H, MASK_FMV_X_H, match_opcode,  WR_xd|RD_xs1 },
 {"fclass.h",  0, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCLASS_H, MASK_FCLASS_H, match_opcode,   WR_xd|RD_xs1 },
 {"fmv.h.x",   0, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FMV_H_X, MASK_FMV_H_X, match_opcode,  WR_xd|RD_xs1 },
-//pseudos
+/* pseudos */
 {"fgt.h",     0, INSN_CLASS_XPULP_FHALF, "d,T,S",    MATCH_FLT_H, MASK_FLT_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fge.h",     0, INSN_CLASS_XPULP_FHALF, "d,T,S",    MATCH_FLE_H, MASK_FLE_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fmv.h",     0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJ_H, MASK_FSGNJ_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fabs.h",    0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJX_H, MASK_FSGNJX_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fneg.h",    0, INSN_CLASS_XPULP_FHALF, "D,U",  MATCH_FSGNJN_H, MASK_FSGNJN_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 
-/* RV64Xfhalf Half-Precision Floating-Point Extension (in addition to RV32Xf16)*/
+/* RV32Xfhalfinx - half-precision floats in x registers (no flh/fsh/fmv/)*/
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r",  MATCH_FMADD_H | MASK_RM, MASK_FMADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmadd.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r,m",  MATCH_FMADD_H, MASK_FMADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r",  MATCH_FMSUB_H | MASK_RM, MASK_FMSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r,m",  MATCH_FMSUB_H, MASK_FMSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r",  MATCH_FNMSUB_H | MASK_RM, MASK_FNMSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r,m",  MATCH_FNMSUB_H, MASK_FNMSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r",  MATCH_FNMADD_H | MASK_RM, MASK_FNMADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,r,m",  MATCH_FNMADD_H, MASK_FNMADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FADD_H | MASK_RM, MASK_FADD_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fadd.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,m",  MATCH_FADD_H, MASK_FADD_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FSUB_H | MASK_RM, MASK_FSUB_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,m",  MATCH_FSUB_H, MASK_FSUB_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FMUL_H | MASK_RM, MASK_FMUL_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,m",  MATCH_FMUL_H, MASK_FMUL_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FDIV_H | MASK_RM, MASK_FDIV_H | MASK_RM, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t,m",  MATCH_FDIV_H, MASK_FDIV_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FSQRT_H | MASK_RM, MASK_FSQRT_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fsqrt.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FSQRT_H, MASK_FSQRT_H, match_opcode,  WR_xd|RD_xs1 },
+{"fsgnj.h",   0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FSGNJ_H, MASK_FSGNJ_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjn.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FSGNJN_H, MASK_FSGNJN_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjx.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FSGNJX_H, MASK_FSGNJX_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmin.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FMIN_H, MASK_FMIN_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmax.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",  MATCH_FMAX_H, MASK_FMAX_H, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"feq.h",     0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",    MATCH_FEQ_H, MASK_FEQ_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"flt.h",     0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",    MATCH_FLT_H, MASK_FLT_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fle.h",     0, INSN_CLASS_XPULP_FHALFINX, "d,s,t",    MATCH_FLE_H, MASK_FLE_H, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_W_H | MASK_RM, MASK_FCVT_W_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.w.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_W_H, MASK_FCVT_W_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_WU_H | MASK_RM, MASK_FCVT_WU_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.h", 0, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_WU_H, MASK_FCVT_WU_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_H_W | MASK_RM, MASK_FCVT_H_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.w",  0, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_H_W, MASK_FCVT_H_W, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_H_WU | MASK_RM, MASK_FCVT_H_W | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.wu", 0, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_H_WU, MASK_FCVT_H_WU, match_opcode,   WR_xd|RD_xs1 },
+{"fclass.h",  0, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCLASS_H, MASK_FCLASS_H, match_opcode,   WR_xd|RD_xs1 },
+/* pseudos */
+{"fgt.h",     0, INSN_CLASS_XPULP_FHALFINX, "d,t,s",    MATCH_FLT_H, MASK_FLT_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fge.h",     0, INSN_CLASS_XPULP_FHALFINX, "d,t,s",    MATCH_FLE_H, MASK_FLE_H, match_opcode,  INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fabs.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,u",  MATCH_FSGNJX_H, MASK_FSGNJX_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fneg.h",    0, INSN_CLASS_XPULP_FHALFINX, "d,u",  MATCH_FSGNJN_H, MASK_FSGNJN_H, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+
+/* RV64Xfhalf Half-Precision Floating-Point Extension (in addition to RV32Xfhalf)*/
 {"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_L_H | MASK_RM, MASK_FCVT_L_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
 {"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALF, "d,S,m",  MATCH_FCVT_L_H, MASK_FCVT_L_H, match_opcode,  WR_xd|RD_xs1 },
 {"fcvt.lu.h", 64, INSN_CLASS_XPULP_FHALF, "d,S",  MATCH_FCVT_LU_H | MASK_RM, MASK_FCVT_LU_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
@@ -1782,15 +1836,35 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALF, "D,s",  MATCH_FCVT_H_LU | MASK_RM, MASK_FCVT_H_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
 {"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALF, "D,s,m",  MATCH_FCVT_H_LU, MASK_FCVT_H_LU, match_opcode,   WR_xd|RD_xs1 },
 
+/* RV64Xfhalfinx Half-Precision Floating-Point Extension (in addition to RV32Xfhalfinx) in x registers */
+{"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_L_H | MASK_RM, MASK_FCVT_L_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.l.h",  64, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_L_H, MASK_FCVT_L_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.h", 64, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_LU_H | MASK_RM, MASK_FCVT_LU_H | MASK_RM, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.h", 64, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_LU_H, MASK_FCVT_LU_H, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.h.l",  64, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_H_L | MASK_RM, MASK_FCVT_H_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.l",  64, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_H_L, MASK_FCVT_H_L, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALFINX, "d,s",  MATCH_FCVT_H_LU | MASK_RM, MASK_FCVT_H_L | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.lu", 64, INSN_CLASS_XPULP_FHALFINX, "d,s,m",  MATCH_FCVT_H_LU, MASK_FCVT_H_LU, match_opcode,   WR_xd|RD_xs1 },
+
 /* XfhalfwithF - half-precision conversions with F extension */
 {"fcvt.s.h",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S",  MATCH_FCVT_S_H, MASK_FCVT_S_H, match_opcode,   WR_fd|RD_xs1 },
 {"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S",  MATCH_FCVT_H_S | MASK_RM, MASK_FCVT_H_S | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
 {"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHF, "D,S,m",  MATCH_FCVT_H_S, MASK_FCVT_H_S, match_opcode,   WR_xd|RD_fs1 },
 
+/* XfhalfwithFinx - half-precision conversions with F extension in x registers */
+{"fcvt.s.h",  0, INSN_CLASS_XPULP_FHALFWITHFINX, "d,s",  MATCH_FCVT_S_H, MASK_FCVT_S_H, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHFINX, "d,s",  MATCH_FCVT_H_S | MASK_RM, MASK_FCVT_H_S | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.h.s",  0, INSN_CLASS_XPULP_FHALFWITHFINX, "d,s,m",  MATCH_FCVT_H_S, MASK_FCVT_H_S, match_opcode,   WR_xd|RD_fs1 },
+
 /* XfhalfwithD - half-precision conversions with D extension (in addition to XfhalfwithF) */
 {"fcvt.d.h",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S",  MATCH_FCVT_D_H, MASK_FCVT_D_H, match_opcode,   WR_fd|RD_xs1 },
 {"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S",  MATCH_FCVT_H_D | MASK_RM, MASK_FCVT_H_D | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
 {"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHD, "D,S,m",  MATCH_FCVT_H_D, MASK_FCVT_H_D, match_opcode,   WR_xd|RD_fs1 },
+
+/* XfhalfwithDinx - half-precision conversions with D extension (in addition to XfhalfwithF) in x registers*/
+{"fcvt.d.h",  0, INSN_CLASS_XPULP_FHALFWITHDINX, "d,s",  MATCH_FCVT_D_H, MASK_FCVT_D_H, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHDINX, "d,s",  MATCH_FCVT_H_D | MASK_RM, MASK_FCVT_H_D | MASK_RM, match_opcode,   WR_xd|RD_fs1 },
+{"fcvt.h.d",  0, INSN_CLASS_XPULP_FHALFWITHDINX, "d,s,m",  MATCH_FCVT_H_D, MASK_FCVT_H_D, match_opcode,   WR_xd|RD_fs1 },
 
 /* RV32Xfalthalf - alternate half-precision floats */
 {"flah",       0, INSN_CLASS_XPULP_FALTHALF, "D,o(s)",  MATCH_FLH, MASK_FLH, match_opcode,   INSN_ALIAS|WR_xd|RD_xs1 },
@@ -1821,12 +1895,41 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fmv.x.ah",   0, INSN_CLASS_XPULP_FALTHALF, "d,S",  MATCH_FMV_X_AH, MASK_FMV_X_AH, match_opcode,  WR_xd|RD_xs1 },
 {"fclass.ah",  0, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCLASS_AH, MASK_FCLASS_AH, match_opcode,   WR_xd|RD_xs1 },
 {"fmv.ah.x",   0, INSN_CLASS_XPULP_FALTHALF, "D,s",  MATCH_FMV_AH_X, MASK_FMV_AH_X, match_opcode,  WR_xd|RD_xs1 },
-//pseudos
+/* pseudos */
 {"fgt.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,T,S",    MATCH_FLT_AH, MASK_FLT_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
 {"fge.ah",     0, INSN_CLASS_XPULP_FALTHALF, "d,T,S",    MATCH_FLE_AH, MASK_FLE_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
 {"fmv.ah",     0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJ_AH, MASK_FSGNJ_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fabs.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJX_AH, MASK_FSGNJX_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 {"fneg.ah",    0, INSN_CLASS_XPULP_FALTHALF, "D,U",  MATCH_FSGNJN_AH, MASK_FSGNJN_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+
+/* RV32Xfalthalfinx - alternate half-precision floats in x registers (no flah/fsah/fmv/) */
+{"fmadd.ah",   0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t,r",  MATCH_FMADD_AH, MASK_FMADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fmsub.ah",   0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t,r",  MATCH_FMSUB_AH, MASK_FMSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmsub.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t,r",  MATCH_FNMSUB_AH, MASK_FNMSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fnmadd.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t,r",  MATCH_FNMADD_AH, MASK_FNMADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2|RD_xs3 },
+{"fadd.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FADD_AH, MASK_FADD_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsub.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FSUB_AH, MASK_FSUB_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmul.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FMUL_AH, MASK_FMUL_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fdiv.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FDIV_AH, MASK_FDIV_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsqrt.ah",   0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FSQRT_AH, MASK_FSQRT_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fsgnj.ah",   0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FSGNJ_AH, MASK_FSGNJ_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjn.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FSGNJN_AH, MASK_FSGNJN_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fsgnjx.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FSGNJX_AH, MASK_FSGNJX_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmin.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FMIN_AH, MASK_FMIN_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"fmax.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",  MATCH_FMAX_AH, MASK_FMAX_AH, match_opcode,   WR_xd|RD_xs1|RD_xs2 },
+{"feq.ah",     0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",    MATCH_FEQ_AH, MASK_FEQ_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"flt.ah",     0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",    MATCH_FLT_AH, MASK_FLT_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fle.ah",     0, INSN_CLASS_XPULP_FALTHALFINX, "d,s,t",    MATCH_FLE_AH, MASK_FLE_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fcvt.w.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_W_AH, MASK_FCVT_W_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.wu.ah", 0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_WU_AH, MASK_FCVT_WU_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.ah.w",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_AH_W, MASK_FCVT_AH_W, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.wu", 0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_AH_WU, MASK_FCVT_AH_W, match_opcode,   WR_xd|RD_xs1 },
+{"fclass.ah",  0, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCLASS_AH, MASK_FCLASS_AH, match_opcode,   WR_xd|RD_xs1 },
+/* pseudos */
+{"fgt.ah",     0, INSN_CLASS_XPULP_FALTHALFINX, "d,t,s",    MATCH_FLT_AH, MASK_FLT_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fge.ah",     0, INSN_CLASS_XPULP_FALTHALFINX, "d,t,s",    MATCH_FLE_AH, MASK_FLE_AH, match_opcode,  WR_xd|RD_xs1|RD_xs2 },
+{"fabs.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,u",  MATCH_FSGNJX_AH, MASK_FSGNJX_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
+{"fneg.ah",    0, INSN_CLASS_XPULP_FALTHALFINX, "d,u",  MATCH_FSGNJN_AH, MASK_FSGNJN_AH, match_rs1_eq_rs2,   INSN_ALIAS|WR_xd|RD_xs1|RD_xs2 },
 
 /* RV64Xfalthalf Alternative Half-Precision Floating-Point Extension (in addition to RV32Xf16)*/
 {"fcvt.l.ah",  64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_L_AH, MASK_FCVT_L_AH, match_opcode,  WR_xd|RD_xs1 },
@@ -1834,18 +1937,37 @@ const struct riscv_opcode riscv_opcodes[] =
 {"fcvt.ah.l",  64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_AH_L, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
 {"fcvt.ah.lu", 64, INSN_CLASS_XPULP_FALTHALF, "D,S",  MATCH_FCVT_AH_LU, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
 
+/* RV64Xfalthalfinx Alternative Half-Precision Floating-Point Extension (in addition to rv32Xfalthalfinx) in x register */
+{"fcvt.l.ah",  64, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_L_AH, MASK_FCVT_L_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.lu.ah", 64, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_LU_AH, MASK_FCVT_LU_AH, match_opcode,  WR_xd|RD_xs1 },
+{"fcvt.ah.l",  64, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_AH_L, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.lu", 64, INSN_CLASS_XPULP_FALTHALFINX, "d,s",  MATCH_FCVT_AH_LU, MASK_FCVT_AH_L, match_opcode,   WR_xd|RD_xs1 },
+
 /* XfalthalfwithF - alternate half-precision conversions with F extension */
 {"fcvt.s.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHF, "D,S",  MATCH_FCVT_S_AH, MASK_FCVT_S_AH, match_opcode,   WR_fd|RD_xs1 },
 {"fcvt.ah.s",  0, INSN_CLASS_XPULP_FALTHALFWITHF, "D,S",  MATCH_FCVT_AH_S, MASK_FCVT_AH_S, match_opcode,   WR_xd|RD_fs1 },
+
+/* XfalthalfwithFinx - alternate half-precision conversions with F extension in x registers */
+{"fcvt.s.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHFINX, "d,s",  MATCH_FCVT_S_AH, MASK_FCVT_S_AH, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.ah.s",  0, INSN_CLASS_XPULP_FALTHALFWITHFINX, "d,s",  MATCH_FCVT_AH_S, MASK_FCVT_AH_S, match_opcode,   WR_xd|RD_fs1 },
 
 /* XfalthalfwithD - alternate half-precision conversions with D extension (in addition to XfalthalfwithF) */
 {"fcvt.d.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHD, "D,S",  MATCH_FCVT_D_AH, MASK_FCVT_D_AH, match_opcode,   WR_fd|RD_xs1 },
 {"fcvt.ah.d",  0, INSN_CLASS_XPULP_FALTHALFWITHD, "D,S",  MATCH_FCVT_AH_D, MASK_FCVT_AH_D, match_opcode,   WR_xd|RD_fs1 },
 
+/* XfalthalfwithDinx - alternate half-precision conversions with D extension (in addition to XfalthalfwithF) in x registers */
+{"fcvt.d.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHDINX, "d,s",  MATCH_FCVT_D_AH, MASK_FCVT_D_AH, match_opcode,   WR_fd|RD_xs1 },
+{"fcvt.ah.d",  0, INSN_CLASS_XPULP_FALTHALFWITHDINX, "d,s",  MATCH_FCVT_AH_D, MASK_FCVT_AH_D, match_opcode,   WR_xd|RD_fs1 },
+
 /* Xfalthalfwithhalf - alternate half-precision conversions with Xfhalf extension */
 {"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S"  ,  MATCH_FCVT_H_AH | MASK_RM, MASK_FCVT_H_AH | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
 {"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S,m",  MATCH_FCVT_H_AH, MASK_FCVT_H_AH, match_opcode,   WR_xd|RD_xs1 },
 {"fcvt.ah.h",  0, INSN_CLASS_XPULP_FALTHALFWITHHALF, "D,S",    MATCH_FCVT_AH_H, MASK_FCVT_AH_H, match_opcode,   WR_xd|RD_xs1 },
+
+/* Xfalthalfwithhalfinx - alternate half-precision conversions with Xfhalf extension in x registers */
+{"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALFINX, "d,s"  ,  MATCH_FCVT_H_AH | MASK_RM, MASK_FCVT_H_AH | MASK_RM, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.h.ah",  0, INSN_CLASS_XPULP_FALTHALFWITHHALFINX, "d,s,m",  MATCH_FCVT_H_AH, MASK_FCVT_H_AH, match_opcode,   WR_xd|RD_xs1 },
+{"fcvt.ah.h",  0, INSN_CLASS_XPULP_FALTHALFWITHHALFINX, "d,s",    MATCH_FCVT_AH_H, MASK_FCVT_AH_H, match_opcode,   WR_xd|RD_xs1 },
 
 /* RV32Xfquarter - quarter-precision floats */
 /* collides with quad precision floats (q) */

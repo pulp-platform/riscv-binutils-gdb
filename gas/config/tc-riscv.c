@@ -2835,37 +2835,6 @@ riscv_after_parse_args (void)
       && !(xlen == 32 && riscv_subset_supports ("d")))
     riscv_add_subset (&riscv_subsets, "xfvecquarternotthirtytwod", 2, 0);
 
-  /* automatically add conversion insns between floating point subsets */
-  if (riscv_subset_supports ("xfhalf"))
-    {
-      if (riscv_subset_supports ("f"))
-	riscv_add_subset (&riscv_subsets, "xfhalfwithf", 2, 0);
-      if (riscv_subset_supports ("d"))
-	riscv_add_subset (&riscv_subsets, "xfhalfwithd", 2, 0);
-    }
-
-  if (riscv_subset_supports ("xfalthalf"))
-    {
-      if (riscv_subset_supports ("f"))
-	riscv_add_subset (&riscv_subsets, "xfalthalfwithf", 2, 0);
-      if (riscv_subset_supports ("d"))
-	riscv_add_subset (&riscv_subsets, "xfalthalfwithd", 2, 0);
-      if (riscv_subset_supports ("xfhalf"))
-	riscv_add_subset (&riscv_subsets, "xfalthalfwithhalf", 2, 0);
-    }
-
-  if (riscv_subset_supports ("xfquarter"))
-    {
-      if (riscv_subset_supports ("f"))
-	riscv_add_subset (&riscv_subsets, "xfquarterwithf", 2, 0);
-      if (riscv_subset_supports ("d"))
-	riscv_add_subset (&riscv_subsets, "xfquarterwithd", 2, 0);
-      if (riscv_subset_supports ("xfhalf"))
-	riscv_add_subset (&riscv_subsets, "xfquarterwithhalf", 2, 0);
-      if (riscv_subset_supports ("xfalthalf"))
-	riscv_add_subset (&riscv_subsets, "xfquarterwithalthalf", 2, 0);
-    }
-
   if (riscv_subset_supports ("xfvecsingle"))
     {
       if (riscv_subset_supports ("f"))
@@ -3618,7 +3587,8 @@ md_show_usage (FILE *stream)
 RISC-V options:\n\
   -fpic                   Generate position-independent code\n\
   -fno-pic                Don't generate position-independent code (default)\n\
-  -march=ISA              Set the RISC-V architecture\n\
+  -march=ISA              Set the RISC-V architecture. Arch attributes take\n\
+                          precedence.\n\
   -mabi=ABI               Set the RISC-V ABI\n\
   -mrelax                 Enable relax (default)\n\
   -mno-relax              Disable relax\n\
