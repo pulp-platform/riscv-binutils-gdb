@@ -3206,6 +3206,7 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
   int32_t i32;
   int64_t i64;
   uint64_t u64;
+  unsigned16 tmp;
   int is;
   sim_cia pc = cpu->pc + 4;
 
@@ -3227,7 +3228,8 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       ufcsr (cpu, sim_fpu_mul (&sft2, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_add (&sft, &sfc, &sft2));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp; /* sign extend */
       goto done;
     case MATCH_FMSUB_H:
       TRACE_INSN (cpu, "fmsub.h %s, %s, %s, %s",
@@ -3236,7 +3238,8 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       ufcsr (cpu, sim_fpu_mul (&sft2, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_sub (&sft, &sft2, &sfc));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FNMADD_H:
       TRACE_INSN (cpu, "fnmadd.h %s, %s, %s, %s",
@@ -3246,7 +3249,8 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       ufcsr (cpu, sim_fpu_neg (&sft2, &sft2));
       ufcsr (cpu, sim_fpu_sub (&sft, &sft2, &sfc));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FNMSUB_H:
       TRACE_INSN (cpu, "fnmsub.h %s, %s, %s, %s",
@@ -3256,7 +3260,8 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       ufcsr (cpu, sim_fpu_neg (&sft2, &sft2));
       ufcsr (cpu, sim_fpu_add (&sft, &sft2, &sfc));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     }
 
@@ -3267,14 +3272,16 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_add (&sft, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FSUB_H:
       TRACE_INSN (cpu, "fsub.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_sub (&sft, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FMUL_H:
       TRACE_INSN (cpu, "fmul.h %s, %s, %s",
@@ -3282,20 +3289,23 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       ufcsr (cpu, sim_fpu_mul (&sft, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_round_64 (&sft, rounding, sim_fpu_denorm_default));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FDIV_H:
       TRACE_INSN (cpu, "fdiv.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_div (&sft, &sfa, &sfb));
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FSQRT_H:
       TRACE_INSN (cpu, "fsqrt.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_sqrt (&sft, &sfa));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     }
 
@@ -3319,34 +3329,44 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		  frd_name, rs1_name);
       sim_fpu_i16to (&sft, cpu->regs[rs1], rounding);
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 ((unsigned16 *) (cpu->fpregs + rd), &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FCVT_H_WU:
       TRACE_INSN (cpu, "fcvt.h.wu %s, %s",
 		  frd_name, rs1_name);
       sim_fpu_u16to (&sft, cpu->regs[rs1], rounding);
       ufcsr (cpu, sim_fpu_round_16 (&sft, rounding, sim_fpu_denorm_default));
-      sim_fpu_to16 ((unsigned16 *) (cpu->fpregs + rd), &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     case MATCH_FCVT_L_H:
       TRACE_INSN (cpu, "fcvt.l.h %s, %s",
 		  rd_name, frs1_name);
-      cpu->regs[rd] = (int64_t) cpu->fpregs[rs1].S[0];
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      /* TODO: unimplemented */
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
       goto done;
     case MATCH_FCVT_LU_H:
       TRACE_INSN (cpu, "fcvt.lu.h %s, %s",
 		  rd_name, frs1_name);
-      cpu->regs[rd] = (uint64_t) cpu->fpregs[rs1].S[0];
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      /* TODO: unimplemented */
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
       goto done;
     case MATCH_FCVT_H_L:
       TRACE_INSN (cpu, "fcvt.h.l %s, %s",
 		  frd_name, rs1_name);
-      cpu->fpregs[rd].S[0] = (float) ((int64_t) cpu->regs[rs1]);
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      /* TODO: unimplemented */
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
       goto done;
     case MATCH_FCVT_H_LU:
       TRACE_INSN (cpu, "fcvt.h.lu %s, %s",
 		  frd_name, rs1_name);
-      cpu->fpregs[rd].S[0] = (float) cpu->regs[rs1];
+      RISCV_ASSERT_RV64 (cpu, "insn: %s", op->name);
+      /* TODO: unimplemented */
+      sim_engine_halt (sd, cpu, NULL, cpu->pc, sim_signalled, SIM_SIGILL);
       goto done;
     }
 
@@ -3357,6 +3377,7 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
       TRACE_INSN (cpu, "fcvt.s.h %s, %s",
 		  frd_name, frs1_name);
       sim_fpu_16to (&sft, cpu->fpregs[rs1].h[0]);
+      /* TODO: sign extend fo rv64 */
       sim_fpu_to32 (&cpu->fpregs[rd].w[0], &sft);
       goto done;
     }
@@ -3367,7 +3388,8 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		  frd_name, frs1_name);
       sft = sfa;
       ufcsr (cpu, sim_fpu_round_16 (&sft, sim_fpu_round_near, sim_fpu_denorm_default));
-      sim_fpu_to16 ((unsigned16 *) (cpu -> fpregs + rd), &sft);
+      sim_fpu_to16 (&tmp, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)tmp;
       goto done;
     }
 
@@ -3391,33 +3413,35 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
 		  frd_name, frs1_name, frs2_name);
       u16 = cpu->fpregs[rs1].h[0] & 0x7fff;
       u16 |= cpu->fpregs[rs2].h[0] & 0x8000;
-      cpu->fpregs[rd].h[0] = u16;
+      cpu->fpregs[rd].v[0] = (signed16)u16;
       break;
     case MATCH_FSGNJN_H:
       TRACE_INSN (cpu, "fsgnjn.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       u16 = cpu->fpregs[rs1].h[0] & 0x7fff;
       u16 |= (cpu->fpregs[rs2].h[0] & 0x8000) ^ 0x8000;
-      cpu->fpregs[rd].h[0] = u16;
+      cpu->fpregs[rd].v[0] = (signed16)u16;
       break;
     case MATCH_FSGNJX_H:
       TRACE_INSN (cpu, "fsgnx.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       u16 = cpu->fpregs[rs1].h[0] & 0x7fff;
       u16 |= (cpu->fpregs[rs1].h[0] & 0x8000) ^ (cpu->fpregs[rs2].h[0] & 0x8000);
-      cpu->fpregs[rd].h[0] = u16;
+      cpu->fpregs[rd].v[0] = (signed16)u16;
       break;
     case MATCH_FMIN_H:
       TRACE_INSN (cpu, "fmin.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_min (&sft, &sfa, &sfb));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&u16, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)u16;
       break;
     case MATCH_FMAX_H:
       TRACE_INSN (cpu, "fmax.h %s, %s, %s",
 		  frd_name, frs1_name, frs2_name);
       ufcsr (cpu, sim_fpu_max (&sft, &sfa, &sfb));
-      sim_fpu_to16 (&cpu->fpregs[rd].h[0], &sft);
+      sim_fpu_to16 (&u16, &sft);
+      cpu->fpregs[rd].v[0] = (signed16)u16;
       break;
     case MATCH_FMV_X_H:
       TRACE_INSN (cpu, "fmv.x.h %s, %s",
@@ -3427,7 +3451,7 @@ execute_fhalf (SIM_CPU *cpu, unsigned_word iw, const struct riscv_opcode *op)
     case MATCH_FMV_H_X:
       TRACE_INSN (cpu, "fmv.h.x %s, %s",
 		  frd_name, rs1_name);
-      cpu->fpregs[rd].h[0] = cpu->regs[rs1]; /* TODO: nan boxing ? */
+      cpu->fpregs[rd].v[0] = (signed16)cpu->regs[rs1]; /* TODO: nan boxing ? */
       break;
     case MATCH_FEQ_H:
       TRACE_INSN (cpu, "feq.h %s, %s, %s",
